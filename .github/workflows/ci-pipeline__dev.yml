@@ -29,6 +29,8 @@ jobs:
         uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/git__increment-tag@dev
         with:
           release_type: 'minor'
+    needs:
+      - run-qunit-tests
 
   trigger-deploy-community-dev:
     name: "Deploy Community (DEV)"
