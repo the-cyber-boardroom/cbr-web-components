@@ -1,8 +1,8 @@
-import Web_Component       from "../core/Web_Component.js"        ;
-import Data__Chat_Bot      from "../data/Data__Chat_Bot.js" ;
-import WebC__Chat_Input    from "./WebC__Chat_Input.js"     ;
-import WebC__Chat_Messages from "./WebC__Chat_Messages.js"  ;
-import Tag                 from "../core/Tag.js"              ;
+import Web_Component       from "../core/Web_Component.mjs"        ;
+import Data__Chat_Bot      from "../data/Data__Chat_Bot.mjs" ;
+import WebC__Chat_Input    from "./WebC__Chat_Input.mjs"     ;
+import WebC__Chat_Messages from "./WebC__Chat_Messages.mjs"  ;
+import Tag                 from "../core/Tag.mjs"              ;
 
 export default class WebC__Chat_Bot extends Web_Component {
     constructor() {

@@ -1,4 +1,4 @@
-import Web_Component from "../core/Web_Component.js";
+import Web_Component from "../core/Web_Component.mjs";
 
 export default class WebC__Events_Utils extends Web_Component {
     constructor() {

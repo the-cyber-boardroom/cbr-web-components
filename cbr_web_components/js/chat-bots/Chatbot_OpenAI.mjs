@@ -1,5 +1,5 @@
 
-import WebC_Chat_Bot from "../elements/WebC__Chat_Bot.js";
+import WebC_Chat_Bot from "../elements/WebC__Chat_Bot.mjs";
 
 export default class Chatbot_OpenAI extends WebC_Chat_Bot{
 

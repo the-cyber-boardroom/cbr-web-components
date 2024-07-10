@@ -1,7 +1,7 @@
-import WebC__Chat_Messages  from '../../js/elements/WebC__Chat_Messages.js'
-import WebC__Chat_Message   from '../../js/elements/WebC__Chat_Message.js'
-import WebC__Target_Div     from '../../js/utils/WebC__Target_Div.js'
-import Web_Component        from "../../js/core/Web_Component.js";
+import WebC__Chat_Messages  from '../../js/elements/WebC__Chat_Messages.mjs'
+import WebC__Chat_Message   from '../../js/elements/WebC__Chat_Message.mjs'
+import WebC__Target_Div     from '../../js/utils/WebC__Target_Div.mjs'
+import Web_Component        from "../../js/core/Web_Component.mjs";
 
 
 QUnit.module('WebC__Chat_Message', function(hooks) {
@@ -130,10 +130,10 @@ QUnit.module('WebC__Chat_Message', function(hooks) {
         assert.equal(chat_message_without_marked.message_raw , message_raw.user_prompt      )
         assert.equal(chat_message_without_marked.message_html ,message_html_lite)
 
+
         // load marked js and eval it
         assert.equal(window.marked, undefined, "maked api is not loaded")
         await fetch(url_markdown).then(response => response.text().then(text => eval(text)))
-
         assert.notEqual(window.marked, undefined, "maked api is now loaded")
 
         const chat_message_with_marked = web_chat_messages.add_message_sent(message_raw)

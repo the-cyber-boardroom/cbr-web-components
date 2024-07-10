@@ -1,5 +1,5 @@
-import Web_Component      from "../core/Web_Component.js";
-import WebC__Chat_Message from "./WebC__Chat_Message.js";
+import Web_Component      from "../core/Web_Component.mjs";
+import WebC__Chat_Message from "./WebC__Chat_Message.mjs";
 
 
 export default class WebC__Chat_Messages extends Web_Component {
@@ -38,7 +38,7 @@ export default class WebC__Chat_Messages extends Web_Component {
                 this.dom_spinner = null
             }
             let chunk = event_data.data
-            this.current_message.append(chunk)
+            this.current_message?.append(chunk)
         }
     }
     add_event_hooks() {

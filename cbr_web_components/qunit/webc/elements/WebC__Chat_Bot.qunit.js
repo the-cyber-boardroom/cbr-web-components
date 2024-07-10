@@ -1,6 +1,6 @@
-import WebC__Chat_Bot   from '../../../webc/elements/WebC__Chat_Bot.js'
-import Web_Component    from '../../../webc/core/Web_Component.js'
-import WebC__Target_Div from "../../../webc/utils/WebC__Target_Div.js";
+import WebC__Chat_Bot   from '../../../js/elements/WebC__Chat_Bot.mjs'
+import Web_Component    from '../../../js/core/Web_Component.mjs'
+import WebC__Target_Div from "../../../js/utils/WebC__Target_Div.mjs";
 
 QUnit.module('Chatbot_OpenAI', function(hooks) {
 

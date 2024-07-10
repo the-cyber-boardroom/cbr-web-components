@@ -1,4 +1,4 @@
-import Tag from  './Tag.js'
+import Tag from  './Tag.mjs'
 
 export default class Text extends Tag {
     constructor({value='', ...kwargs}={}) {

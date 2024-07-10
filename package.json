@@ -1,10 +1,16 @@
 {
   "name": "cbr_web_components",
   "version": "0.1.0",
+  "type": "module",
   "scripts": {
-    "test": "qunit"
+    "test": "karma start karma.conf.cjs"
   },
   "devDependencies": {
-    "qunit": "latest"
+    "datatables.net": "*",
+    "jquery": "*",
+    "karma": "^6.4.3",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-qunit": "^4.2.0",
+    "qunit": "^2.21.0"
   }
 }

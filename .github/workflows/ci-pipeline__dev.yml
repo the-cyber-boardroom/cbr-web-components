@@ -10,6 +10,16 @@ env:
 
 jobs:
 
+  run-qunit-tests:
+    name: Run QUnit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run QUnit Tests
+        uses: ./.github/actions/run-qunit-tests
+        with:
+          node-version: '22.4.1'
+
   increment-tag:
     name: Increment Tag - DEV
     runs-on: ubuntu-latest
@@ -18,5 +28,20 @@ jobs:
       - name: Increment Tag (for DEV)
         uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/git__increment-tag@dev
         with:
-          release_type : 'minor'
+          release_type: 'minor'
+    needs:
+      - run-qunit-tests
 
+  trigger-deploy-community-dev:
+    name: "Deploy Community (DEV)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger target repository workflow
+        run: |
+          curl -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ secrets.GIT_HUB__ACCESS_TOKEN }}" \
+          https://api.github.com/repos/the-cyber-boardroom/cbr-community/dispatches \
+          -d '{"event_type":"deploy-community-dev"}'
+    needs:
+      - increment-tag

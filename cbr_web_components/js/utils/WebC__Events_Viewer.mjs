@@ -1,9 +1,9 @@
-import '../../plugins/jquery/dist/jquery.min.js'
-import '../../plugins/data-tables/js/dataTables.min.js'
-import Tag                from "../core/Tag.js"          ;
-import Table              from "../../webc/core/Table.js";        
-import Div                from "../core/Div.js"          ;
-import Web_Component      from "../core/Web_Component.js";
+//import '../../plugins/jquery/dist/jquery.min.mjs'
+//import '../../plugins/data-tables/js/dataTables.min.mjs'
+import Tag                from "../core/Tag.mjs"          ;
+import Table              from "../core/Table.mjs";
+import Div                from "../core/Div.mjs"          ;
+import Web_Component      from "../core/Web_Component.mjs";
 
 export default class WebC__Events_Viewer extends Web_Component {    
 
