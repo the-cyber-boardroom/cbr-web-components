@@ -1,11 +1,9 @@
 ---
-title: CBR XYZ
+title: CBR Web Components
 ---
 
-# cbr-xyz
-Repo for XYZ (replace with name of project). 
-
-This is the template for the other projects and builds up the main CI/CD pipeline
+# web_components
+Repo for CBR Web Components
 
 
 ## Repo details
