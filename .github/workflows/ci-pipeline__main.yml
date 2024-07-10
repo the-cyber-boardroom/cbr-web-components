@@ -10,16 +10,6 @@ env:
 
 jobs:
 
-  increment-tag:
-    name: Increment Tag - MAIN
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Increment Tag (for MAIN)
-        uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/git__increment-tag@dev
-        with:
-          release_type : 'major'
-
   run-qunit-tests:
     name: Run QUnit tests
     runs-on: ubuntu-latest
@@ -29,8 +19,18 @@ jobs:
         uses: ./.github/actions/run-qunit-tests
         with:
           node-version: '22.4.1'
+
+  increment-tag:
+    name: Increment Tag - MAIN
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Increment Tag (for MAIN)
+        uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/git__increment-tag@dev
+        with:
+          release_type : 'major'
     needs:
-      - increment-tag
+      - run-qunit-tests
 
   publish-to-pypi:
     permissions:
@@ -43,4 +43,4 @@ jobs:
       - name: publish-to-pypi
         uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/pypi__publish@dev
     needs:
-      - run-qunit-tests
+      - increment-tag
