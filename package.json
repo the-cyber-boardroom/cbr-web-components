@@ -1,10 +1,13 @@
 {
   "name": "cbr_web_components",
   "version": "0.1.0",
+  "type": "module",
   "scripts": {
     "test": "qunit 'cbr_web_components/qunit/**/*.*' "
   },
   "devDependencies": {
-    "qunit": "latest"
+    "datatables.net":"*",
+    "jquery": "*",
+    "qunit": "*"
   }
 }

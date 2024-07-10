@@ -1,6 +1,6 @@
-import Div           from "../core/Div.js";
-import Tag           from "../core/Tag.js";
-import Web_Component from "../core/Web_Component.js"
+import Div           from "../core/Div.mjs";
+import Tag           from "../core/Tag.mjs";
+import Web_Component from "../core/Web_Component.mjs"
 
 export default class WebC__Target_Div extends Web_Component {
     constructor() {

@@ -1,7 +1,7 @@
-import Data__Chat_Bot      from "../../js/data/Data__Chat_Bot.js";
-import WebC__Chat_Bot      from '../../js/elements/WebC__Chat_Bot.js'
-import WebC__Target_Div    from '../../js/utils/WebC__Target_Div.js'
-import Web_Component       from '../../js/core/Web_Component.js'
+import Data__Chat_Bot      from "../../js/data/Data__Chat_Bot.mjs";
+import WebC__Chat_Bot      from '../../js/elements/WebC__Chat_Bot.mjs'
+import WebC__Target_Div    from '../../js/utils/WebC__Target_Div.mjs'
+import Web_Component       from '../../js/core/Web_Component.mjs'
 
 QUnit.module('WebC__Chat_Bot', function(hooks) {
 

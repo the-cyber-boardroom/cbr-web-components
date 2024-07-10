@@ -1,5 +1,5 @@
-import Tag  from  './Tag.js'
-import Text from './Text.js'
+import Tag  from  './Tag.mjs'
+import Text from './Text.mjs'
 
 export default class Div extends Tag {
     constructor({...kwargs}={}) {

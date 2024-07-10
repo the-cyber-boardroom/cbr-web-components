@@ -1,6 +1,6 @@
-import Web_Component from "../core/Web_Component.js";
-import Tag           from "../core/Tag.js";
-import Div           from "../core/Div.js";
+import Web_Component from "../core/Web_Component.mjs";
+import Tag           from "../core/Tag.mjs";
+import Div           from "../core/Div.mjs";
 
 
 export default class WebC__Chat_Message extends Web_Component {

@@ -1,5 +1,5 @@
-import Web_Component      from "../core/Web_Component.js";
-import WebC__Chat_Message from "./WebC__Chat_Message.js";
+import Web_Component      from "../core/Web_Component.mjs";
+import WebC__Chat_Message from "./WebC__Chat_Message.mjs";
 
 
 export default class WebC__Chat_Messages extends Web_Component {

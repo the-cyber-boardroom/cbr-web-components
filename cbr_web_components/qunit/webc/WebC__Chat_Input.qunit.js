@@ -1,6 +1,6 @@
-import WebC__Chat_Input     from '../../js/elements/WebC__Chat_Input.js'
-import WebC__Target_Div     from '../../js/utils/WebC__Target_Div.js'
-import Web_Component        from "../../js/core/Web_Component.js";
+import WebC__Chat_Input     from '../../js/elements/WebC__Chat_Input.mjs'
+import WebC__Target_Div     from '../../js/utils/WebC__Target_Div.mjs'
+import Web_Component        from "../../js/core/Web_Component.mjs";
 
 
 QUnit.module('WebC__Chat_Input', function(hooks) {
