@@ -20,6 +20,18 @@ jobs:
         with:
           release_type : 'major'
 
+  run-qunit-tests:
+    name: Run QUnit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run QUnit Tests
+        uses: ./.github/actions/run-qunit-tests
+        with:
+          node-version: '22.4.1'
+    needs:
+      - increment-tag
+
   publish-to-pypi:
     permissions:
       id-token: write
@@ -31,4 +43,4 @@ jobs:
       - name: publish-to-pypi
         uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/pypi__publish@dev
     needs:
-      - increment-tag
+      - run-qunit-tests
