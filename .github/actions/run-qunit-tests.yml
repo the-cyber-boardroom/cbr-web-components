@@ -1,0 +1,22 @@
+name: 'Run QUnit Tests'
+description: 'Action to run QUnit tests'
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run QUnit tests
+      run: npm test

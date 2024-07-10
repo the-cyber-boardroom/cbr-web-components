@@ -20,3 +20,13 @@ jobs:
         with:
           release_type : 'minor'
 
+  run-qunit-tests:
+    name: Run QUnit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run QUnit Tests
+        uses: ./.github/actions/run-qunit-tests
+        with:
+          node-version: '22.4.1'
+
