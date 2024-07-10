@@ -38,7 +38,7 @@ export default class WebC__Chat_Messages extends Web_Component {
                 this.dom_spinner = null
             }
             let chunk = event_data.data
-            this.current_message.append(chunk)
+            this.current_message?.append(chunk)
         }
     }
     add_event_hooks() {
