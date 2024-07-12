@@ -35,6 +35,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         this.apply_ui_tweaks()
 
     }
+
     add_event_listeners() {
         this.addEventListener('messageSent', async (event) => {
             if (this.target && this.target === event.detail.target) {
@@ -58,10 +59,14 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
             this.provider = event.detail?.provider
             this.model    = event.detail?.model
         })
-
     }
 
+    add_thread_id_ui_link() {
+        let ui_link = `<a style="padding:0px" href="chat/view/${this.chat_thread_id}" target="_blank">view saved chat</a>`
+        this.messages.add_message_link_thread_id(ui_link)
+    }
     apply_ui_tweaks () {
+        this.add_thread_id_ui_link()
         this.input.value   = this.initial_prompt
         if (this.initial_message !== null) {
             this.messages.add_message_initial(this.initial_message)

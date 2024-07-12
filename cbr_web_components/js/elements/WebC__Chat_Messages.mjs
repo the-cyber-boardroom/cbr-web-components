@@ -120,6 +120,10 @@ export default class WebC__Chat_Messages extends Web_Component {
         return this.add_message(message, 'initial')
     }
 
+    add_message_link_thread_id(message) {
+        return this.add_message(message, 'link_thread_id')
+    }
+    
     add_message_received(message, images, platform, provider, model) {
         return this.add_message(message, 'received', images, platform, provider, model)
     }
