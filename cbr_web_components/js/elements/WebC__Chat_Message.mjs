@@ -11,9 +11,9 @@ export default class WebC__Chat_Message extends Web_Component {
         this.message_html = ''
         this.type         = ''
         this.channel      = this.getAttribute('channel' )       || null
-        this.platform     = this.getAttribute('platform')       || 'plat1'
-        this.provider     = this.getAttribute('provider')       || 'provider aaa'
-        this.model        = this.getAttribute('model'   )       || 'model1 bbbb'
+        this.platform     = this.getAttribute('platform')       || 'platform'
+        this.provider     = this.getAttribute('provider')       || 'provider'
+        this.model        = this.getAttribute('model'   )       || 'model'
         if (this.channel) { this.channels.push(this.channel) }
         this.channels.push('WebC__Chat_Message')
         this.edit_message  = this.edit_message.bind(this);
@@ -36,7 +36,6 @@ export default class WebC__Chat_Message extends Web_Component {
             this.shadowRoot.querySelector("#clear_button").addEventListener('click', this.clear_message)
         }
     }
-
     css_messages() { return {   ".message"      : { "margin-bottom"   : "25px"             ,
                                                     "max-width"       : "80%"              ,
                                                     "padding"         : "10px"             },

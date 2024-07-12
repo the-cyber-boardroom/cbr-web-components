@@ -18,10 +18,10 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         this.url                = this.getAttribute('url'               ) || '/api/llms/chat/completion';
         this.bot_name           = this.getAttribute('name'              ) || 'OpenAI ChatBot'
         this.target             = this.getAttribute('target'            ) || null
+        this.system_prompt      = this.getAttribute('system_prompt'     )
+        this.stream             = this.getAttribute('stream'            ) !== 'false'  // default to true
         this.chat_thread_id     = this.random_uuid()
         this.stop_fetch         = false
-        this.system_prompt      = this.getAttribute('system_prompt' )
-        //window.chatbot = this
     }
 
     connectedCallback() {
@@ -95,15 +95,16 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         user_data['selected_model'   ] = this.model    || $('#model-select'   ).val();
         const histories = this.calculate_histories()
         const data = { chat_thread_id   : this.chat_thread_id             ,
-                            model            : this.openai_model          ,
-                            temperature      : this.openai_temperature    ,
-                            seed             : this.openai_seed           ,
-                            max_tokens       : this.max_tokens            ,
-                            user_prompt      : user_prompt                ,
-                            images           : images                     ,
-                            system_prompts   : this.all_system_prompts()  ,
-                            histories        : histories                  ,
-                            user_data        : user_data                  }
+                       model            : this.openai_model          ,
+                       temperature      : this.openai_temperature    ,
+                       seed             : this.openai_seed           ,
+                       max_tokens       : this.max_tokens            ,
+                       user_prompt      : user_prompt                ,
+                       images           : images                     ,
+                       system_prompts   : this.all_system_prompts()  ,
+                       histories        : histories                  ,
+                       user_data        : user_data                  ,
+                       stream           : this.stream                }
 
         const event = new CustomEvent('promptSent', {
             bubbles : true    ,
@@ -141,13 +142,15 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
             //throw new Error(`HTTP error! Status: ${response.status}`);
           }
 
-
           const reader = response.body.getReader();                     // Handling the stream
           const decoder = new TextDecoder('utf-8');
 
           this.messages.messages_div_scroll_to_end()
 
-
+          if (this.stream === false) {
+              await this.handle_not_streamed_response(reader, decoder, detail__stream_data)
+              return
+          }
 
           const processStream = async ({done, value}) => {
               if (this.stop_fetch) {
@@ -193,6 +196,19 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         }
     }
 
+    async handle_not_streamed_response(reader, decoder, detail__stream_data) {
+        const handle_response = ({done, value}) => {
+            let response_json = decoder.decode(value);
+            detail__stream_data.data = JSON.parse(response_json)
+            console.log(detail__stream_data)
+            this.dispatchEvent(new CustomEvent('streamData'    , { bubbles : true    ,                         // allows the event to bubble up through the DOM
+                                                                   composed: true    ,                         // allows the event to cross shadow DOM boundaries
+                                                                   detail  : detail__stream_data }));          // Emit an event with the chunk
+
+            this.dispatchEvent(new CustomEvent('streamComplete', { bubbles : true, composed: true }));
+        }
+        reader.read().then(handle_response)
+    }
 
     // todo refactor this code to use the Data__Chat_Bot class which has proper support for storing messages
     calculate_histories() {
