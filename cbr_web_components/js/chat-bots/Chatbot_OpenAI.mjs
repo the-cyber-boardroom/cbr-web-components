@@ -5,7 +5,6 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
 
     constructor() {
         super()
-
         this.provider           = this.getAttribute('provider'          )
         this.platform           = this.getAttribute('platform'          )
         this.model              = this.getAttribute('model'             )
@@ -22,43 +21,37 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         this.stream             = this.getAttribute('stream'            ) !== 'false'  // default to true
         this.chat_thread_id     = this.random_uuid()
         this.stop_fetch         = false
+        this.on_message_sent    = this.on_message_sent.bind(this);
+        this.on_stop_stream     = this.on_stop_stream.bind (this);
+        this.on_select_model    = this.on_select_model.bind(this);
     }
 
     connectedCallback() {
         this.build()
+        this.add_event_listeners()
+    }
+
+    disconnectedCallback() {
+        this.remove_event_listeners()
     }
 
     build() {
         super.build()
         //window.chatbot_openai = this
-        this.add_event_listeners()
         this.apply_ui_tweaks()
 
     }
 
+    remove_event_listeners() {
+        this.removeEventListener  ('messageSent'   , this.on_message_sent)
+        window.removeEventListener('stop_stream' , this.on_stop_stream)
+        window.removeEventListener('select_model', this.on_select_model)
+    }
+
     add_event_listeners() {
-        this.addEventListener('messageSent', async (event) => {
-            if (this.target && this.target === event.detail.target) {
-                console.log(`[add_event_listeners]--->> NOT Current target ${this.target} != ${event.detail.target}<----`)
-                return
-            }
-            const message     = event.detail.message
-            const user_prompt = message.user_prompt
-            const images      = message.images
-
-            await this.post_openai_prompt_with_stream(user_prompt, images)
-        });
-
-        window.addEventListener('stop_stream', async (event) => {
-            if (event.detail?.channel === this.channel) {
-                this.stop_fetch = true
-            }
-        })
-        window.addEventListener('select_model', async (event) => {
-            this.platform = event.detail?.platform
-            this.provider = event.detail?.provider
-            this.model    = event.detail?.model
-        })
+        this.addEventListener  ('messageSent'   , this.on_message_sent )
+        window.addEventListener('stop_stream' , this.on_stop_stream  )
+        window.addEventListener('select_model', this.on_select_model )
     }
 
     add_thread_id_ui_link() {
@@ -66,7 +59,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         this.messages.add_message_link_thread_id(ui_link)
     }
     apply_ui_tweaks () {
-        this.add_thread_id_ui_link()
+        //this.add_thread_id_ui_link()
         this.input.value   = this.initial_prompt
         if (this.initial_message !== null) {
             this.messages.add_message_initial(this.initial_message)
@@ -91,6 +84,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         }
         return []
     }
+
     async post_openai_prompt_with_stream(user_prompt, images) {
 
         var storedData = localStorage.getItem('user_data');
@@ -234,6 +228,30 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         })
         return histories
     }
+
+    async on_message_sent(event) {
+        if (this.target && this.target === event.detail.target) {
+                console.log(`[add_event_listeners]--->> NOT Current target ${this.target} != ${event.detail.target}<----`)
+                return
+        }
+        const message     = event.detail.message
+        const user_prompt = message.user_prompt
+        const images      = message.images
+
+        await this.post_openai_prompt_with_stream(user_prompt, images)
+    }
+
+    async on_stop_stream (event) {
+        if (event.detail?.channel === this.channel) {
+            this.stop_fetch = true
+        }
+    }
+    async on_select_model(event) {
+        this.platform = event.detail?.platform
+        this.provider = event.detail?.provider
+        this.model    = event.detail?.model
+    }
+
     random_uuid() {
         return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)

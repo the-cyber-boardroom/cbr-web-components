@@ -75,7 +75,6 @@ QUnit.module('WebC__Chat_Message', function(hooks) {
 
 <style>
 .message-edit {
-   
     display: none;
     font-size: 14px;
     width: 95%;
@@ -84,21 +83,18 @@ QUnit.module('WebC__Chat_Message', function(hooks) {
     margin-top: 10px;
     margin-bottom: 0px;
     box-sizing: border-box;
-    
 }
 
 #save_button { display: none;}
-              
+
 .source-sent { position:relative;
-          /*right : -10px; */ 
           bottom: -30px;
           color : #6a42c1; }
 .source-received { position:relative;
-          /*right : -10px; */ 
           bottom: -30px;
-          color : #808080; }         
+          color : #808080; }
 .badge {
-    position: absolute;            
+    position: absolute;
     color: white;
     padding: 5px 10px;
     border-radius: 12px;

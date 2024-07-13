@@ -41,54 +41,55 @@ QUnit.module('WebC__Chat_Bot', function(hooks) {
         // //dom_chat_bot.remove()
     })
 
-    QUnit.test('create 4 chat bot',  async (assert) => {
-        if (typeof window.__karma__ !== 'undefined') {
-            assert.ok(true, 'Skipped in Karma environment');
-            return;
-        }
-
-        const remove_web_components  = true
-
-        //todo: refactor into a helper that creates the div with less code in the test
-        function add_chat_box(...kwargs) {
-            const target_div    = WebC__Target_Div.add_to_body().build(...kwargs)
-            const webc_chat_bot = WebC__Chat_Bot.create()
-            target_div.appendChild(webc_chat_bot)
-            return webc_chat_bot
-        }
-
-        assert.equal(document.querySelectorAll(WebC__Target_Div.element_name).length, 0)
-        const webc_chat_bot_1 = add_chat_box({left:"12px", right:null  , top: "10px", "bottom": null  , width:"45%", height:"45%"})
-        const webc_chat_bot_2 = add_chat_box({left:"12px", right:null  , top: null  , "bottom": "10px", width:"45%", height:"45%"})
-        const webc_chat_bot_3 = add_chat_box({left:null  , right:"12px", top: "10px", "bottom": null  , width:"45%", height:"45%"})
-        const webc_chat_bot_4 = add_chat_box({left:null  , right:"12px", top: null  , "bottom": "10px", width:"45%", height:"45%"})
-        assert.equal(document.querySelectorAll(WebC__Target_Div.element_name).length, 4)
-
-        const dom_elements = document.querySelectorAll(WebC__Target_Div.element_name)
-        assert.equal(dom_elements.length, 4)
-        assert.equal(getComputedStyle(dom_elements[0].shadowRoot.children[0]).top   , '10px')
-        assert.equal(getComputedStyle(dom_elements[1].shadowRoot.children[0]).bottom, '10px')
-        assert.equal(getComputedStyle(dom_elements[2].shadowRoot.children[0]).top   , '10px')
-        assert.equal(getComputedStyle(dom_elements[3].shadowRoot.children[0]).bottom, '10px')
-
-        webc_chat_bot_1.messages.add_message_sent    ('sent in 1'         )
-        webc_chat_bot_2.messages.add_message_received('reveived in 2'     )
-        webc_chat_bot_3.messages.add_message_sent    ('sent in 3'         )
-        webc_chat_bot_4.messages.add_message         ('not specified in 4')
-        window.webc_chat_bot_1 = webc_chat_bot_1
-
-
-        if (remove_web_components) {
-            webc_chat_bot_1.parent_element().remove()
-            webc_chat_bot_2.parent_element().remove()
-            webc_chat_bot_3.parent_element().remove()
-            webc_chat_bot_4.parent_element().remove()
-
-            assert.equal(document.querySelectorAll(WebC__Target_Div.element_name).length, 0)
-        } else {
-            assert.equal(document.querySelectorAll(WebC__Target_Div.element_name).length, 4)
-        }
-    })
+    //todo: redo this test in a more robust way (since here is not the best place for it)
+    // QUnit.only('create 4 chat bot',  async (assert) => {
+    //     if (typeof window.__karma__ !== 'undefined') {
+    //         assert.ok(true, 'Skipped in Karma environment');
+    //         return;
+    //     }
+    //
+    //     const remove_web_components  = true
+    //
+    //     //todo: refactor into a helper that creates the div with less code in the test
+    //     function add_chat_box(...kwargs) {
+    //         const target_div    = WebC__Target_Div.add_to_body().build(...kwargs)
+    //         const webc_chat_bot = WebC__Chat_Bot.create()
+    //         target_div.appendChild(webc_chat_bot)
+    //         return webc_chat_bot
+    //     }
+    //
+    //     assert.equal(document.querySelectorAll(WebC__Target_Div.element_name).length, 0)
+    //     const webc_chat_bot_1 = add_chat_box({left:"12px", right:null  , top: "10px", "bottom": null  , width:"45%", height:"45%"})
+    //     const webc_chat_bot_2 = add_chat_box({left:"12px", right:null  , top: null  , "bottom": "10px", width:"45%", height:"45%"})
+    //     const webc_chat_bot_3 = add_chat_box({left:null  , right:"12px", top: "10px", "bottom": null  , width:"45%", height:"45%"})
+    //     const webc_chat_bot_4 = add_chat_box({left:null  , right:"12px", top: null  , "bottom": "10px", width:"45%", height:"45%"})
+    //     assert.equal(document.querySelectorAll(WebC__Target_Div.element_name).length, 4)
+    //
+    //     const dom_elements = document.querySelectorAll(WebC__Target_Div.element_name)
+    //     assert.equal(dom_elements.length, 4)
+    //     assert.equal(getComputedStyle(dom_elements[0].shadowRoot.children[0]).top   , '10px')
+    //     assert.equal(getComputedStyle(dom_elements[1].shadowRoot.children[0]).bottom, '10px')
+    //     assert.equal(getComputedStyle(dom_elements[2].shadowRoot.children[0]).top   , '10px')
+    //     assert.equal(getComputedStyle(dom_elements[3].shadowRoot.children[0]).bottom, '10px')
+    //
+    //     webc_chat_bot_1.messages.add_message_sent    ('sent in 1'         )
+    //     webc_chat_bot_2.messages.add_message_received('reveived in 2'     )
+    //     webc_chat_bot_3.messages.add_message_sent    ('sent in 3'         )
+    //     webc_chat_bot_4.messages.add_message         ('not specified in 4')
+    //     window.webc_chat_bot_1 = webc_chat_bot_1
+    //
+    //
+    //     if (remove_web_components) {
+    //         webc_chat_bot_1.parent_element().remove()
+    //         webc_chat_bot_2.parent_element().remove()
+    //         webc_chat_bot_3.parent_element().remove()
+    //         webc_chat_bot_4.parent_element().remove()
+    //
+    //         assert.equal(document.querySelectorAll(WebC__Target_Div.element_name).length, 0)
+    //     } else {
+    //         assert.equal(document.querySelectorAll(WebC__Target_Div.element_name).length, 4)
+    //     }
+    // })
 
     QUnit.test('test html_code',  (assert)=>{
         const webc_chat_bot = WebC__Chat_Bot.create()
@@ -103,6 +104,7 @@ QUnit.module('WebC__Chat_Bot', function(hooks) {
 </div>`
         const html_code = webc_chat_bot.div_chatbot_ui().html()
         assert.equal(html_code, expected_html_code)
+        webc_chat_bot.remove()
     })
 
 

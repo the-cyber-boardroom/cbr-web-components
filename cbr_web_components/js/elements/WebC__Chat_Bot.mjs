@@ -62,7 +62,7 @@ export default class WebC__Chat_Bot extends Web_Component {
              this.handle_new_input_message(e.detail)
         });
         window.addEventListener('channel_message', (e)=>{
-            console.log("received channel_message")
+            //console.log("received channel_message")
         })
         window.addEventListener('clear_messages', (e)=>{
             this.handle_clear_messages(e.detail)

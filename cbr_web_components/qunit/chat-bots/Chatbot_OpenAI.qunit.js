@@ -7,13 +7,17 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
     let chatbot_openai
     let target_div
 
-    hooks.before(async (assert) => {
+    hooks.before(() => {
         chatbot_openai = Chatbot_OpenAI
-        target_div = WebC__Target_Div.add_to_body().build({width: "50%"})        
+        target_div = WebC__Target_Div.add_to_body().build({width: "50%"})
         target_div.append_child(chatbot_openai)
-        //await webc_events_viewer.load_datatables_css() 
+        //await webc_events_viewer.load_datatables_css()
     });
- 
+
+    hooks.after(() => {
+        target_div.remove()
+
+    })
 
     QUnit.test('constructor', (assert) => {
         assert.ok(true)

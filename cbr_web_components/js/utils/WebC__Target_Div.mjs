@@ -23,14 +23,6 @@ export default class WebC__Target_Div extends Web_Component {
         return this
     }
 
-    html(chat_bot_id=null) {
-        const target_div = new Div({id:chat_bot_id, class:'target_div'})
-        const slot_div = new Tag({tag:'slot'})        
-        target_div.add(slot_div)
-        slot_div.html_config.include_id = false
-        return target_div.html()
-    }
-
     css_rules({right="10px" , left=null, width=null, top="10px", bottom="10px", height=null, z_index=null}={}) {
         return { ".target_div": { border         : "3px solid #724ae8",
                                   bottom         : bottom            ,
@@ -44,6 +36,31 @@ export default class WebC__Target_Div extends Web_Component {
                                   zIndex         : z_index || "1000" ,
                                   backgroundColor: "white"          }}
     }
+
+    html(chat_bot_id=null) {
+        const target_div = new Div({id:chat_bot_id, class:'target_div'})
+        const slot_div = new Tag({tag:'slot'})
+        target_div.add(slot_div)
+        slot_div.html_config.include_id = false
+        return target_div.html()
+    }
+
+    style(styles) {
+        const div_style = this.target_div().style;
+        if (typeof styles === 'object') {
+            for (const property in styles) {
+                if (styles.hasOwnProperty(property)) {
+                    div_style[property] = styles[property];
+                }
+            }
+        }
+        return divStyle;
+    }
+
+    target_div() {
+        return this.target_element
+    }
+
 }
 
 WebC__Target_Div.define()

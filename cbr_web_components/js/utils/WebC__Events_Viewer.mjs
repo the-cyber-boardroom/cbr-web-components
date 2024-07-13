@@ -66,7 +66,7 @@ export default class WebC__Events_Viewer extends Web_Component {
         let html = events_viewer.html()
 
         //todo: find a better way to add this css to the shadowRoot
-        html += `<style>@import url('/assets/plugins/data-tables/css/dataTables.dataTables.min.css');</style>`
+        //html += `<style>@import url('/assets/plugins/data-tables/css/dataTables.dataTables.min.css');</style>`
         html += `
 <style>
   
