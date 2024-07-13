@@ -16,12 +16,20 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         div_system_prompt.id              = 'system_prompt';
         div_system_prompt.style.display   = 'none';
         document.body.appendChild(div_system_prompt);
-        chatbot_openai.messages.messages_clear()
         assert.equal(document.body.querySelector('#system_prompt').outerHTML, '<div id="system_prompt" style="display: none;"></div>')
+
     });
 
-    hooks.after(() => {
-        //console.log(document.querySelector('#system_prompt'))
+    hooks.beforeEach(() => {
+        chatbot_openai.messages.messages_clear()
+    })
+
+    hooks.afterEach(() => {
+
+    })
+
+    hooks.after((assert) => {
+        assert.equal(chatbot_openai.messages.messages_size(),0)
         target_div.remove()
         div_system_prompt.remove()
     })
@@ -33,11 +41,11 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
     })
 
     QUnit.test('add_thread_id_ui_link', (assert) => {
-        assert.equal(chatbot_openai.messages.messages().length,0)
+        assert.equal(chatbot_openai.messages.messages_size(),0)
 
         chatbot_openai.add_thread_id_ui_link()
 
-        assert.equal(chatbot_openai.messages.messages().length,1)
+        assert.equal(chatbot_openai.messages.messages_size(),1)
         let last_message = chatbot_openai.messages.messages()[0]
         let chat_thread_id = chatbot_openai.chat_thread_id
         let last_message_inner_html = `<a style="padding:0px" href="chat/view/${chat_thread_id}" target="_blank">view saved chat</a>`
@@ -51,11 +59,83 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         chatbot_openai.system_prompt = 'an system_prompt'
         assert.deepEqual(chatbot_openai.all_system_prompts(), ['an system_prompt'])
 
-        chatbot_openai.system_prompt = ''
+        chatbot_openai.system_prompt = null
 
         div_system_prompt.innerHTML = 'this is another system prompt'
         assert.deepEqual(chatbot_openai.all_system_prompts(), ['this is another system prompt'])
         div_system_prompt.innerHTML = ''
         assert.deepEqual(chatbot_openai.all_system_prompts(), [])
     })
+
+    QUnit.test('apply_ui_tweaks', (assert) => {
+        assert.deepEqual(chatbot_openai.all_system_prompts(), [])
+        assert.equal(chatbot_openai.input.value   , '')
+        assert.equal(chatbot_openai.initial_prompt, '')
+        chatbot_openai.apply_ui_tweaks()
+        assert.equal(chatbot_openai.input.value, '')
+
+        chatbot_openai.initial_prompt = 'an initial prompt'
+        chatbot_openai.apply_ui_tweaks()
+        assert.equal(chatbot_openai.input.value, 'an initial prompt')
+
+        chatbot_openai.initial_message = 'an initial message'
+        chatbot_openai.apply_ui_tweaks()
+
+        assert.deepEqual(chatbot_openai.messages.messages_size(),1)
+        assert.deepEqual(chatbot_openai.messages.messages()[0].outerHTML, '<webc-chat-message type="initial" style="display: inherit;">an initial message</webc-chat-message>')
+
+        chatbot_openai.messages.messages_clear()
+        chatbot_openai.initial_message = null
+
+        chatbot_openai.system_prompt = 'an system prompt'
+        chatbot_openai.apply_ui_tweaks()
+        assert.deepEqual(chatbot_openai.messages.messages_size(),1)
+        assert.deepEqual(chatbot_openai.messages.messages()[0].outerHTML, '<webc-chat-message type="system" style="display: inherit;">an system prompt</webc-chat-message>')
+
+        chatbot_openai.messages.messages_clear()
+    })
+
+    // QUnit.test('post_openai_prompt_with_stream', async (assert) => {
+    //     server = sinon.createFakeServer();
+    //     server.autoRespond = true;
+    //
+    //     const expectedResponse = { success: true };
+    //     server.respondWith('POST', '/api/llms/chat/completion',
+    //                        [200,  { 'Content-Type': 'application/json' }, JSON.stringify(expectedResponse)]);
+    //
+    //     const done          = assert.async();
+    //
+    //     const response = await fetch('/api/llms/chat/completion', {
+    //                               method: 'POST',
+    //                               headers: {
+    //                                 'Accept': 'application/json',
+    //                                 'Content-Type': 'application/json',
+    //                               },
+    //                               body: JSON.stringify({ some: 'data' }),
+    //                             });
+    //
+    //     assert.deepEqual(response.ok, false)
+    //     assert.deepEqual(response.status, 404)
+    //     assert.ok(1)
+    //     done()
+    //     return
+    //     const end_test = () => {
+    //         chatbot_openai.messages.messages_clear()
+    //         done()
+    //     }
+    //
+    //     const user_prompt = '2+2'
+    //     const images      = null
+    //
+    //
+    //     chatbot_openai.addEventListener('streamData', function(event) {
+    //         const expected_data = { channel: null, data: 'HTTP error! Status: 404' }
+    //         assert.deepEqual(event.detail, expected_data)
+    //         end_test();
+    //         }, { once: true });
+    //
+    //     chatbot_openai.post_openai_prompt_with_stream(user_prompt, images)
+    //
+    //     assert.ok(1)
+    // });
 })

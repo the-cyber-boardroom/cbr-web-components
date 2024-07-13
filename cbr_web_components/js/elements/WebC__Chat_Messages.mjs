@@ -137,12 +137,15 @@ export default class WebC__Chat_Messages extends Web_Component {
     }  // method to be overwritten by Classes that extend this one
 
     messages () {
-        return this.childNodes
+        return this.childNodes                          // todo: change the logic since we really shouldn't be using the html elements here, we should have an internal data representation of the messages
     }
 
-    messages_clear () {
+    messages_clear() {
         this.innerHTML = ''
         return this
+    }
+    messages_size() {
+        return this.messages().length
     }
 
     messages_div () {
