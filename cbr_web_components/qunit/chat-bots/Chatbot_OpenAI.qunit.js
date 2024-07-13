@@ -95,47 +95,42 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         chatbot_openai.messages.messages_clear()
     })
 
-    // QUnit.test('post_openai_prompt_with_stream', async (assert) => {
-    //     server = sinon.createFakeServer();
-    //     server.autoRespond = true;
-    //
-    //     const expectedResponse = { success: true };
-    //     server.respondWith('POST', '/api/llms/chat/completion',
-    //                        [200,  { 'Content-Type': 'application/json' }, JSON.stringify(expectedResponse)]);
-    //
-    //     const done          = assert.async();
-    //
-    //     const response = await fetch('/api/llms/chat/completion', {
-    //                               method: 'POST',
-    //                               headers: {
-    //                                 'Accept': 'application/json',
-    //                                 'Content-Type': 'application/json',
-    //                               },
-    //                               body: JSON.stringify({ some: 'data' }),
-    //                             });
-    //
-    //     assert.deepEqual(response.ok, false)
-    //     assert.deepEqual(response.status, 404)
-    //     assert.ok(1)
-    //     done()
-    //     return
-    //     const end_test = () => {
-    //         chatbot_openai.messages.messages_clear()
-    //         done()
-    //     }
-    //
-    //     const user_prompt = '2+2'
-    //     const images      = null
-    //
-    //
+
+
+    QUnit.test('post_openai_prompt_with_stream', async (assert) => {
+
+        const fake_fetch_request_post = async (url, body) => {
+            return {
+                ok      : true    ,
+                status  : 200     ,
+                body    : { getReader() { return { read() {return Promise.resolve({ done: true,
+                                                                                    value: new TextEncoder().encode('{"message": "fake data"}' )})}}}}
+            };
+        }
+        chatbot_openai.fetch_request_post = fake_fetch_request_post
+
+        const done          = assert.async();
+
+        const end_test = () => {
+            chatbot_openai.messages.messages_clear()
+            done()
+        }
+
+        const user_prompt = '2+2'
+        const images      = null
+
+        chatbot_openai.addEventListener('streamComplete', function(event) {
+            assert.deepEqual(event.detail, null)
+            end_test();
+            }, { once: true });
+
+        chatbot_openai.post_openai_prompt_with_stream(user_prompt, images)
+    });
+
     //     chatbot_openai.addEventListener('streamData', function(event) {
+    //         console.log('in streamData')
     //         const expected_data = { channel: null, data: 'HTTP error! Status: 404' }
-    //         assert.deepEqual(event.detail, expected_data)
+    //         //assert.deepEqual(event.detail, expected_data)
     //         end_test();
     //         }, { once: true });
-    //
-    //     chatbot_openai.post_openai_prompt_with_stream(user_prompt, images)
-    //
-    //     assert.ok(1)
-    // });
 })

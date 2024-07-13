@@ -122,38 +122,36 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         await this.fetch_data_from_server(data)
     }
 
-    async fetch_data_from_server(data) {
-        let detail__stream_data  = {'channel':this.channel, 'data': null}
-        this.stop_fetch = false
-        try {
-          const response = await fetch(this.url, {
+    async fetch_request_post(url, body) {
+        return await fetch(url, {
             method : 'POST',
             headers: { 'Accept': 'application/json',
                        'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(body)
           });
+    }
 
-          if (!response.ok) {                                           // todo : refator to raise event method
+    async fetch_data_from_server(data) {            // todo refactor this method into smaller methods
+        let detail__stream_data  = {'channel':this.channel, 'data': null}
+        this.stop_fetch = false
+        try {
+            const response = await this.fetch_request_post(this.url, data)
+            if (!response.ok) {                                           // todo : refator to raise event method
+                detail__stream_data.data = `HTTP error! Status: ${response.status}`
+                this.dispatchEvent(new CustomEvent('streamData', { bubbles : true,  composed: true, detail: detail__stream_data }));
+            }
 
-              detail__stream_data.data = `HTTP error! Status: ${response.status}`
-              this.dispatchEvent(new CustomEvent('streamData', {
-                bubbles : true    ,                         // allows the event to bubble up through the DOM
-                composed: true    ,                         // allows the event to cross shadow DOM boundaries
-                detail: detail__stream_data }));                          // Emit an event with the chunk
-            //throw new Error(`HTTP error! Status: ${response.status}`);
-          }
+            const reader = response.body.getReader();                     // Handling the stream
+            const decoder = new TextDecoder('utf-8');
 
-          const reader = response.body.getReader();                     // Handling the stream
-          const decoder = new TextDecoder('utf-8');
+            this.messages.messages_div_scroll_to_end()
 
-          this.messages.messages_div_scroll_to_end()
-
-          if (this.stream === false) {
+            if (this.stream === false) {
               await this.handle_not_streamed_response(reader, decoder, detail__stream_data)
               return
-          }
+            }
 
-          const processStream = async ({done, value}) => {
+            const processStream = async ({done, value}) => {
               if (this.stop_fetch) {
                   detail__stream_data.data = '   ...(stopped)...'
                   this.dispatchEvent(new CustomEvent('streamData', {bubbles : true    , composed: true    ,
@@ -183,9 +181,9 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
                 detail: detail__stream_data }));                          // Emit an event with the chunk
 
             reader.read().then(processStream);                                              // Read the next chunk
-          };
+            };
 
-          reader.read().then(processStream);
+            reader.read().then(processStream);
 
         } catch (error) {                                                   // todo : refactor to raise event method
           detail__stream_data.data = `streamError: ${error.message}`
