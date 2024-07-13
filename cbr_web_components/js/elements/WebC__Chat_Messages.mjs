@@ -140,6 +140,11 @@ export default class WebC__Chat_Messages extends Web_Component {
         return this.childNodes
     }
 
+    messages_clear () {
+        this.innerHTML = ''
+        return this
+    }
+
     messages_div () {
         return this.query_selector('.messages')
 

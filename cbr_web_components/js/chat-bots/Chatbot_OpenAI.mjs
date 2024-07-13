@@ -58,6 +58,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         let ui_link = `<a style="padding:0px" href="chat/view/${this.chat_thread_id}" target="_blank">view saved chat</a>`
         this.messages.add_message_link_thread_id(ui_link)
     }
+
     apply_ui_tweaks () {
         //this.add_thread_id_ui_link()
         this.input.value   = this.initial_prompt
@@ -76,11 +77,12 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
             return [this.system_prompt]
         }
 
-        const dom_system_prompt = document.querySelector('#system_prompt')
+        const dom_system_prompt = document.querySelector('#system_prompt')              // todo: find a better way to get this global system prompt
         if (dom_system_prompt !== null) {
             const system_prompt = dom_system_prompt.innerHTML
-            window.dom_system_prompt = dom_system_prompt
-            return [system_prompt]
+            if (system_prompt) {
+                return [system_prompt]
+            }
         }
         return []
     }
