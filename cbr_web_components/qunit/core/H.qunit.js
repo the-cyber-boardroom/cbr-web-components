@@ -1,4 +1,4 @@
-import H  from '../../js/core/H.mjs';
+import H   from '../../js/core/H.mjs';
 import Tag from '../../js/core/Tag.mjs';
 
 QUnit.module('H', function(hooks) {
@@ -12,6 +12,18 @@ QUnit.module('H', function(hooks) {
         assert.equal(new H({level:'A'}).tag, 'hA')          // todo: this is a bug, only h1 .. h6 values should be accepted
     })
 
+
+    QUnit.test('.add_element', function (assert) {
+        assert.equal(new H().add_element('abc'), false)
+    })
+
+    QUnit.test('.inner_html', function (assert) {
+        let h = new H()
+        assert.deepEqual(h.inner_html(),'')
+
+        h.value = 'abc'
+        assert.deepEqual(h.inner_html(),'abc')
+    })
 
     QUnit.test('.html', function (assert) {
         const h1 = new H();

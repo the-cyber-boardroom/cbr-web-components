@@ -1,9 +1,7 @@
 import Tag  from '../../js/core/Tag.mjs' ;
 
 QUnit.module('Html_Tag', function(hooks) {
-    hooks.before(function (assert) {
-        //window.Html_Tag = Html_Tag                                        // expose the Div object in the browser's window (to make it easier to test and debug from a browser)
-    })
+
 
     QUnit.test('. parent', function (assert) {
         const tag_parent = new Tag({id:'tag_parent'})
@@ -68,6 +66,26 @@ QUnit.module('Html_Tag', function(hooks) {
                                             trim_final_html_code    : false})
         assert.equal(tag.html(),expected_html)
     });
+
+    QUnit.test('.add', function (assert) {
+        const tag_id         = 'parent'
+        const tag_child_1_id = 'child_1'
+        const tag_child_2_id = 'child_1'
+        const tag_child_3_id = 'child_1'
+        const tag            = new Tag({id: tag_id         })
+        const tag_child_1    = new Tag({id: tag_child_1_id })
+        const tag_child_2    = new Tag({id: tag_child_2_id })
+        const tag_child_3    = new Tag({id: tag_child_3_id })
+
+        assert.deepEqual(tag.elements,[])
+        tag.add(tag_child_1)
+
+        assert.deepEqual(tag.elements,[tag_child_1])
+        tag.add([tag_child_2, tag_child_3])
+
+        assert.deepEqual(tag.elements,[tag_child_1,tag_child_2, tag_child_3])
+    })
+
 
     QUnit.test('.add_element', function (assert) {
         const tag_id         = 'parent'
@@ -187,9 +205,10 @@ const expected_html_3 =
         assert.equal(tag_child_4.parent(), tag_child_3 )
         assert.equal(tag.inner_html(), expected_inner_html_4)
         assert.equal(tag.html(),expected_html_4)
-
-        window.tag= tag
+        
     })
+    
+    
 
     QUnit.test('.add_to', function (assert) {
         const tag_id = 'an_id'
@@ -212,7 +231,7 @@ const expected_html_3 =
         // Clean up by removing the added div
         $(`#${tag_id}`).remove()                                                        // todo: remove jQuery dependency (once Div API is more mature)
         assert.equal($(`#${tag_id}`).html(), undefined)
-        window.tag = tag
+
     });
 
     QUnit.test('.default_styles()',  function (assert) {
@@ -236,6 +255,48 @@ const expected_html_3 =
         assert.equal(actual_html, expected_html, "Html generated with all attributes matches the expected output");
     })
 
+    QUnit.test('.dom_add_class', function (assert) {
+        const tag = new Tag()
+        tag.dom_add_class('test-class', { backgroundColor: 'red', fontSize: '14px' });
+
+        const styleSheets = document.styleSheets;
+        let ruleFound = false;
+
+        for (let i = 0; i < styleSheets.length; i++) {
+            const rules = styleSheets[i].cssRules || styleSheets[i].rules;
+            for (let j = 0; j < rules.length; j++) {
+                if (rules[j].selectorText === '.test-class') {
+                    ruleFound = true;
+                    assert.ok(rules[j].style.backgroundColor === 'red', 'Background color is red');
+                    assert.ok(rules[j].style.fontSize === '14px', 'Font size is 14px');
+                }
+            }
+        }
+
+        assert.ok(ruleFound, '.test-class rule found in style sheets');
+
+    });
+
+    QUnit.test('.dom_parent', function (assert) {
+        const tag = new Tag()
+        assert.equal(tag.dom_parent(), null)
+        tag.parent_dom = 'aaaa'
+        assert.equal(tag.dom_parent(), 'aaaa')
+    })
+
+    QUnit.test('.generate_random_id', function (assert) {
+        const tag__tag = new Tag()
+        const tag__div = new Tag({tag:'Div'})
+        const tag_random_id = tag__tag.generate_random_id()
+        const div_random_id = tag__div.generate_random_id()
+        assert.equal(tag_random_id.length, 9)
+        assert.equal(div_random_id.length, 9)
+        assert.ok(tag_random_id.startsWith('tag'))
+        assert.ok(div_random_id.startsWith('div'))
+        assert.notEqual(new Tag().generate_random_id(), new Tag().generate_random_id())
+
+
+    })
     QUnit.test('.html.html_config.include_tag', function (assert) {
         const tag = new Tag()
         assert.equal(tag.html_config.include_tag, true)

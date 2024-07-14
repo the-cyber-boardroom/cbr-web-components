@@ -63,6 +63,14 @@ QUnit.module('Html', function(hooks) {
         assert.equal(html_4.html(), expected_html_4)
     })
 
+    QUnit.test('.inner_html', function (assert) {
+        let html = new Html()
+        assert.deepEqual(html.inner_html(),'')
+
+        html.value = 'abc'
+        assert.deepEqual(html.inner_html(),'abc\n')
+    })
+
     QUnit.test('_should be an instance and inherit from Tag', function(assert) {
         const html = new Html();
         assert.ok(html instanceof Tag, 'Div is an instance of Tag');

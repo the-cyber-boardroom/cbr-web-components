@@ -2,9 +2,6 @@ import Text  from '../../js/core/Text.mjs' ;
 import Tag  from '../../js/core/Tag.mjs' ;
 
 QUnit.module('Text', function(hooks) {
-    hooks.before(function (assert) {
-        //window.Div = Div                                    // expose the Div object in the browser's window (to make it easier to test and debug from a browser)
-    })
 
     QUnit.test('.config',  function (assert) {
         const text = new Text();
@@ -27,10 +24,24 @@ QUnit.module('Text', function(hooks) {
         const text = new Text();
         const expected_html_1 = `<text></text>`
         assert.equal(text.html(), expected_html_1)
-        const value_1 = 'aaaa'
-        text.value = value_1
+        text.value = 'aaaa'
         const expected_html_2 = `<text>${text.value}</text>`
         assert.equal(text.html(), expected_html_2)
+    })
+
+    QUnit.test('.inner_html', function (assert) {
+        let text = new Text()
+        assert.deepEqual(text.inner_html(),'')
+
+        text.value = 'abc'
+        assert.deepEqual(text.inner_html(),'abc')
+    })
+
+    QUnit.test('.just_text', function (assert) {
+        let text = new Text()
+        assert.deepEqual(text.html_config.include_tag,true  )
+        assert.deepEqual(text.just_text(), text             )
+        assert.deepEqual(text.html_config.include_tag,false )
     })
 
     QUnit.test('_should be an instance and inherit from Html_Tag', function(assert) {

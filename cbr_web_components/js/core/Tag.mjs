@@ -139,7 +139,7 @@ export default class Tag {
         return styleObject;
     }
 
-    dom_parent() {
+    dom_parent() {                      // todo: see if this is still needed
         return this.parent_dom
     }
 
