@@ -29,7 +29,6 @@ export default class Web_Component extends HTMLElement {
         if (tag != null) {
             element.innerHTML = tag.html();
         }
-
         return element;
     }
 
@@ -52,6 +51,10 @@ export default class Web_Component extends HTMLElement {
     }
 
     // instance methods
+
+    connectedCallback() {
+        // todo: see what common actions can be moved here (for example reading some attributes)
+    }
     add_adopted_stylesheet(stylesheet) {
         const currentStylesheets = this.shadowRoot.adoptedStyleSheets;
         this.shadowRoot.adoptedStyleSheets = [...currentStylesheets, stylesheet];
@@ -61,8 +64,6 @@ export default class Web_Component extends HTMLElement {
         const child_component = WebC_Class.create(...attributes)        // calls static method create from the Web Component class
         this.appendChild(child_component)                               // adds it as a child to the current WebC
         return child_component                                          // returns the instance created of WebC_Class
-        // console.log(webc_chat_bot)
-        // console.log(attributes)
     }
     // root_element() {
     //     return null

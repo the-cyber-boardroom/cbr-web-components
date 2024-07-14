@@ -2,7 +2,7 @@ import WebC__Target_Div from "../../js/utils/WebC__Target_Div.mjs";
 import Web_Component    from '../../js/core/Web_Component.mjs'
 import WebC__Form_Input from "../../js/elements/WebC__Form_Input.mjs";
 
-QUnit.module('Chatbot_OpenAI', function(hooks) {
+QUnit.module('WebC__Form_Input', function(hooks) {
 
     let webc_form_input
     let target_div

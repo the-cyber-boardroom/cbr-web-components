@@ -5,11 +5,13 @@ export default class WebC__Chat_Input extends Web_Component {
 
     constructor() {
         super();
-        this.channel  = this.getAttribute('channel')       || null
+    }
+
+    load_attributes() {                                                     // todo: see how this set of the channel can be move into one of the parent components (since this is a pattern that applies to multiple components)
+        this.channel  = this.getAttribute('channel')  || null
         if (this.channel) { this.channels.push(this.channel) }
         this.channels.push('WebC__Chat_Input')
     }
-
     // properties
     get input() {
         return this.query_selector('#user-prompt')
@@ -39,6 +41,8 @@ export default class WebC__Chat_Input extends Web_Component {
     }
 
     connectedCallback() {
+        super.connectedCallback();
+        this.load_attributes()
         this.build()
         this.add_event_hooks()
     }
@@ -103,12 +107,12 @@ export default class WebC__Chat_Input extends Web_Component {
         //return div_chat_input.html()
         const new_html = `
 <div class="chat-images"></div>
-<div class="chat-input">    
+<div class="chat-input">
     <!--<input id='file-input' type="file" />-->
     <!--<label for="file-input" class="file-input-label">+</label>-->
     <input id='user-prompt' type="text" placeholder="Enter a message..." autocomplete="off"/>
-     <button id="action-button">send</button>
-     <button id="clear-button">clear</button>
+    <button id="action-button">send</button>
+    <button id="clear-button">clear</button>
 </div>
 `
         return new_html
@@ -116,7 +120,7 @@ export default class WebC__Chat_Input extends Web_Component {
 
     setup_upload_button() {
         const element = this.query_selector('#file-input')
-        window.element = element
+        //window.element = element
         element.addEventListener('change', () => {
               var reader = new FileReader();
               reader.onloadend = () => {

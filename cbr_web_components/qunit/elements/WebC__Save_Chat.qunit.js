@@ -2,7 +2,7 @@ import WebC__Target_Div from "../../js/utils/WebC__Target_Div.mjs";
 import Web_Component    from '../../js/core/Web_Component.mjs'
 import WebC__Save_Chat from "../../js/elements/WebC__Save_Chat.mjs";
 
-QUnit.module('Chatbot_OpenAI', function(hooks) {
+QUnit.module('WebC__Save_Chat', function(hooks) {
 
     let webc_save_chat
     let target_div

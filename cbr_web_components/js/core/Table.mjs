@@ -1,5 +1,4 @@
 import Tag  from  './Tag.mjs'
-import Text from './Text.mjs'
 
 export default class Table extends Tag {
     constructor({...kwargs}={}) {
@@ -43,6 +42,7 @@ export default class Table extends Tag {
     connectedCallback() {
         this.build()        
     }
+
     html(depth) {
         this.build()        
         return super.html(depth)

@@ -3,11 +3,42 @@ import Tag from '../../js/core/Tag.mjs';
 
 QUnit.module('Div', function(hooks) {
 
-    hooks.before(function (assert) {
-        //window.Div = Div                                    // expose the Div object in the browser's window (to make it easier to test and debug from a browser)
+    QUnit.test('constructor', (assert) =>{
+        let div_1  = new Div()
+        let div_2  = new Div({id:'div_2'})
+        let div_3  = new Div({class:'an_class'})
+        let div_4  = new Div({id:'an_id', class:'another_class'})
+        let html_1 = '<div>\n</div>\n'
+        let html_2 = '<div id="div_2">\n</div>\n'
+        let html_3 = '<div class="an_class">\n</div>\n'
+        let html_4 = '<div id="an_id" class="another_class">\n</div>\n'
+        assert.equal(div_1.html(), html_1)
+        assert.equal(div_2.html(), html_2)
+        assert.equal(div_3.html(), html_3)
+        assert.equal(div_4.html(), html_4)
     })
 
-    // working test (which is the only work that works in real-time in Wallaby)
+    QUnit.test('add_div', (assert) =>{
+        let div_parent = new Div({id:'parent'})
+        let div_child  = div_parent.add_div({id:'child'})
+        assert.equal(div_parent.html(), '<div id="parent">\n    <div id="child">\n    </div>\n</div>\n')
+        assert.equal(div_child .html(), '<div id="child">\n</div>\n')
+    })
+
+    QUnit.test('add_tag', (assert) =>{
+        let div_parent = new Div({id:'parent'})
+        let tag_child  = div_parent.add_tag({tag:'title', id:'child'})
+        assert.equal(div_parent.html(), '<div id="parent">\n    <title id="child">\n    </title>\n</div>\n')
+        assert.equal(tag_child .html(), '<title id="child">\n</title>\n')
+    })
+
+    QUnit.test('add_text', (assert) =>{
+        let text       = 'this is some text'
+        let div_parent = new Div({id:'parent'})
+        let text_child  = div_parent.add_text(text)
+        assert.equal(div_parent.html(), `<div id="parent">\n    <text>${text}</text></div>\n`)
+        assert.equal(text_child .html(), `<text>${text}</text>`)
+    })
 
     QUnit.test('_should be an instance and inherit from Html_Tag', function(assert) {
         const divInstance = new Div()
@@ -42,12 +73,3 @@ QUnit.module('Div', function(hooks) {
     })
 
 })
-
-
-        // window.tag_create_box = tag_create_box
-        // const box = tag_create_box('an_box', "70")
-        // box.set_style('border', '10px solid red')
-        // box.add_to_dom_element(document.body);
-        //
-        // box.add_element(tag)
-        // console.log(box.html())
