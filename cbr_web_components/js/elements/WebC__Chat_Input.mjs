@@ -211,8 +211,11 @@ export default class WebC__Chat_Input extends Web_Component {
     }
 
     async process_paste(event) {
-        //console.log('paste event')
-        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        let items;
+
+        if (event.clipboardData)                                           { items = event.clipboardData.items;                 }
+        else if (event.originalEvent && event.originalEvent.clipboardData) { items = event.originalEvent.clipboardData.items;   }
+        else                                                               { items = []                                         }
 
 
         const imageItem = Array.from(items).find(item => item.type.startsWith('image')); // Find the first image item in the paste data

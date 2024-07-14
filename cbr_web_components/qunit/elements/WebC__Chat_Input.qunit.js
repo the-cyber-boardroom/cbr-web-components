@@ -129,6 +129,136 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
         target_div.remove()
         div_file_input.remove()
     })
+
+
+
+    // todo: add tests for the cases where there is data in clipboardData
+    QUnit.test('on_process_paste (via paste event)', (assert) => {
+        const input = webc_chat_input.input
+        const event = new Event('paste');
+        input.dispatchEvent(event);
+        assert.ok(1)
+
+    })
+
+    QUnit.test('on_input_keydown (via keydown event)', (assert) => {
+        let on_new_input_message_data = null
+        const on_new_input_message    = (e)=>{ on_new_input_message_data = e.detail }
+        const input                   = webc_chat_input.input
+        const event = new Event('keydown');
+
+        window.addEventListener('new_input_message', on_new_input_message);
+        // no value in key
+        input.dispatchEvent(event);
+        assert.deepEqual(on_new_input_message_data, null)
+
+        // with  key = 'Enter', value = ''
+        event.key = 'Enter'
+        input.dispatchEvent(event);
+        assert.deepEqual(on_new_input_message_data, { user_prompt: '', images: [], channel: channel })
+
+        // with  key = 'Enter', value = 'aaaa'
+        input.value = 'aaaa'
+        event.key   = 'Enter'
+        input.dispatchEvent(event);
+        assert.deepEqual(on_new_input_message_data, { user_prompt: 'aaaa', images: [], channel: channel })
+        assert.deepEqual(input.value, '')
+
+        // with  _key = 'Enter', value = 'bbbb'
+        on_new_input_message_data = null
+        input.value               = 'bbbb'
+        event.key                 = null
+        event._key                = 'Enter'
+        input.dispatchEvent(event);
+        assert.deepEqual(on_new_input_message_data, { user_prompt: 'bbbb', images: [], channel: channel })
+        assert.deepEqual(input.value, '')
+
+        // with  key = 'a' and _key = 'b' and    value = 'cccc'
+        on_new_input_message_data = null
+        input.value               = 'cccc'
+        event.key                 = 'a'
+        event._key                = 'b'
+        input.dispatchEvent(event);
+        assert.deepEqual(on_new_input_message_data, null)
+        assert.deepEqual(input.value, 'cccc')
+
+        window.removeEventListener('new_input_message', on_new_input_message);
+    })
+
+    QUnit.test('on_clear_button (via click event)', (assert) => {
+        let on_clear_messages_data = null
+        const on_clear_messages    = (e)=>{ on_clear_messages_data       = e.detail }
+        const clear_button         = webc_chat_input.clear_button
+
+        window.addEventListener('clear_messages', on_clear_messages);
+
+        const event = new Event('click');
+        clear_button.dispatchEvent(event);
+        assert.deepEqual(on_clear_messages_data,{channel: channel})
+
+        window.removeEventListener('clear_messages', on_clear_messages);
+    })
+
+    QUnit.test('on_action_button (via click event)', (assert) => {
+
+        let on_stop_stream_data = null
+        let on_new_input_message_data = null
+        const on_stop_stream       = (e)=>{ on_stop_stream_data       = e.detail }
+        const on_new_input_message = (e)=>{ on_new_input_message_data = e.detail }
+        window.addEventListener('stop_stream'      , on_stop_stream      );                     // todo add support for generic event listener to the beforeEach afterEach
+        window.addEventListener('new_input_message', on_new_input_message);
+
+        const action_button = webc_chat_input.action_button
+        const event = new Event('click');
+        action_button.dispatchEvent(event);
+
+        assert.equal(action_button.innerHTML     , 'send')
+        assert.equal(action_button.style.backgroundColor, '')
+        assert.equal(on_stop_stream_data      , null)
+        assert.equal(on_new_input_message_data, null)
+
+
+        //with action_button.input.value = ''
+        action_button.dispatchEvent(event);
+        assert.equal(on_stop_stream_data      , null)
+        assert.equal(on_new_input_message_data, null)
+        assert.equal(action_button.innerHTML     , 'send')
+        assert.equal(action_button.style.backgroundColor, '')
+
+        // ##### with action_button = 'stop'
+        action_button.innerHTML = 'stop'
+        action_button.dispatchEvent(event);
+        assert.deepEqual(on_stop_stream_data                , {channel: channel})
+        assert.deepEqual(on_new_input_message_data          , null)
+        assert.deepEqual(action_button.innerHTML            , 'send')
+        assert.deepEqual(action_button.style.backgroundColor, 'rgb(0, 123, 255)')
+
+        //with a value in action_button.input.value
+        webc_chat_input.input.value = 'an message'
+        on_stop_stream_data         = null
+        on_new_input_message_data   = null
+        action_button.dispatchEvent(event);
+        assert.deepEqual(on_stop_stream_data, null)
+        assert.deepEqual(on_new_input_message_data, { user_prompt: 'an message', images: [], channel: channel })
+        assert.deepEqual(action_button.innerHTML            , 'stop')
+        assert.deepEqual(action_button.style.backgroundColor, 'black')
+        assert.deepEqual(webc_chat_input.input.value        , '')
+
+        // then clicking on stop
+        on_stop_stream_data         = null
+        on_new_input_message_data   = null
+        action_button.dispatchEvent(event);
+        assert.deepEqual(on_stop_stream_data                , {channel: channel})
+        assert.deepEqual(on_new_input_message_data          , null)
+        assert.deepEqual(on_stop_stream_data                , {channel: channel})
+        assert.deepEqual(on_new_input_message_data          , null)
+        assert.deepEqual(action_button.innerHTML            , 'send')
+        assert.deepEqual(action_button.style.backgroundColor, 'rgb(0, 123, 255)')
+
+
+        window.removeEventListener('stop_stream'      , on_stop_stream      );
+        window.removeEventListener('new_input_message', on_new_input_message);
+    })
 })
 
 //todo: move to util class
