@@ -19,6 +19,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         this.target             = this.getAttribute('target'            ) || null
         this.system_prompt      = this.getAttribute('system_prompt'     )
         this.stream             = this.getAttribute('stream'            ) !== 'false'  // default to true
+        this.fetch              = this.getAttribute('fetch'             ) !== 'false'  // default to true
         this.chat_thread_id     = this.random_uuid()
         this.stop_fetch         = false
         this.on_message_sent    = this.on_message_sent.bind(this);
@@ -68,6 +69,9 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
 
         if (this.system_prompt !== null) {
             this.messages.add_message_system(this.system_prompt)
+        }
+        if (this.channel?.startsWith('shared-llm')) {
+            this.shadowRoot.querySelector('webc-chat-input').style.display='none'
         }
         //this.shadowRoot.innerHTML += `<hr/><a style="padding:0px" href="chat/view/${this.chat_thread_id}">saved chat</a>`
     }
@@ -231,8 +235,11 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
 
     async on_message_sent(event) {
         if (this.target && this.target === event.detail.target) {
-                console.log(`[add_event_listeners]--->> NOT Current target ${this.target} != ${event.detail.target}<----`)
-                return
+            console.log(`[add_event_listeners]--->> NOT Current target ${this.target} != ${event.detail.target}<----`)
+        }
+        if (this.fetch === false) {
+            console.log(`[add_event_listeners]--->> fetch is false ${this.fetch}<----`)
+            return
         }
         const message     = event.detail.message
         const user_prompt = message.user_prompt

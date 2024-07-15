@@ -48,6 +48,9 @@ export default class WebC__Chat_Bot extends Web_Component {
     handle_new_input_message(event_data) {
         if (event_data?.channel === this.channel) {
             this.messages.add_message_sent(event_data) }
+        if (this.channel?.startsWith('shared-llm')) {
+            this.messages.add_message_sent(event_data) }
+
     }
     handle_clear_messages(event_data) {
         if (event_data?.channel === this.channel) {
@@ -130,6 +133,7 @@ export default class WebC__Chat_Bot extends Web_Component {
         div_chatbot_ui.add(div_chat_header  )
         div_chatbot_ui.add(webc_chat_messages)
         div_chatbot_ui.add(webc_chat_input)
+
         //div_chatbot_ui.add(div_chat_input)
         //div_chat_input.add(input_chat_input)
 

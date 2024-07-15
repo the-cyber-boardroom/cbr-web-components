@@ -10,6 +10,7 @@ export default class WebC__Chat_Message extends Web_Component {
         this.message_raw  = ''
         this.message_html = ''
         this.type         = ''
+        this.duration     = ''
         this.channel      = this.getAttribute('channel' )       || null
         this.platform     = this.getAttribute('platform')       || 'platform'
         this.provider     = this.getAttribute('provider')       || 'provider'
@@ -20,6 +21,8 @@ export default class WebC__Chat_Message extends Web_Component {
         this.save_message  = this.save_message.bind(this);
         this.clear_message = this.clear_message.bind(this);
         this.edit_mode     = false
+
+        window.message = this
     }
     connectedCallback() {
         this.build()
@@ -129,8 +132,12 @@ export default class WebC__Chat_Message extends Web_Component {
 
     }
 
+    source_ui_text() {
+        return `${this.platform} | ${this.provider} | ${this.model}` // | ${this.duration} `
+    }
+
     html() {
-        let source = `${this.platform} | ${this.provider} | ${this.model}`
+        let source = this.source_ui_text()
         const div_class = `message ${this.type}`
         const div_message = new Tag({tag: 'div', class: div_class})
         const text_area = new Tag({tag: 'textarea', id:'message_text_area' , class: 'message-edit', value: this.message_raw})
