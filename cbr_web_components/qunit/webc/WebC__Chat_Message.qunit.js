@@ -179,7 +179,6 @@ QUnit.module('WebC__Chat_Message', function(hooks) {
 
     QUnit.test('.source_ui_text', (assert) => {
         let webc_chat_message =  WebC__Chat_Message.create()
-        console.log(webc_chat_message.platform)
         assert.ok(1)
     })
 })
