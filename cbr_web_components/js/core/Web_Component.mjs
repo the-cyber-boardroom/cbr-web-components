@@ -114,6 +114,10 @@ export default class Web_Component extends HTMLElement {
         return this.parentElement
     }
 
+    random_id(prefix='random') {
+        const random_part = Math.random().toString(36).substring(2, 7); // Generate a random string.
+        return `${prefix}_${random_part}`;
+    }
     set_inner_html(inner_html) {
         this.shadowRoot.innerHTML = inner_html
     }

@@ -1,6 +1,6 @@
-import Events__Utils from "../../js/events/Events__Utils.mjs";
+import Events__Utils    from "../../js/events/Events__Utils.mjs";
 import Events__Dispatch from "../../js/events/Events__Dispatch.mjs";
-import Events__Receive from "../../js/events/Events__Receive.mjs";
+import Events__Receive  from "../../js/events/Events__Receive.mjs";
 
 QUnit.module('Events__Utils.qunit', function(hooks) {
 
@@ -42,8 +42,8 @@ QUnit.module('Events__Utils.qunit', function(hooks) {
 
         let event_received_data = {}
         let event_received = (event) => {
-            assert.equal(event.type  , event_name)
-            assert.equal(event.detail, event_data)
+            assert.equal(event.event_type  , event_name)
+            assert.equal(event.event_data, event_data)
             event_received_data = { type: event.type, data: event.detail}
         }
         assert.deepEqual(events_receive.channel_callbacks , {})
@@ -68,7 +68,7 @@ QUnit.module('Events__Utils.qunit', function(hooks) {
         let expected_log_entry      = {event_type: event_name, event_data: event_data}
         events_receive.logs_enabled = true
         let on_log_event = (event) =>{
-            assert.deepEqual(event.type , event_name)
+            assert.deepEqual(event.event_type , event_name)
         }
 
         assert.deepEqual(events_receive.channel_callbacks, {})

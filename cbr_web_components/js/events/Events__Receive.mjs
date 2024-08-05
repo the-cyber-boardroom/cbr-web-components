@@ -54,7 +54,8 @@ export default class Events__Receive {
     raise_event(callback, event) {
         if (callback) {
             this.log_event(this.logs_callbacks_invoked, event)
-            callback(event);
+            let event_entry = { event_type: event.type, event_data: event.detail}
+            callback(event_entry);
         }
     }
 

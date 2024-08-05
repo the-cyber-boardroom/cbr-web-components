@@ -203,7 +203,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         const handle_response = ({done, value}) => {
             let response_json = decoder.decode(value);
             detail__stream_data.data = JSON.parse(response_json)
-            console.log(detail__stream_data)
+            //console.log(detail__stream_data)
             this.dispatchEvent(new CustomEvent('streamData'    , { bubbles : true    ,                         // allows the event to bubble up through the DOM
                                                                    composed: true    ,                         // allows the event to cross shadow DOM boundaries
                                                                    detail  : detail__stream_data }));          // Emit an event with the chunk
