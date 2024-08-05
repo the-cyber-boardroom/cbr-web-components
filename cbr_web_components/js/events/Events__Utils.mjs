@@ -6,9 +6,6 @@ export default class Events__Utils {
     constructor() {
         this.events_dispatch = new Events__Dispatch()
         this.events_receive  = new Events__Receive()
-        this.events_send     = []
-        this.events_received = []
-        this.events_handled  = []
     }
 
     raise_event(){
