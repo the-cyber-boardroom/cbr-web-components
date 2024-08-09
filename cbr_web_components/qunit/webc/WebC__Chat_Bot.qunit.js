@@ -141,7 +141,7 @@ QUnit.module('WebC__Chat_Bot', function(hooks) {
         keyevent._key ='Enter'          // todo: replace with proper event dispatch
 
         web_chat_bot.messages.add_message_received(received_message)
-        assert.ok(1)
+
         web_chat_bot.input.value = message_to_send
         web_chat_bot.input.dispatchEvent(keyevent)
 

@@ -1,8 +1,15 @@
+import Events__Utils from "../events/Events__Utils.mjs";
+
 export default class Web_Component extends HTMLElement {
+
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.channels = ['Web_Component']
+        this.channel   = null
+        this.channels  = ['Web_Component']
+        this.webc_id   = null
+        this.webc_type = 'Web_Component'            // todo: see if this is useful
+        this.events_utils = new Events__Utils()
     }
 
     // static properties
@@ -34,7 +41,6 @@ export default class Web_Component extends HTMLElement {
 
     // todo: refactor to use the create() method above (since this is adding an element to to document body which is only one of the scenarios
     static create_element() {
-        //this.define();
         return document.createElement(this.element_name);
     }
 
@@ -50,11 +56,44 @@ export default class Web_Component extends HTMLElement {
         return false;
     }
 
-    // instance methods
+    // instance - connection methods
+
+    add_event_listeners__web_component() {                              // todo: see if there is a better way to do this (ie. invoke the add_event_listeners() method from this
+        this.events_utils.events_receive.add_event_listener('invoke' , this.channel, this.on_invoke      );
+    }
 
     connectedCallback() {
-        // todo: see what common actions can be moved here (for example reading some attributes)
+        this.load_attributes()
+        this.channels.push(this.channel)
+        this.add_event_listeners__web_component()
     }
+
+    disconnectedCallback() {
+        this.remove_event_listeners__webc_component()
+    }
+
+    load_attributes() {
+        this.channel  = this.getAttribute('channel') || this.random_id('webc_channel_')
+        this.webc_id  = this.getAttribute('webc_id') || this.random_id('webc_id_')
+    }
+    remove_event_listeners__webc_component() {
+        this.events_utils.events_receive.remove_all_event_listeners()
+    }
+
+    on_invoke = (event) => {
+        if (this.webc_id ===event.webc_id) {                                                    // only react to events that are sent to this specific webc_id
+            let event_data = event.event_data                                                   // get the event_data
+            let callback   = event.callback                                                     // get the callback
+            if (typeof this[event_data.method] === 'function') {                                // check if the method defined in the method exists in this
+                const result = this[event_data.method](...Object.values(event_data.params));    // if so execute it and capture the return value
+                if (typeof callback === 'function') {                                           // check if the callback is a function
+                    callback(result)                                                            // if it is defined, invoke it with the return value of the function execution
+                }
+            }
+        }
+    }
+    // instance methods
+
     add_adopted_stylesheet(stylesheet) {
         const currentStylesheets = this.shadowRoot.adoptedStyleSheets;
         this.shadowRoot.adoptedStyleSheets = [...currentStylesheets, stylesheet];

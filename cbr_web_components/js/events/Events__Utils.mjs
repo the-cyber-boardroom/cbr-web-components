@@ -8,7 +8,7 @@ export default class Events__Utils {
         this.events_receive  = new Events__Receive()
     }
 
-    raise_event(){
+    raise_event() {
         //console.log('raising event.......')
     }
 

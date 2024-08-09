@@ -28,19 +28,14 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
     }
 
     connectedCallback() {
-        this.build()
+        super.connectedCallback()
         this.add_event_listeners()
+        this.apply_ui_tweaks()
     }
 
     disconnectedCallback() {
+        super.disconnectedCallback()
         this.remove_event_listeners()
-    }
-
-    build() {
-        super.build()
-        //window.chatbot_openai = this
-        this.apply_ui_tweaks()
-
     }
 
     remove_event_listeners() {
@@ -62,7 +57,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
 
     apply_ui_tweaks () {
         //this.add_thread_id_ui_link()
-        this.input.value   = this.initial_prompt
+        this.set_input_value(this.initial_prompt)
         if (this.initial_message !== null) {
             this.messages.add_message_initial(this.initial_message)
         }

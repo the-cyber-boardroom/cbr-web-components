@@ -30,15 +30,19 @@ export default class Events__Receive {
         this.logs_callbacks_invoked = []
     }
     on_event = (event) => {
-        this.log_event(this.logs_events_received, event)
-        let event_type = event.type
-        let event_data = event.detail
-        let channel    = event_data?.channel
+
+        let event_details = event.detail
+        let event_type    = event_details?.event_type
+        let event_data    = event_details?.event_data
+        let channel       = event_details?.channel
+
+        this.log_event(this.logs_events_received, event_details)
+
         if (this.channel_callbacks[event_type]) {
             if (channel && this.channel_callbacks[event_type][channel]) {
                 let callbacks = this.channel_callbacks[event_type][channel]
                 callbacks.forEach(callback => {
-                    this.raise_event(callback, event)
+                    this.raise_event(callback, event_details)
                 })
             }
         }
@@ -46,16 +50,14 @@ export default class Events__Receive {
 
     log_event(target, event) {
         if (this.logs_enabled) {
-            let log_event = {event_type: event.type, event_data: event.detail}
-            target.push(log_event)
+            target.push(event)
         }
     }
 
-    raise_event(callback, event) {
+    raise_event(callback, event_details) {
         if (callback) {
-            this.log_event(this.logs_callbacks_invoked, event)
-            let event_entry = { event_type: event.type, event_data: event.detail}
-            callback(event_entry);
+            this.log_event(this.logs_callbacks_invoked, event_details)
+            callback(event_details);
         }
     }
 

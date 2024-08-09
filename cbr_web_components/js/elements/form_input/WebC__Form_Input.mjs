@@ -1,4 +1,3 @@
-import Events__Utils from "../../events/Events__Utils.mjs";
 import Web_Component from "../../core/Web_Component.mjs";
 import Tag           from "../../core/Tag.mjs";
 
@@ -6,10 +5,7 @@ export default class WebC__Form_Input extends Web_Component {
 
     constructor() {
         super();
-        this.events_utils = new Events__Utils()
-        this.channel_id = this.random_id('channel')
         this.channels.push('WebC__Form_Input'     )
-        this.channels.push(this.channel_id        )
     }
 
     // properties
@@ -19,9 +15,11 @@ export default class WebC__Form_Input extends Web_Component {
 
     // connection methods
     add_event_listeners() {
-        this.text_area.addEventListener                    ('input'       , this.on_auto_resize);
-        this.events_utils.events_receive.add_event_listener('set_value'   , this.channel_id, this.on_set_value   )
-        this.events_utils.events_receive.add_event_listener('append_value', this.channel_id, this.on_append_value)
+        this.text_area.addEventListener                    ('input'       , this.on_input  );
+        this.text_area.addEventListener                    ('keydown'     , this.on_keydown);
+        //this.events_utils.events_receive.add_event_listener('keydown'     , this.channel, this.keydown   );
+        this.events_utils.events_receive.add_event_listener('set_value'   , this.channel, this.on_set_value   );
+        this.events_utils.events_receive.add_event_listener('append_value', this.channel, this.on_append_value);
     }
 
     build() {
@@ -31,16 +29,18 @@ export default class WebC__Form_Input extends Web_Component {
     }
 
     connectedCallback() {
+        super.connectedCallback()
         this.build()
     }
 
     disconnectedCallback() {
+        super.disconnectedCallback()
         this.remove_event_listeners()
     }
 
     remove_event_listeners() {
-        this.text_area.removeEventListener('input' , this.auto_resize)
-        this.events_utils.events_receive.remove_all_event_listeners()
+        this.text_area.removeEventListener('input'  , this.on_input  )
+        this.text_area.removeEventListener('keydown', this.on_keydown)
     }
 
     // methods
@@ -48,10 +48,9 @@ export default class WebC__Form_Input extends Web_Component {
     css_rules__chat_input() {
         return { "#form_input": { "display"        : "flex"              ,
                                   "align-items"    : "center"            ,
-                                  "border"         : "2px solid #9c27b0" ,      // purple border
+                                  "border"         : "1px solid #ccc"    ,      // purple border
                                   "border-radius"  : "10px"              ,
-                                  "padding"        : "5px"               ,
-                                  "margin"         : "10px"              ,
+                                  "padding"        : "2px"               ,
                                   "width"          : "100%"              ,
                                   "box-sizing"     : "border-box"        },     // ensures padding is included in the width
 
@@ -60,6 +59,8 @@ export default class WebC__Form_Input extends Web_Component {
                                   "outline"        : "none"              ,
                                   "resize"         : "none"              ,      // removes the bottom right corner resize handle
                                   "font-size"      : "16px"              ,
+                                  "line-height"    : "25px"              ,
+                                  "font-family"    : 'Arial, sans-serif;',
                                   "padding"        : "10px"              ,
                                   "border-radius"  : "10px"              ,      // same border radius as parent for a uniform look
                                   "box-sizing"     : "border-box"        },
@@ -80,17 +81,26 @@ export default class WebC__Form_Input extends Web_Component {
     }
 
     text_area_new_height() {
-        const line_height  = 20
-        const max_height = line_height * 5;
+        const line_height  = 25                             // size of text & line height
+        const max_height = line_height * 8;                 // current css values this will give about 8 lines
         const new_height = Math.min(this.text_area.scrollHeight, max_height)
         return new_height
     }
 
-    // events
-    on_auto_resize = () =>{
+    text_area_resize = () =>{
         this.text_area.style.height = 'auto';               // Reset height to auto to shrink when needed
         const new_height = this.text_area_new_height()
         this.text_area.style.height = new_height + 'px'; // Set height to scrollHeight
+    }
+
+    // events
+
+    on_input = () => {
+        this.text_area_resize()
+    }
+
+    on_keydown = (keyboard_event) => {
+        this.events_utils.events_dispatch.send_to_channel('keydown', this.channel, { keyboard_event: keyboard_event})
     }
 
     on_append_value = (event) => {
@@ -99,10 +109,16 @@ export default class WebC__Form_Input extends Web_Component {
         this.text_area_trigger_input_event()
     }
 
+    // on_invoke = (event) => {
+    //     console.log(this instanceof WebC__Form_Input)
+    //     //console.log(event)
+    //     event.callback('el 42...')
+    // }
+
     on_set_value = (event) => {
         let value = event.event_data.value
         this.text_area.value = value
-        this.on_auto_resize()
+        this.text_area_resize()
     }
 
 }

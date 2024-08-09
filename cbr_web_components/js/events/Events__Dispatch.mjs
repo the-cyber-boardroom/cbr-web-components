@@ -4,9 +4,13 @@ export default class Events__Dispatch {
         //console.log('raising event.......')
     }
 
-    send_to_channel(event_name, channel, event_data) {
-        event_data.channel = channel
-        this.send_event(event_name, event_data)
+    send_to_channel(event_type, channel, event_data, webc_id, callback) {
+        let event_details = { channel   : channel    ,
+                              callback  : callback   ,
+                              event_data: event_data ,
+                              event_type: event_type ,
+                              webc_id   : webc_id    }
+        this.send_event(event_type, event_details)
     }
 
     send_message_to_channel(channel, message_data){

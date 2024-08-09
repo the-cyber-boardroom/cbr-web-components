@@ -1,20 +1,30 @@
+import Events__Utils      from "../events/Events__Utils.mjs";
 import Web_Component      from "../core/Web_Component.mjs";
 import Tag                from "../core/Tag.mjs";
+import WebC__Form_Input   from "../elements/form_input/WebC__Form_Input.mjs";       // used in .build()
 
 export default class WebC__Chat_Input extends Web_Component {
 
     constructor() {
         super();
-    }
-
-    load_attributes() {                                                     // todo: see how this set of the channel can be move into one of the parent components (since this is a pattern that applies to multiple components)
-        this.channel  = this.getAttribute('channel')  || null
-        if (this.channel) { this.channels.push(this.channel) }
+        this.events_utils = new Events__Utils()
         this.channels.push('WebC__Chat_Input')
     }
+
     // properties
-    get input() {
-        return this.query_selector('#user-prompt')
+    get input() {                       // todo refactor this into a help method to return the result of a query selector
+        let event_type  = 'invoke'
+        let channel     = this.channel
+        let event_data  = { method: 'query_selector', params: {'selector' : '#text_area'}}
+        let webc_id     = this.query_selector('webc-form-input').webc_id
+        let text_area   = null
+
+        let callback    = function(result) {
+            text_area = result
+        }
+        let events_dispatch = this.events_utils.events_dispatch
+        events_dispatch.send_to_channel(event_type, channel, event_data, webc_id, callback)
+        return text_area
     }
 
     get action_button() {
@@ -32,17 +42,19 @@ export default class WebC__Chat_Input extends Web_Component {
     // methods
 
     add_event_hooks() {
-        this.input.addEventListener('keydown'        , (event) => this.on_input_keydown(event))
-        this.input.addEventListener('paste'          , (event) => this.process_paste(event))
-        this.action_button.addEventListener('click'  , (event) => this.on_action_button(event))
-        this.clear_button.addEventListener('click'   , (event) => this.on_clear_button(event))
-        window.addEventListener('promptSent'    , (event) => this.on_prompt_sent(event))
-        window.addEventListener('streamComplete', (event) => this.on_stream_complete(event))
+        this.events_utils.events_receive.add_event_listener('keydown', this.channel, this.on_input_keydown)
+        this.events_utils.events_receive.add_event_listener('paste'  , this.channel, this.process_paste)
+
+        //this.input.addEventListener('keydown'        , (event) => this.on_input_keydown(event))
+        //this.input.addEventListener('paste'          , (event) => this.process_paste(event))
+        this.action_button.addEventListener('click'         , (event) => this.on_action_button(event))
+        this.clear_button.addEventListener ('click'         , (event) => this.on_clear_button(event))
+        window.addEventListener            ('promptSent'    , (event) => this.on_prompt_sent(event))
+        window.addEventListener            ('streamComplete', (event) => this.on_stream_complete(event))
     }
 
     connectedCallback() {
         super.connectedCallback();
-        this.load_attributes()
         this.build()
         this.add_event_hooks()
     }
@@ -60,10 +72,10 @@ export default class WebC__Chat_Input extends Web_Component {
                                          "box-shadow"    : "0 -2px 10px rgba(0,0,0,0.1)" ,
                                          "display"       : "flex"                        ,
                                          "align-items"   : "center"                      },
-                 ".chat-input input" : { "width"         : "96%"                         ,
-                                         "padding"       : "10px"                        ,
-                                         "border-radius" : "20px"                        ,
-                                         "border"        : "1px solid #ccc"              },
+                 "webc-form-input" : { "width"         : "96%"                         },
+                                       //  "padding"       : "10px"                        ,
+                                       //  "border-radius" : "20px"                        ,
+                                       //  "border"        : "1px solid #ccc"              },
                  "#file-input"       : { "opacity"       : "0px"                         ,   /* Hide the file input */
                                          "position"      : "absolute"                    ,
                                          "z-index"       : "-1"                          },  /* Place it behind the scene */
@@ -107,10 +119,12 @@ export default class WebC__Chat_Input extends Web_Component {
         //return div_chat_input.html()
         const new_html = `
 <div class="chat-images"></div>
+
 <div class="chat-input">
     <!--<input id='file-input' type="file" />-->
     <!--<label for="file-input" class="file-input-label">+</label>-->
-    <input id='user-prompt' type="text" placeholder="Enter a message..." autocomplete="off"/>
+    <webc-form-input channel="${this.channel}" webc_id="webc-form-input"></webc-form-input>
+    <!--<input id='user-prompt' type="text" placeholder="Enter a message..." autocomplete="off"/>-->
     <button id="action-button">send</button>
     <button id="clear-button">clear</button>
 </div>
@@ -152,10 +166,19 @@ export default class WebC__Chat_Input extends Web_Component {
         this.input.value = ''
         this.images.innerHTML  =''
     }
-    async on_input_keydown(event) {
-        // todo: remove e_.key once test event trigger is working
-        if (event.key === "Enter" || event._key === "Enter") {         //  todo: add this when we have support for textarea as the bot input:    && !e.shiftKey
-            this.send_user_message_event()
+
+    on_input_keydown = (event) =>{
+        let keyboard_event = event.event_data?.keyboard_event
+        let key            = keyboard_event?.key || keyboard_event?._key        //todo: see if there is a better way to set the key value (using ._key because it is not possible to set KeyboardEvent.key, due to it only having a getter)
+        let shift_key      = keyboard_event.shiftKey                            // don't trigger the event when the shift key is also pressed
+        if (key === "Enter") {
+            if (this.input.value === '') {
+                keyboard_event.preventDefault();
+                return;
+            }
+            if (!shift_key) {
+                this.send_user_message_event()
+            }
         }
     }
 
@@ -170,6 +193,11 @@ export default class WebC__Chat_Input extends Web_Component {
             this.action_button.style.backgroundColor = '#007bff'
         }
     }
+
+    // set_input_value(value)  {
+    //     console.log('[WebC__Chat_Input] Setting value: ' + value)
+    // }
+
     on_action_button() {
         if (this.action_button.innerHTML==='stop') {
             this.set_action_button('start')
@@ -191,6 +219,7 @@ export default class WebC__Chat_Input extends Web_Component {
         this.set_action_button('stop')
         this.input.disabled = true
     }
+
     async on_stream_complete(event) {
         this.set_action_button('send')
         this.input.disabled = false

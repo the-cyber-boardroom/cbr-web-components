@@ -18,7 +18,7 @@ QUnit.module('Events__Utils.qunit', function(hooks) {
         events_dispatch = events_utils.events_dispatch
         channel         = 'an_channel'
         event_name      = 'test_event'
-        event_data      = { test_data: 'test_data' , channel: channel}
+        event_data      = { test_data: 'test_data'}
         assert.deepEqual(events_receive.channel_callbacks , {})
         assert.deepEqual(events_receive.document_callbacks, {})
     })
@@ -65,7 +65,7 @@ QUnit.module('Events__Utils.qunit', function(hooks) {
     })
 
     QUnit.test('.logs_enabled == true', (assert) => {
-        let expected_log_entry      = {event_type: event_name, event_data: event_data}
+        let expected_log_entry      = { callback: undefined, channel: channel,  event_type: event_name, event_data: event_data, webc_id: undefined}
         events_receive.logs_enabled = true
         let on_log_event = (event) =>{
             assert.deepEqual(event.event_type , event_name)
@@ -79,8 +79,8 @@ QUnit.module('Events__Utils.qunit', function(hooks) {
         assert.deepEqual(events_receive.channel_callbacks , {[event_name]: {[channel]: [on_log_event]}})
         assert.deepEqual(events_receive.document_callbacks, {[event_name]: events_receive.on_event})
 
-
         events_dispatch.send_to_channel(event_name, channel, event_data)
+
         assert.deepEqual(events_receive.logs_events_received   ,  [expected_log_entry])
         assert.deepEqual(events_receive.logs_callbacks_invoked ,  [expected_log_entry])
 
@@ -88,8 +88,11 @@ QUnit.module('Events__Utils.qunit', function(hooks) {
         assert.deepEqual(events_receive.logs_events_received   ,  [expected_log_entry, expected_log_entry])
         assert.deepEqual(events_receive.logs_callbacks_invoked ,  [expected_log_entry, expected_log_entry])
 
-        let expected_log_entry_2 = { event_type: 'test_event',
-		                             event_data: { test_data: 'test_data', channel: 'another_channel' }}
+        let expected_log_entry_2 = { callback  : undefined         ,
+                                     channel   : 'another_channel' ,
+                                     event_type: 'test_event'      ,
+		                             event_data: event_data        ,
+                                     webc_id   : undefined         }
 
         events_dispatch.send_to_channel(event_name, 'another_channel', event_data)
         assert.deepEqual(events_receive.logs_events_received   , [expected_log_entry, expected_log_entry, expected_log_entry_2])
