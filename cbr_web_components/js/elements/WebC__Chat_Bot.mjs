@@ -11,9 +11,9 @@ export default class WebC__Chat_Bot extends Web_Component {
         //this.div_chat_messages  = null
         this.data_chat_bot      = new Data__Chat_Bot()
         this.bot_name           = 'ChatBot'
-        this.channel            = this.getAttribute('channel')       || null
+        //this.channel            = this.getAttribute('channel')       || null
         this.show_sent_messages = this.getAttribute('show_sent_messages') || false
-        this.channels.push(this.channel)
+        //this.channels.push(this.channel)
         this.channels.push('WebC__Chat_Bot')
 
         if (this.getAttribute('edit_mode')  === null) {
@@ -23,7 +23,6 @@ export default class WebC__Chat_Bot extends Web_Component {
         if (this.getAttribute('show_sent_messages')  === null) {
             this.show_sent_messages = 'true' }
         else { this.show_sent_messages = this.getAttribute('show_sent_messages') }
-
     }
 
     // properties
@@ -44,6 +43,11 @@ export default class WebC__Chat_Bot extends Web_Component {
         return getComputedStyle(this.target_element)
     }
 
+    // connected events
+    connectedCallback() {
+        super.connectedCallback()
+        this.build()
+    }
     // instance methods
     handle_new_input_message(event_data) {
         if (event_data?.channel === this.channel) {
@@ -60,9 +64,10 @@ export default class WebC__Chat_Bot extends Web_Component {
     clear_messages() {
         $(this.messages.childNodes).remove()
     }
+
     add_event_hooks() {
         window.addEventListener('new_input_message', (e)=>{
-             this.handle_new_input_message(e.detail)
+            this.handle_new_input_message(e.detail)
         });
         window.addEventListener('channel_message', (e)=>{
             //console.log("received channel_message")
@@ -70,10 +75,6 @@ export default class WebC__Chat_Bot extends Web_Component {
         window.addEventListener('clear_messages', (e)=>{
             this.handle_clear_messages(e.detail)
         })
-    }
-
-    connectedCallback() {
-        this.build()
     }
 
     css_rules__chat_bot() {
@@ -152,6 +153,11 @@ export default class WebC__Chat_Bot extends Web_Component {
     hide() {
         this.hidden = true
         return this
+    }
+
+    set_input_value(value)  {
+        let event_data = {'value': value }
+        this.events_utils.events_dispatch.send_to_channel('set_value', this.channel, event_data)
     }
 
 

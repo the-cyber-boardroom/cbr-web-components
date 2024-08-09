@@ -1,6 +1,5 @@
 import WebC__Target_Div from "../../js/utils/WebC__Target_Div.mjs";
 import Web_Component    from '../../js/core/Web_Component.mjs'
-import WebC__Form_Input from "../../js/elements/WebC__Form_Input.mjs";
 
 QUnit.module('WebC__Target_Div', function(hooks) {
 
@@ -26,7 +25,7 @@ QUnit.module('WebC__Target_Div', function(hooks) {
     QUnit.test ('constructor', (assert) => {
         assert.ok(WebC__Target_Div.prototype instanceof Web_Component , 'WebC__Target_Div.prototype is an instance of Web_Component');
         assert.ok       (target_div instanceof Web_Component          , 'target_div is an instance of Web_Component')
-        assert.deepEqual(target_div.channels, [ 'Web_Component' ]     , 'target_div.channels == [ "Web_Component" ]')
+        assert.deepEqual(target_div.channels, [ 'Web_Component', target_div.channel]     , 'target_div.channels == [ "Web_Component" ]')
     })
 
 

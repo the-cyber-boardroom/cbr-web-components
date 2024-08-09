@@ -18,7 +18,7 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
         target_div.remove()
     })
 
-    QUnit.test('constructor', (assert) => {
+    QUnit.test('.constructor()', (assert) => {
         assert.equal(WebC__Chat_Input.element_name, 'webc-chat-input'         , 'WebC__Chat_Message element name was correctly set'           )
         assert.ok   (WebC__Chat_Input.prototype instanceof Web_Component      , 'WebC__Chat_Message.prototype is an instance of Web_Component');
         assert.ok    (webc_chat_input instanceof WebC__Chat_Input)
@@ -26,19 +26,18 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
         assert.ok    (webc_chat_input instanceof Object          )
     })
 
-    QUnit.test('connectedCallback', (assert) => {
-        assert.deepEqual(webc_chat_input.channels, [ 'Web_Component', 'an_channel', 'WebC__Chat_Input' ]);
+    QUnit.test('.connectedCallback()', (assert) => {
+        assert.deepEqual(webc_chat_input.channels, [ 'Web_Component', 'WebC__Chat_Input' , 'an_channel']);
     })
 
-    QUnit.test('.event_dispatch',     (assert) => {
+    QUnit.test('.event_dispatch()',     (assert) => {
         //const target_div        = WebC__Target_Div.add_to_body().build({width:"50%"})
         //const web_chat_input    = target_div.append_child(WebC__Chat_Input)
         const message_to_send   = 'an sent message'
         const expected_message  = {"channel": channel, "images": [], user_prompt: message_to_send }
         const keyevent           = new KeyboardEvent('keydown')
-        keyevent._key ='Enter'          // todo: replace with proper event dispatch
+        keyevent._key ='Enter'
 
-        //web_chat_bot.messages.add_message_received(received_message)
         var message_received = null
         var on_new_input_message = (e)=>{
              message_received = e.detail
@@ -46,8 +45,8 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
         window.addEventListener('new_input_message', on_new_input_message);
 
         assert.equal(message_received, null)
-
         webc_chat_input.input.value = message_to_send
+
         webc_chat_input.input.dispatchEvent(keyevent)
         assert.propEqual(message_received, expected_message)
         assert.equal(webc_chat_input.input.value, '')
@@ -56,17 +55,30 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
         window.removeEventListener('new_input_message', on_new_input_message);
     })
 
-    QUnit.test('render', (assert) => {
+    QUnit.test('.input()', (assert) => {
+        let events_dispatch = webc_chat_input.events_utils.events_dispatch
+        let event_type      = 'set_value'
+        let channel         = webc_chat_input.channel
+        let value           = 'an value set via set_value event'
+        let event_data      = {'value': value}
+        let input           = webc_chat_input.input                                 // get reference to input element via 'invoke' event
+        events_dispatch.send_to_channel(event_type, channel, event_data)            // use 'set_value' event to set the value of the text area
+        assert.deepEqual(input.value, value)                                        // confirm values match
+    })
+
+    QUnit.test('.render()', (assert) => {
         // const div_setup = {top: "30%", width: "50%", bottom:"50%"}
         // const target_div = WebC__Target_Div.add_to_body().build(div_setup)
         // const web_chat_input = target_div.append_child(WebC__Chat_Input)
         const expected_html =
 `
 <div class="chat-images"></div>
+
 <div class="chat-input">
     <!--<input id='file-input' type="file" />-->
     <!--<label for="file-input" class="file-input-label">+</label>-->
-    <input id='user-prompt' type="text" placeholder="Enter a message..." autocomplete=\"off\"/>
+    <webc-form-input channel="an_channel" webc_id="webc-form-input"></webc-form-input>
+    <!--<input id='user-prompt' type="text" placeholder="Enter a message..." autocomplete=\"off\"/>-->
     <button id=\"action-button\">send</button>
     <button id=\"clear-button\">clear</button>
 </div>
@@ -153,9 +165,9 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
         assert.deepEqual(on_new_input_message_data, null)
 
         // with  key = 'Enter', value = ''
-        event.key = 'Enter'
+        event.key = 'Enter'                                             // when we only have an Enter value
         input.dispatchEvent(event);
-        assert.deepEqual(on_new_input_message_data, { user_prompt: '', images: [], channel: channel })
+        assert.deepEqual(on_new_input_message_data, null)               // there will be no event dispatched
 
         // with  key = 'Enter', value = 'aaaa'
         input.value = 'aaaa'

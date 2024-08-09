@@ -22,7 +22,7 @@ export default class WebC__Chat_Message extends Web_Component {
         this.clear_message = this.clear_message.bind(this);
         this.edit_mode     = false
 
-        window.message = this
+        window.message = this               // todo: remove once confirmed that this is not being used by one of the MVPs
     }
     connectedCallback() {
         this.build()
