@@ -9,8 +9,7 @@ module.exports = function(config) {
         {"pattern": "node_modules/datatables.net/js/dataTables.js"    },
         { pattern: 'cbr_web_components/js/**/*.*'    , type: 'module' },
         { pattern: 'cbr_web_components/qunit/**/*.*' , type: 'module' },
-        {
-          pattern: 'node_modules/**',
+        { pattern: 'node_modules/**',
           served: true,
           included: false
         }

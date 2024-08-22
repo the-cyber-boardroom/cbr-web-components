@@ -2,8 +2,9 @@ import Events__Utils from "../events/Events__Utils.mjs";
 
 export default class API__Invoke {
     constructor(channel) {
-        this.events_utils = new Events__Utils()
-        this.channel      = channel || this.random_id('api_invoke_')
+        this.events_utils   = new Events__Utils()
+        this.channel        = channel || this.random_id('api_invoke_')
+        this.mock_responses = false
         this.connect_event_listeners()
     }
 
@@ -39,6 +40,9 @@ export default class API__Invoke {
         }
 
         try {
+            if (this.mock_responses) {
+                return { version: 'v0.6.8' }
+            }
             const response = await fetch(url, options);
 
             if (!response.ok) {

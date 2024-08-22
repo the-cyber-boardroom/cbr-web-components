@@ -10,6 +10,7 @@ export default class Text_Highlight {
             // Fetch and apply the highlight.js CSS
             let path = '/assets/plugins/highlight/default.min.css'
             const cssResponse = await fetch(path);
+            console.log('in fetch_css_code, with status code:', cssResponse.status)
             const css = await cssResponse.text();
             return css
         } catch (error) {

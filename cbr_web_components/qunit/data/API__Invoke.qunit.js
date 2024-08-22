@@ -17,20 +17,23 @@ QUnit.module('API_Invoke', function(hooks) {
         events_dispatch = event_utils.events_dispatch
         events_receive  = event_utils.events_receive
         mockResponse    = { version: 'v0.6.8' };
-        originalFetch   = globalThis.fetch
 
-        globalThis.fetch = async (url, options) => {
-            return {
-                ok: true,
-                json: async () => mockResponse,
-                status: 200,
-            };
-        };
+        api_invoke.mock_responses = true
+
+        // originalFetch   = globalThis.fetch
+        //
+        // globalThis.fetch = async (url, options) => {
+        //     return {
+        //         ok: true,
+        //         json: async () => mockResponse,
+        //         status: 200,
+        //     };
+        // };
     })
 
-    hooks.afterEach(() => {
-         globalThis.fetch = originalFetch;
-    })
+    // hooks.afterEach(() => {
+    //      globalThis.fetch = originalFetch;
+    // })
 
     QUnit.test('.constructor()', (assert)=> {
         assert.ok       (api_invoke              instanceof API_Invoke)

@@ -1,16 +1,19 @@
-import Web_Component from "../core/Web_Component.mjs";
-import API__Invoke from "../data/API__Invoke.mjs";
+import Web_Component  from "../core/Web_Component.mjs";
+import API__Invoke    from "../data/API__Invoke.mjs";
+import Text_Highlight from "../plugins/Text_Highlight.mjs";
 
 
 export default class UI__Session_Data extends Web_Component {
     constructor() {
         super();
-        this.api_invoke = new API__Invoke()
+        this.api_invoke     = new API__Invoke()
+        this.text_highlight = new Text_Highlight(this)
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback()
         //this.load_highlight_css()
+        await this.text_highlight.load_css()
         this.build()
     }
 
