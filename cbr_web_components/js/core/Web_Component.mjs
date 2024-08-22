@@ -157,6 +157,7 @@ export default class Web_Component extends HTMLElement {
         const random_part = Math.random().toString(36).substring(2, 7); // Generate a random string.
         return `${prefix}_${random_part}`;
     }
+
     set_inner_html(inner_html) {
         this.shadowRoot.innerHTML = inner_html
     }
