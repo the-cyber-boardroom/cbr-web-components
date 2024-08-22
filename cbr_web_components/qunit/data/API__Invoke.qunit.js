@@ -20,7 +20,6 @@ QUnit.module('API_Invoke', function(hooks) {
         originalFetch   = globalThis.fetch
 
         globalThis.fetch = async (url, options) => {
-            console.log(url, options)
             return {
                 ok: true,
                 json: async () => mockResponse,
@@ -44,8 +43,6 @@ QUnit.module('API_Invoke', function(hooks) {
         let event_data = { method:'GET', 'path':  '/config/version', 'data': null}
 
         let on_api_response = (data) =>{
-            console.log(data)
-            console.log(mockResponse)
             assert.deepEqual(data, mockResponse)
         }
         events_dispatch.send_to_channel(event_name, channel, event_data, null, on_api_response)

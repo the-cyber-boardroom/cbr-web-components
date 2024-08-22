@@ -10,7 +10,7 @@ export default class UI__Session_Data extends Web_Component {
 
     connectedCallback() {
         super.connectedCallback()
-        this.load_highlight_css()
+        //this.load_highlight_css()
         this.build()
     }
 
@@ -18,15 +18,15 @@ export default class UI__Session_Data extends Web_Component {
         super.disconnectedCallback()
     }
 
-    load_highlight_css() {
-        fetch('/assets/plugins/highlight/default.min.css')
-          .then(response => response.text())
-          .then(css => {
-            const sheet = new CSSStyleSheet();
-            sheet.replaceSync(css);
-            this.shadowRoot.adoptedStyleSheets = [sheet];
-          });
-    }
+    // load_highlight_css() {
+    //     fetch('/assets/plugins/highlight/default.min.css')
+    //       .then(response => response.text())
+    //       .then(css => {
+    //         const sheet = new CSSStyleSheet();
+    //         sheet.replaceSync(css);
+    //         this.shadowRoot.adoptedStyleSheets = [sheet];
+    //       });
+    // }
 
     build() {
         let raw_html = this.html()

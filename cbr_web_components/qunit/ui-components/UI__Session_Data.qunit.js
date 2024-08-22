@@ -9,22 +9,25 @@ import API__Invoke from "../../js/data/API__Invoke.mjs";
 QUnit.module('UI__Session_Data', function(hooks) {
     let target_div
     let ui_session_data
+    let mockResponse
+    let originalFetch
+
     hooks.beforeEach(() =>{
+        mockResponse    = { version: 'v0.6.8' };
+        originalFetch = globalThis.fetch
+        globalThis.fetch = async (url, options) => {
+            return {
+                ok: true,
+                json: async () => mockResponse,
+                status: 200,
+            };
+        };
         target_div              = WebC__Target_Div.add_to_body().build()
         ui_session_data         = target_div.append_child(UI__Session_Data)
-
-        // globalThis.fetch = async (url, options) => {
-        //     console.log(url, options)
-        //     return {
-        //         ok: true,
-        //         json: async () => mockResponse,
-        //         status: 200,
-        //     };
-        // };
-
     })
 
     hooks.afterEach(() => {
+        globalThis.fetch = originalFetch;
         ui_session_data.remove()
         target_div.remove()
     })

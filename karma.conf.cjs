@@ -1,3 +1,5 @@
+let path = require('path');
+
 module.exports = function(config) {
   config.set({
     basePath: '',
@@ -7,6 +9,11 @@ module.exports = function(config) {
         {"pattern": "node_modules/datatables.net/js/dataTables.js"    },
         { pattern: 'cbr_web_components/js/**/*.*'    , type: 'module' },
         { pattern: 'cbr_web_components/qunit/**/*.*' , type: 'module' },
+        {
+          pattern: 'node_modules/**',
+          served: true,
+          included: false
+        }
     ],
     exclude: [],
     preprocessors: {
@@ -19,7 +26,9 @@ module.exports = function(config) {
     autoWatch: true,
     browsers: ['ChromeHeadless'],
     singleRun: false,
-    concurrency: Infinity
+    concurrency: Infinity,
+    proxies: { '/assets/plugins/highlight/': '/base/node_modules/highlight.js/styles' }
+
   });
 };
 
