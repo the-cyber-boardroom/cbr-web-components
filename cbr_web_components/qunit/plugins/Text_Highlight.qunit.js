@@ -41,6 +41,7 @@ QUnit.module('API_Invoke', function(hooks) {
         await text_highlight.fetch_js_code()
         assert.ok(text_highlight.js_loaded === true)
         assert.deepEqual(typeof(hljs), 'object')
+        console.log('hlj version:', hljs.versionString)
         assert.ok(1)
     })
 })
