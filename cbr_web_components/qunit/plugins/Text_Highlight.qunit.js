@@ -34,4 +34,13 @@ QUnit.module('API_Invoke', function(hooks) {
         assert.notDeepEqual(text_highlight.css_code, '')
         assert.deepEqual(text_highlight.css_code.indexOf(css_signature), 23)
     })
+
+    QUnit.test('.fetch_js_code()', async (assert)=> {
+        assert.deepEqual(typeof(hljs), 'undefined')
+        assert.ok(text_highlight.js_loaded === false)
+        await text_highlight.fetch_js_code()
+        assert.ok(text_highlight.js_loaded === true)
+        assert.deepEqual(typeof(hljs), 'object')
+        assert.ok(1)
+    })
 })

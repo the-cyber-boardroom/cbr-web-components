@@ -1,3 +1,6 @@
+//import aaa from "/assets/plugins/highlight/lib/core.js"
+//import hljs from 'https://unpkg.com/@highlightjs/cdn-assets@11.10.0/es/highlight.min.js';
+
 export default class Text_Highlight {
 
     constructor(target_webc) {
@@ -7,6 +10,7 @@ export default class Text_Highlight {
         this.css_code    = ''
     }
 
+    ///assets/plugins/highlight/highlight.min.js
     async fetch_css_code() {
         try {
             const path        = '/assets/plugins/highlight/default.min.css'
@@ -17,6 +21,31 @@ export default class Text_Highlight {
             return ''
         }
     }
+
+    async fetch_js_code() {
+        try {
+            if (typeof(hljs) !== 'undefined') {
+                console.log('hljs already loaded')
+                return
+            }
+            const path           = '/assets/plugins/highlight/highlight.min.js';
+            const scriptElement  = document.createElement('script');
+            scriptElement.src    = path;
+            scriptElement.async  = true; // Load asynchronously
+
+            document.head.appendChild(scriptElement);
+
+            await new Promise((resolve, reject) => {
+                scriptElement.onload = resolve;
+                scriptElement.onerror = () => reject(new Error('[Text_Highlight] Error loading JS script'));
+            });
+            this.js_loaded =  true
+
+        } catch (error) {
+            console.error('[Text_Highlight] Error in fetch_js_code:', error);
+        }
+    }
+
     async load_css() {
         await this.fetch_css_code()
         if (this.css_code) {

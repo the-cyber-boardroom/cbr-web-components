@@ -9,7 +9,7 @@ module.exports = function(config) {
         {"pattern": "node_modules/datatables.net/js/dataTables.js"    },
         { pattern: 'cbr_web_components/js/**/*.*'    , type: 'module' },
         { pattern: 'cbr_web_components/qunit/**/*.*' , type: 'module' },
-        { pattern: 'node_modules/**',
+        { pattern: 'modules/cbr-static/cbr_static/assets/plugins/**',
           served: true,
           included: false
         }
@@ -26,8 +26,7 @@ module.exports = function(config) {
     browsers: ['ChromeHeadless'],
     singleRun: false,
     concurrency: Infinity,
-    proxies: { '/assets/plugins/highlight/': '/base/node_modules/highlight.js/styles' }
-
+    proxies: { '/assets/plugins/': '/base/modules/cbr-static/cbr_static/assets/plugins' }
   });
 };
 

@@ -54,14 +54,15 @@ export default class WebC__API_To_Json extends Web_Component {
         let event_data = { method:'GET', 'path':  path, 'data': null}
         let on_api_response = (data) => {
             let raw_html = `${JSON.stringify(data, null, ' ')}`
-            if (typeof hljs !== 'undefined' && hljs.highlight) {
-                let html_code = hljs.highlight("javascript", raw_html).value
-                html_code = `<pre>${html_code}</pre>`
-                this.set_inner_html(html_code)
-            }
-            else {
-                this.set_inner_html(raw_html)
-            }
+            this.set_inner_html(raw_html)
+            // if (typeof hljs !== 'undefined' && hljs.highlight) {
+            //     let html_code = hljs.highlight("javascript", raw_html).value
+            //     html_code = `<pre>${html_code}</pre>`
+            //     this.set_inner_html(html_code)
+            // }
+            // else {
+            //     this.set_inner_html(raw_html)
+            // }
         }
 
         events_dispatch.send_to_channel(event_name, channel, event_data, null, on_api_response)

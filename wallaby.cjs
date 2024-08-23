@@ -14,7 +14,8 @@ module.exports = function (wallaby) {
     },
     middleware: function (app, express) {
       // Serve the highlight files from node_modules
-      app.use('/assets/plugins/highlight', express.static(require('path').join(__dirname, 'node_modules/highlight.js/styles')));
+      //app.use('/assets/plugins/highlight', express.static(require('path').join(__dirname, 'node_modules/highlight.js')));
+      app.use('/assets/plugins', express.static(require('path').join(__dirname, 'modules/cbr-static/cbr_static/assets/plugins')));
     },
   };
 };
