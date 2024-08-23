@@ -3,22 +3,29 @@ import API__Invoke    from "../data/API__Invoke.mjs";
 import Text_Highlight from "../plugins/Text_Highlight.mjs";
 
 
-export default class UI__Session_Data extends Web_Component {
+export default class WebC__API_To_Json extends Web_Component {
+
     constructor() {
         super();
-        this.api_invoke     = new API__Invoke()
-        this.text_highlight = new Text_Highlight(this)
     }
 
     async connectedCallback() {
         super.connectedCallback()
-        //this.load_highlight_css()
+        this.setup()
         await this.text_highlight.load_css()
         this.build()
+        this.raise_event('build-complete')
     }
 
     disconnectedCallback() {
         super.disconnectedCallback()
+    }
+    setup() {
+        this.offline_mode  = this.getAttribute('offline_mode') === 'true'                   // todo: figure out a better way to do this
+
+        this.api_invoke                = new API__Invoke()
+        this.text_highlight            = new Text_Highlight(this)
+        this.api_invoke.mock_responses = this.offline_mode === true                         // todo: figure out a better way to do this
     }
 
     // load_highlight_css() {
@@ -63,4 +70,4 @@ export default class UI__Session_Data extends Web_Component {
     }
 }
 
-UI__Session_Data.define()
+WebC__API_To_Json.define()

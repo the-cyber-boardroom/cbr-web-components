@@ -24,7 +24,8 @@ export default class Text_Highlight {
             sheet.replaceSync(this.css_code);
             this.target_webc.add_adopted_stylesheet(sheet);
             this.css_loaded = true
-            this.target_webc.dispatchEvent(new CustomEvent('css-loaded', { bubbles: false }));
+            this.target_webc.raise_event('css-loaded')              // todo: see if we still need this
+            //this.target_webc.dispatchEvent(new CustomEvent('css-loaded', { bubbles: false }));
         }
     }
 }
