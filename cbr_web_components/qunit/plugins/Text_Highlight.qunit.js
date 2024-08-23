@@ -22,11 +22,16 @@ QUnit.module('API_Invoke', function(hooks) {
     })
 
     QUnit.test('.load_css()', async (assert)=> {
-        var done = assert.async()
+        let css_signature = 'Description: Original highlight.js style'
+
         assert.deepEqual(text_highlight.css_loaded, false)
+        assert.deepEqual(text_highlight.css_code  , '')
+        assert.deepEqual(text_highlight.css_code.indexOf(css_signature), -1)
+
         await text_highlight.load_css()
+
         assert.deepEqual(text_highlight.css_loaded, true)
-        assert.ok(1)
-        done()
+        assert.notDeepEqual(text_highlight.css_code, '')
+        assert.deepEqual(text_highlight.css_code.indexOf(css_signature), 23)
     })
 })
