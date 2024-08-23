@@ -94,6 +94,25 @@ export default class Web_Component extends HTMLElement {
     }
     // instance methods
 
+    // events methods
+    raise_event(event_name, event_detail) {
+        const options =  { bubbles: false, detail: event_detail}
+        this.dispatchEvent(new CustomEvent(event_name, options));
+    }
+
+    async wait_for_event(event_name, timeout) {
+        const timeout_value = timeout || 100
+        const timeout_message = `${event_name} event did not fire within the expected timeout value: ${timeout_value}ms.`
+
+        await new Promise((resolve, reject) => {
+            const on_timeout       = () => { reject(new Error(timeout_message)); }
+            const timeout_function = setTimeout(on_timeout, timeout_value);
+            const on_event         = () => { clearTimeout(timeout_function); resolve(); }
+            this.addEventListener(event_name, on_event, { once: true });
+        });
+    }
+
+    // other methods // todo organise these methods in a logical way
     add_adopted_stylesheet(stylesheet) {
         const currentStylesheets = this.shadowRoot.adoptedStyleSheets;
         this.shadowRoot.adoptedStyleSheets = [...currentStylesheets, stylesheet];
@@ -157,6 +176,7 @@ export default class Web_Component extends HTMLElement {
         const random_part = Math.random().toString(36).substring(2, 7); // Generate a random string.
         return `${prefix}_${random_part}`;
     }
+
     set_inner_html(inner_html) {
         this.shadowRoot.innerHTML = inner_html
     }

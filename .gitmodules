@@ -1,0 +1,3 @@
+[submodule "modules/cbr-static"]
+	path = modules/cbr-static
+	url = git@github.com:the-cyber-boardroom/cbr-static.git

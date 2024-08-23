@@ -15,6 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true                              # Ensures submodules are checked out
+          token: ${{ secrets.GIT_HUB__ACCESS_TOKEN }}
+
       - name: Run QUnit Tests
         uses: ./.github/actions/run-qunit-tests
         with:
