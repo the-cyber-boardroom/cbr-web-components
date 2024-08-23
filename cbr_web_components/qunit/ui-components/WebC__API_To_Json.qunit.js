@@ -54,6 +54,8 @@ QUnit.module('WebC__API_To_Json', function(hooks) {
         assert.ok       (webc__api_to_json.text_highlight.css_code !== '')
         assert.deepEqual(webc__api_to_json.getAttributeNames(), ['offline_mode'])
         assert.ok       (webc__api_to_json.api_invoke.mock_responses)
+        assert.deepEqual(typeof(hljs), 'object')
+        assert.deepEqual(hljs.versionString, '11.9.0')
         // todo: figure out why the tests below fail
         //assert.equal(Object.getPrototypeOf(ui_session_data), UI__Session_Data.prototype, 'The prototype of ui_session_data should be UI__Session_Data.prototype');
         //assert.ok(ui_session_data instanceof UI__Session_Data, 'ui_session_data should be an instance of UI__Session_Data');
@@ -61,7 +63,7 @@ QUnit.module('WebC__API_To_Json', function(hooks) {
 
     QUnit.test('.html', (assert) => {
         //if (skip_tests) { return }
-        let expected_html = JSON.stringify(mockResponse,null, 1)
+        let expected_html = '<pre><span class="hljs-punctuation">{</span>\n <span class="hljs-attr">"version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"v0.6.8"</span>\n<span class="hljs-punctuation">}</span></pre>'
         assert.deepEqual(webc__api_to_json.inner_html(), expected_html)
 
         //console.log(ui_session_data.inner_html())

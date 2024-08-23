@@ -22,10 +22,10 @@ export default class Text_Highlight {
         }
     }
 
-    async fetch_js_code() {
+    async load_highlight_js() {
         try {
             if (typeof(hljs) !== 'undefined') {
-                console.log('hljs already loaded')
+                //console.log('hljs already loaded')
                 return
             }
             const path           = '/assets/plugins/highlight/highlight.min.js';
@@ -56,5 +56,9 @@ export default class Text_Highlight {
             this.target_webc.raise_event('css-loaded')              // todo: see if we still need this
             //this.target_webc.dispatchEvent(new CustomEvent('css-loaded', { bubbles: false }));
         }
+    }
+
+    format_text(text, language) {
+        return hljs.highlight(text, { language: language }).value
     }
 }

@@ -52,20 +52,7 @@ QUnit.module('API_Invoke', function(hooks) {
     })
 
     QUnit.test('.invoke_api()', async (assert)=> {
-
-        // const mockResponse = { version: 'v0.6.8' };
-        // globalThis.fetch = async (url, options) => {
-        //     return {
-        //         ok: true,
-        //         json: async () => mockResponse,
-        //         status: 200,
-        //     };
-        // };
-
         const response = await api_invoke.invoke_api( '/config/version', 'GET');
-
-        assert.deepEqual(response, mockResponse, 'The response should match the expected JSON object');
-
+        assert.deepEqual(response, mockResponse , 'The response should match the expected JSON object');
     })
-
 })

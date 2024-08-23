@@ -8,11 +8,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-#    - name: Checkout repository
-#      uses: actions/checkout@v4
-#      with:
-#        submodules: true                          # Ensures submodules are checked out
-#        token: ${{ secrets.GIT_HUB__ACCESS_TOKEN }}
 
     - name: Set up Node.js ${{ inputs.node-version }}
       uses: actions/setup-node@v4

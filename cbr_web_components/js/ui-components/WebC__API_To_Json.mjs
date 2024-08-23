@@ -13,6 +13,7 @@ export default class WebC__API_To_Json extends Web_Component {
         super.connectedCallback()
         this.setup()
         await this.text_highlight.load_css()
+        await this.text_highlight.load_highlight_js()
         this.build()
         this.raise_event('build-complete')
     }
@@ -54,7 +55,9 @@ export default class WebC__API_To_Json extends Web_Component {
         let event_data = { method:'GET', 'path':  path, 'data': null}
         let on_api_response = (data) => {
             let raw_html = `${JSON.stringify(data, null, ' ')}`
-            this.set_inner_html(raw_html)
+            let formatted_html = this.text_highlight.format_text(raw_html, 'json')
+            let html_code = `<pre>${formatted_html}</pre>`
+            this.set_inner_html(html_code)
             // if (typeof hljs !== 'undefined' && hljs.highlight) {
             //     let html_code = hljs.highlight("javascript", raw_html).value
             //     html_code = `<pre>${html_code}</pre>`

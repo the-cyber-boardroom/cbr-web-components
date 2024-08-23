@@ -35,13 +35,20 @@ QUnit.module('API_Invoke', function(hooks) {
         assert.deepEqual(text_highlight.css_code.indexOf(css_signature), 23)
     })
 
-    QUnit.test('.fetch_js_code()', async (assert)=> {
+    QUnit.test('.load_highlight_js()', async (assert)=> {
         assert.deepEqual(typeof(hljs), 'undefined')
         assert.ok(text_highlight.js_loaded === false)
-        await text_highlight.fetch_js_code()
+        await text_highlight.load_highlight_js()
         assert.ok(text_highlight.js_loaded === true)
         assert.deepEqual(typeof(hljs), 'object')
-        console.log('hlj version:', hljs.versionString)
-        assert.ok(1)
+        assert.deepEqual(hljs.versionString, '11.9.0')
+    })
+
+    QUnit.test('.format_text()',  async (assert)=> {
+        await text_highlight.load_highlight_js()
+        let text = 'this is **bold** in markdown\n\nnew line'
+        let expected_html = 'this is <span class="hljs-strong">**bold**</span> in markdown\n\nnew line'
+        let formatted_html   = text_highlight.format_text(text, 'markdown')
+        assert.deepEqual(formatted_html, expected_html)
     })
 })
