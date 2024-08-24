@@ -14,13 +14,19 @@ export default class WebC__API_To_Json extends Web_Component {
         this.setup()
         await this.text_highlight.load_css()
         await this.text_highlight.load_highlight_js()
-        this.build()
+        await this.build()
         this.raise_event('build-complete')
+    }
+
+    load_attributes() {
+        super.load_attributes()
+        this.api_path  = this.getAttribute('api_path')
     }
 
     disconnectedCallback() {
         super.disconnectedCallback()
     }
+
     setup() {
         this.offline_mode  = this.getAttribute('offline_mode') === 'true'                   // todo: figure out a better way to do this
 
@@ -39,38 +45,39 @@ export default class WebC__API_To_Json extends Web_Component {
     //       });
     // }
 
-    build() {
-        let raw_html = this.html()
+    async build() {
+        let raw_html = await this.html()
         this.set_inner_html(raw_html)
         window.session_data = this
     }
 
-    html () {
-        let events_dispatch = this.api_invoke.events_utils.events_dispatch
-        let channel    = this.api_invoke.channel
-        let event_name = 'api_invoke'
-        //let path = '/config/version'
-        //let path = '/api/openapi.json'
-        let path = '/api/user/user-session/session-data'
-        let event_data = { method:'GET', 'path':  path, 'data': null}
-        let on_api_response = (data) => {
-            let raw_html = `${JSON.stringify(data, null, ' ')}`
-            let formatted_html = this.text_highlight.format_text(raw_html, 'json')
-            let html_code = `<pre>${formatted_html}</pre>`
-            this.set_inner_html(html_code)
-            // if (typeof hljs !== 'undefined' && hljs.highlight) {
-            //     let html_code = hljs.highlight("javascript", raw_html).value
-            //     html_code = `<pre>${html_code}</pre>`
-            //     this.set_inner_html(html_code)
-            // }
-            // else {
-            //     this.set_inner_html(raw_html)
-            // }
-        }
+    async invoke_api_path() {
+        const api_path = this.api_path
+        const method   = 'GET'
+        const data     = null
+        return await this.api_invoke.invoke_api(api_path, method, data)
+    }
 
-        events_dispatch.send_to_channel(event_name, channel, event_data, null, on_api_response)
-        let html = "<h2>UI Session Data </h2>"
-        return html
+    async html () {
+
+        let api_data = await this.invoke_api_path()
+        let data_str = `${JSON.stringify(api_data, null, ' ')}`
+        let formatted_html = this.text_highlight.format_text(data_str, 'json')
+        let html_code = `<h2>${this.api_path}</h2><pre>${formatted_html}</pre>`
+        return html_code
+        //this.set_inner_html(html_code)
+        // let path = '/api/user/user-session/session-data'
+        // let event_data = { method:'GET', 'path':  path, 'data': null}
+        // let on_api_response = (data) => {
+        //     let raw_html = `${JSON.stringify(data, null, ' ')}`
+        //     let formatted_html = this.text_highlight.format_text(raw_html, 'json')
+        //     let html_code = `<pre>${formatted_html}</pre>`
+        //     this.set_inner_html(html_code)
+        // }
+        //
+        // events_dispatch.send_to_channel(event_name, channel, event_data, null, on_api_response)
+        // let html = "<h2>UI Session Data </h2>"
+        //return html_code
     }
 }
 

@@ -11,6 +11,7 @@ export default class API__Invoke {
     connect_event_listeners() {
         this.add_event_listener('api_invoke', this.channel, this.on_api_invoke)
     }
+
     add_event_listener(event_name, channel, callback) {
         this.events_utils.events_receive.add_event_listener(event_name, channel, callback)
     }
@@ -26,8 +27,8 @@ export default class API__Invoke {
     }
 
     // Method to invoke the API asynchronously using fetch
-    async invoke_api(api, method = 'GET', data = null) {
-        const url = `${api}`;
+    async invoke_api(api_path, method = 'GET', data = null) {
+        const url = `${api_path}`;
         const options = {
             method,
             headers: {
@@ -41,7 +42,7 @@ export default class API__Invoke {
 
         try {
             if (this.mock_responses) {
-                return { version: 'v0.6.8' }
+                return { version: 'v0.6.8' }                // todo: add a way to control the mocked data based on the URl , method, and data
             }
             const response = await fetch(url, options);
 
