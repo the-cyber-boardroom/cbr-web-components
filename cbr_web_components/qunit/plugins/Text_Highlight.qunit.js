@@ -36,7 +36,7 @@ QUnit.module('API_Invoke', function(hooks) {
     })
 
     QUnit.test('.load_highlight_js()', async (assert)=> {
-        assert.deepEqual(typeof(hljs), 'undefined')
+        //assert.deepEqual(typeof(hljs), 'undefined')               // in Karma, hljs is already loaded by the time we reach here
         assert.ok(text_highlight.js_loaded === false)
         await text_highlight.load_highlight_js()
         assert.ok(text_highlight.js_loaded === true)

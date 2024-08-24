@@ -1,30 +1,30 @@
-import Events__Utils from "../events/Events__Utils.mjs";
+//import Events__Utils from "../events/Events__Utils.mjs";
 
 export default class API__Invoke {
     constructor(channel) {
-        this.events_utils   = new Events__Utils()
+        //this.events_utils   = new Events__Utils()
         this.channel        = channel || this.random_id('api_invoke_')
         this.mock_responses = false
-        this.connect_event_listeners()
+        //this.connect_event_listeners()
     }
 
-    connect_event_listeners() {
-        this.add_event_listener('api_invoke', this.channel, this.on_api_invoke)
-    }
+    // connect_event_listeners() {
+    //     this.add_event_listener('api_invoke', this.channel, this.on_api_invoke)
+    // }
+    //
+    // add_event_listener(event_name, channel, callback) {
+    //     this.events_utils.events_receive.add_event_listener(event_name, channel, callback)
+    // }
 
-    add_event_listener(event_name, channel, callback) {
-        this.events_utils.events_receive.add_event_listener(event_name, channel, callback)
-    }
-
-    on_api_invoke = (event) => {
-        let event_data = event.event_data;
-        let callback   = event.callback;
-
-        this.invoke_api(event_data.path, event_data.method, event_data.data)                  // Invoke the API asynchronously
-            .then (response => { callback( response               ); })                      // Call the callback with the response if the API call is successful
-            .catch(error    => { callback({ error: error.message }); });                     // Handle any errors that occurred during the API call
-
-    }
+    // on_api_invoke = (event) => {
+    //     let event_data = event.event_data;
+    //     let callback   = event.callback;
+    //
+    //     this.invoke_api(event_data.path, event_data.method, event_data.data)                  // Invoke the API asynchronously
+    //         .then (response => { callback( response               ); })                      // Call the callback with the response if the API call is successful
+    //         .catch(error    => { callback({ error: error.message }); });                     // Handle any errors that occurred during the API call
+    //
+    // }
 
     // Method to invoke the API asynchronously using fetch
     async invoke_api(api_path, method = 'GET', data = null) {
@@ -41,8 +41,8 @@ export default class API__Invoke {
         }
 
         try {
-            if (this.mock_responses) {
-                return { version: 'v0.6.8' }                // todo: add a way to control the mocked data based on the URl , method, and data
+            if (this.mock_responses && this.mock_responses[api_path]) {
+                return this.mock_responses[api_path]
             }
             const response = await fetch(url, options);
 

@@ -25,6 +25,7 @@ export default class Text_Highlight {
     async load_highlight_js() {
         try {
             if (typeof(hljs) !== 'undefined') {
+                this.js_loaded = true                           // since hljs has already been loaded by another instance (or test)
                 //console.log('hljs already loaded')
                 return
             }
@@ -40,7 +41,6 @@ export default class Text_Highlight {
                 scriptElement.onerror = () => reject(new Error('[Text_Highlight] Error loading JS script'));
             });
             this.js_loaded =  true
-
         } catch (error) {
             console.error('[Text_Highlight] Error in fetch_js_code:', error);
         }
