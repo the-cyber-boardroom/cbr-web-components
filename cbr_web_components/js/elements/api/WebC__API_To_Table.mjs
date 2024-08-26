@@ -32,16 +32,30 @@ export default class WebC__API_To_Table extends Web_Component {
     }
 
     async build() {
+        this.set_inner_html('...fetching data ...')
         let api_data = await this.invoke_api_path()
 
-        let headers  = api_data['headers']
-        let rows     = api_data['rows'   ]
-        let title    = api_data['title'  ]
-        this.table.headers = headers
-        this.table.rows    = rows
+        if (api_data.status === 'error') {
+            let html = `<b>Error: ${api_data.message}</b>`
+            this.set_inner_html(html)
+        }
+        else
+        {
+            let html     = "<a id='data_reload' href='#reload'>reload</a>"
+            let headers  = api_data['headers']
+            let rows     = api_data['rows'   ]
+            let title    = api_data['title'  ]
+            this.table.headers = headers
+            this.table.rows    = rows
+            html += this.table.html()
+            this.set_inner_html(html)
+        }
+        this.shadowRoot.querySelector("#data_reload" ).addEventListener('click', this.reload_data )
+    }
 
-        let html = this.table.html()
-        this.set_inner_html(html)
+     reload_data = async (event)  => {
+        event.preventDefault();
+        await this.build()
     }
 
     mergeUrlWithPageParams(url) {
