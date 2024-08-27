@@ -47,7 +47,7 @@ export default class WebC__API_To_Table extends Web_Component {
             let title    = api_data['title'  ]
             this.table.headers = headers
             this.table.rows    = rows
-            html += this.table.html()
+            html = this.table.html()
             this.set_inner_html(html)
         }
         this.shadowRoot.querySelector("#data_reload" ).addEventListener('click', this.reload_data )
