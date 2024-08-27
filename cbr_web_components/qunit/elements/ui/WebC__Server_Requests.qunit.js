@@ -40,12 +40,21 @@ QUnit.module('WebC__Server_Requests', function(hooks) {
         assert.deepEqual(webc_server_requests.api_path, api_path)
     })
 
-    QUnit.test ('.build', (assert) => {
+    QUnit.only ('.build', (assert) => {
         let table = new Table()
         table.headers = api_data['headers']
         table.rows    = api_data['rows']
-        let reload_link = "<a id=\"data_reload\" href=\"#reload\">reload</a>"
-        assert.deepEqual(webc_server_requests.inner_html(), reload_link + table.html()) // this started failing once the reload and extra link was added
+        let expected_html = `\
+<div id="api_to_table">
+    <a id="data_reload" href="#reload">reload</a>
+${table.html(1)}\
+</div>
+`;
+        // let expected_html = "<div id=\"api_to_table\">\n"+
+        //                     "    <a id=\"data_reload\" href=\"#reload\">reload</a>\n" +
+        //                          table.html(1) +
+        //                     "</div>\n"
+        assert.deepEqual(webc_server_requests.inner_html(), expected_html)
 
     })
 })

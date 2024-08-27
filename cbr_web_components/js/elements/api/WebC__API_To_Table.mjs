@@ -1,12 +1,13 @@
 import Web_Component    from "../../core/Web_Component.mjs";
 import API__Invoke      from "../../data/API__Invoke.mjs";
 import Table            from "../../core/Table.mjs";
+import A                from "../../core/A.mjs";
+import Div              from "../../core/Div.mjs";
 
 export default class WebC__API_To_Table extends Web_Component {
 
     constructor() {
         super();
-        this.table = new Table()
     }
 
     async connectedCallback() {
@@ -41,14 +42,20 @@ export default class WebC__API_To_Table extends Web_Component {
         }
         else
         {
-            let html     = "<a id='data_reload' href='#reload'>reload</a>"
+            let div      = new Div({id:'api_to_table'})
+            let a_reload = new A({id:'data_reload', value:'reload', attributes:{href:'#reload'}})
             let headers  = api_data['headers']
             let rows     = api_data['rows'   ]
             let title    = api_data['title'  ]
-            this.table.headers = headers
-            this.table.rows    = rows
-            html = this.table.html()
-            this.set_inner_html(html)
+            let table    = new Table()
+            table.headers = headers            // set table headers with data received from the API
+            table.rows    = rows               // set table rows with data received from the API
+            div.add_element(a_reload)
+            div.add_element(table)
+            this.set_inner_html(div.html())
+
+            //this.set_inner_html(html)
+
         }
         this.shadowRoot.querySelector("#data_reload" ).addEventListener('click', this.reload_data )
     }

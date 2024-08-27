@@ -29,6 +29,10 @@ export default class Tag {
         return true
     }
 
+    clear_elements() {
+        this.elements = []
+    }
+
     clone({id=null, ...kwargs}={}) {
         const prototype = Object.getPrototypeOf(this)
         const obj       = Object.create(prototype)
