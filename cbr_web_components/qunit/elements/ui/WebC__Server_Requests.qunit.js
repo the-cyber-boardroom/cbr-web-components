@@ -40,7 +40,7 @@ QUnit.module('WebC__Server_Requests', function(hooks) {
         assert.deepEqual(webc_server_requests.api_path, api_path)
     })
 
-    QUnit.only ('.build', (assert) => {
+    QUnit.test ('.build', (assert) => {
         let table = new Table()
         table.headers = api_data['headers']
         table.rows    = api_data['rows']
