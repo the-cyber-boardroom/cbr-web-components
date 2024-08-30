@@ -50,19 +50,19 @@ jobs:
     needs:
       - increment-tag
 
-    publish-to-pypi:
-      permissions:
-        id-token: write
-      name: "Publish to PYPI"
-      runs-on: ubuntu-latest
+  publish-to-pypi:
+    permissions:
+      id-token: write
+    name: "Publish to PYPI"
+    runs-on: ubuntu-latest
 
-      steps:
-        - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Git Update Current Branch
-          uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/git__update_branch@dev
+      - name: Git Update Current Branch
+        uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/git__update_branch@dev
 
-        - name: publish-to-pypi
-          uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/pypi__publish@dev
-      needs:
-        - increment-tag
+      - name: publish-to-pypi
+        uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/pypi__publish@dev
+    needs:
+      - increment-tag
