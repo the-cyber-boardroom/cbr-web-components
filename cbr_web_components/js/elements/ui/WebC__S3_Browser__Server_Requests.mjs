@@ -2,15 +2,17 @@ import Web_Component from "../../core/Web_Component.mjs";
 import API__Invoke   from "../../data/API__Invoke.mjs";
 import A             from "../../core/A.mjs";
 import B             from "../../core/B.mjs";
+import BR            from "../../core/BR.mjs";
 import Div           from "../../core/Div.mjs";
 import HR            from "../../core/HR.mjs";
 import Span          from "../../core/Span.mjs";
 import Tag           from "../../core/Tag.mjs";
+import Table from "../../core/Table.mjs";
 
 
 export default class WebC__S3_Browser__Server_Requests extends Web_Component {
 
-    static url__api_list_files   = "/api/server/requests-in-s3/list-files?parent_folder=server-requests/cbr-website-dev-local/2024-09-13/16/api/server/docs"
+    static url__api_list_files   = "/api/server/requests-in-s3/list-files?parent_folder="
     static url__api_list_folders = "/api/server/requests-in-s3/list-folders?parent_folder="
 
     constructor() {
@@ -20,7 +22,7 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
     async connectedCallback() {
         super.connectedCallback()
         this.setup()
-        await this.build()
+        await this.build(this.current_path)
 
         //setTimeout(this.simulate_click,500)
     }
@@ -34,13 +36,20 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         this.api_invoke  = new API__Invoke()
         this.api_invoke.mock_responses = JSON.parse(this.getAttribute('mock_responses'))
         this.current_paths = []
-        this.current_folder = '/'
-        this.current_path   = ''
-        this.previous_path  = ''
-
-        window.dd = this
+        // this.current_folder = '/'
+        // this.current_path   = ''
+        // this.previous_path  = ''
+        this.current_folder = 'list-folders'
+        this.current_path   = 'server-requests/cbr-website-dev-local/2024-09-15/00/api/server/requests-in-s3/list-folders'
+        this.previous_path  = 'server-requests/cbr-website-dev-local/2024-09-15/00/api/server/requests-in-s3'
     }
 
+    async api_get_files(parent_folder) {
+        const api_path = WebC__S3_Browser__Server_Requests.url__api_list_files + (parent_folder || '')
+        const method   = 'GET'
+        const data     = null
+        return await this.api_invoke.invoke_api(api_path, method, data)
+    }
     async api_get_folders(parent_folder) {
         const api_path = WebC__S3_Browser__Server_Requests.url__api_list_folders + (parent_folder || '')
         const method   = 'GET'
@@ -49,8 +58,10 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
     }
 
     async build(current_path) {
+        console.log(current_path)
         let folders  = await this.api_get_folders(current_path)
-        let raw_html = await this.html(folders)
+        let files    = await this.api_get_files  (current_path)
+        let raw_html = await this.html(folders, files)
         this.set_inner_html(raw_html)
         this.set_event_listeners()
     }
@@ -101,10 +112,11 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         }
         await this.build(target_folder)
     }
-    async html(folders) {
+    async html(folders, files) {
         let div_root        = new Div({id:'api_to_table'    })
         let separator_slash = new Span({value:'/'})
         let separator_pipe  = new Span({value:'|'})
+        let separator_br    = new BR()
         let hr_separator    = new HR()
 
         div_root.add_element(hr_separator)
@@ -117,7 +129,19 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
             let a_folder_link = new A({class:'folder-link',  value:folder, attributes:{href:folder}})
             div_root.add_elements(separator_pipe, a_folder_link)
         }
-        let div_current_paths = new Div({value:`${JSON.stringify(this.current_paths)}`})
+        div_root.add_element(hr_separator)
+        let table_rows = []
+        for (let file of files) {
+            let a_file_link = new A({class:'file-link',  value:file, attributes:{href:file}})
+            //div_root.add_elements(separator_br, a_file_link)
+            table_rows.push([a_file_link.html()])
+        }
+
+        let table    = new Table()
+            table.headers = ['files']            // set table headers with data received from the API
+            table.rows    = table_rows
+        div_root.add_element(table)
+        //let div_current_paths = new Div({value:`${JSON.stringify(this.current_paths)}`})
         //div_root.add_element(div_current_paths)
         let html = div_root.html()
         return html
