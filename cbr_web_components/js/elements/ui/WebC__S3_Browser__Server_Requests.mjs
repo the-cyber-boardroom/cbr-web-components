@@ -23,25 +23,25 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         super.connectedCallback()
         this.setup()
         await this.build(this.current_path)
-
+        this.raise_event('build-complete')
         //setTimeout(this.simulate_click,500)
     }
 
-    simulate_click = () => {
-        const folder_link = this.shadowRoot.querySelector(".folder-link");
-        folder_link.click()
-    }
+    // simulate_click = () => {
+    //     const folder_link = this.shadowRoot.querySelector(".folder-link");
+    //     folder_link.click()
+    // }
 
     setup() {
         this.api_invoke  = new API__Invoke()
         this.api_invoke.mock_responses = JSON.parse(this.getAttribute('mock_responses'))
         this.current_paths = []
-        // this.current_folder = '/'
-        // this.current_path   = ''
-        // this.previous_path  = ''
-        this.current_folder = 'list-folders'
-        this.current_path   = 'server-requests/cbr-website-dev-local/2024-09-15/00/api/server/requests-in-s3/list-folders'
-        this.previous_path  = 'server-requests/cbr-website-dev-local/2024-09-15/00/api/server/requests-in-s3'
+        this.current_folder = '/'
+        this.current_path   = ''
+        this.previous_path  = ''
+        // this.current_folder = 'list-folders'
+        // this.current_path   = 'server-requests/cbr-website-dev-local/2024-09-15/00/api/server/requests-in-s3/list-folders'
+        // this.previous_path  = 'server-requests/cbr-website-dev-local/2024-09-15/00/api/server/requests-in-s3'
     }
 
     async api_get_files(parent_folder) {
@@ -58,7 +58,6 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
     }
 
     async build(current_path) {
-        console.log(current_path)
         let folders  = await this.api_get_folders(current_path)
         let files    = await this.api_get_files  (current_path)
         let raw_html = await this.html(folders, files)

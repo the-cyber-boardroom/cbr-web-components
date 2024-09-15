@@ -1,6 +1,5 @@
 import WebC__S3_Browser__Server_Requests from "../../../js/elements/ui/WebC__S3_Browser__Server_Requests.mjs";
 import WebC__Target_Div                  from "../../../js/utils/WebC__Target_Div.mjs";
-import WebC__API_To_Json                 from "../../../js/elements/api/WebC__API_To_Json.mjs";
 import Web_Component                     from "../../../js/core/Web_Component.mjs";
 import API__Invoke                       from "../../../js/data/API__Invoke.mjs";
 
@@ -19,14 +18,16 @@ QUnit.module('WebC__S3_Browser__Server_Requests', function(hooks) {
         target_div          = WebC__Target_Div.add_to_body().build()
         let attributes      = { mock_responses: mock_responses, api_path: api_path}
         webc_s3_browser_server_requests   = await target_div.append_child(WebC__S3_Browser__Server_Requests, attributes)
-        //await webc_s3_browser_server_requests.wait_for_event('build-complete')
+        await webc_s3_browser_server_requests.wait_for_event('build-complete')
     })
 
     function api_mock_data() {
         let api__list_folders = WebC__S3_Browser__Server_Requests.url__api_list_folders
+        let api__list_files    = WebC__S3_Browser__Server_Requests.url__api_list_files
         return {
                  [api__list_folders                    ]: ["server-requests"],
                  [api__list_folders + "server-requests"]: ["qunit-server", 'another-server'],
+                 [api__list_files                      ]: ['file-a.json.gz']
                 }
     }
 
@@ -61,6 +62,21 @@ QUnit.module('WebC__S3_Browser__Server_Requests', function(hooks) {
                               '    \n' +
                               '    <span>|</span>\n' +
                               '    <a class="folder-link" href="server-requests">server-requests</a>\n' +
+                              '    <hr>\n' +
+                              '    \n' +
+                              '    <table>\n' +
+                              '        <thead>\n' +
+                              '            <tr>\n' +
+                              '                <td>files</td>\n' +
+                              '            </tr>\n' +
+                              '        </thead>\n' +
+                              '        <tbody>\n' +
+                              '            <tr>\n' +
+                              '                <td><a class="file-link" href="file-a.json.gz">file-a.json.gz</a>\n' +
+                              '</td>\n' +
+                              '            </tr>\n' +
+                              '        </tbody>\n' +
+                              '    </table>\n' +
                               '</div>\n' +
                               ''
         assert.deepEqual(webc_s3_browser_server_requests.inner_html(), expected_html)
