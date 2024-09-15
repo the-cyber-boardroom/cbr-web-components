@@ -29,6 +29,12 @@ export default class Tag {
         return true
     }
 
+    add_elements(...elements) {
+        for(let element of elements){
+            this.add_element(element)
+        }
+    }
+
     clear_elements() {
         this.elements = []
     }
