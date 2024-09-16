@@ -1,10 +1,10 @@
 import Tag  from  './Tag.mjs'
 
 export default class Table extends Tag {
-    constructor({...kwargs}={}) {
+    constructor({ headers = [], rows = [], ...kwargs } = {})  {
         super({tag:'table',...kwargs})
-        this.headers = []
-        this.rows    = []
+        this.headers = headers
+        this.rows    = rows
     }
 
     build_thead() {
@@ -51,7 +51,8 @@ export default class Table extends Tag {
 
     table_css__simple() {
         return { 'table *' : { 'padding'         : '5px'            },
-                 'table'   : { 'border'          : '0px solid black'},
+                 'table'   : { 'border'          : '0px solid black',
+                               'width'           : '100%'           },
                  'thead'   : { 'background-color': 'lightgrey'      ,
                                'font-color'      : 'black'          },
                  'td'      : { 'border'          : '1px solid black'}}

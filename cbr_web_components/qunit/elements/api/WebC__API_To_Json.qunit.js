@@ -52,8 +52,12 @@ QUnit.module('WebC__API_To_Json', function(hooks) {
     })
 
     QUnit.test('.html', (assert) => {
-        let expected_html = '<h2>/an/path/to/load</h2><pre><span class="hljs-punctuation">{</span>\n <span class="hljs-attr">"version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"v0.6.8"</span>\n<span class="hljs-punctuation">}</span></pre>'
-        assert.deepEqual(webc__api_to_json.inner_html(), expected_html)
+        let expected_html = '<h2>/an/path/to/load</h2><pre><span class="hljs-punctuation">{</span>\n    <span class="hljs-attr">"version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"v0.6.8"</span>\n<span class="hljs-punctuation">}</span></pre>'
+        let html          = webc__api_to_json.inner_html()
+        assert.deepEqual(html, expected_html)
 
     })
 })
+
+//Expected: '<h2>/an/path/to/load</h2><pre><span class="hljs-punctuation">{</span>\n <span class="hljs-attr">"version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"v0.6.8"</span>\n<span class="hljs-punctuation">}</span></pre>'
+// 	Actual: '<h2>/an/path/to/load</h2><pre><span class="hljs-punctuation">{</span>\n    <span class="hljs-attr">"version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"v0.6.8"</span>\n<span class="hljs-punctuation">}</span></pre>'

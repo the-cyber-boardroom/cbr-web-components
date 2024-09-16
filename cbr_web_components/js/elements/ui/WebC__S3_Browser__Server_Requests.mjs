@@ -1,19 +1,19 @@
-import Web_Component from "../../core/Web_Component.mjs";
-import API__Invoke   from "../../data/API__Invoke.mjs";
-import A             from "../../core/A.mjs";
-import B             from "../../core/B.mjs";
-import BR            from "../../core/BR.mjs";
-import Div           from "../../core/Div.mjs";
-import HR            from "../../core/HR.mjs";
-import Span          from "../../core/Span.mjs";
-import Tag           from "../../core/Tag.mjs";
-import Table from "../../core/Table.mjs";
+import Web_Component        from "../../core/Web_Component.mjs";
+import API__Invoke          from "../../data/API__Invoke.mjs";
+import A                    from "../../core/A.mjs";
+import B                    from "../../core/B.mjs";
+import BR                   from "../../core/BR.mjs";
+import Div                  from "../../core/Div.mjs";
+import HR                   from "../../core/HR.mjs";
+import Span                 from "../../core/Span.mjs";
+import Table                from "../../core/Table.mjs";
+import Container__Two_Cols  from "../../core/layout/Container__Two_Cols.mjs";
+import WebC__API_To_Json    from "../api/WebC__API_To_Json.mjs";
 
 
 export default class WebC__S3_Browser__Server_Requests extends Web_Component {
 
-    static url__api_list_file_contents   = "/api/server/requests-in-s3/file_contents?file_path="
-    static url__api_list_files           = "/api/server/requests-in-s3/list-files?parent_folder="
+    static url__api_list_file_contents   = "/api/server/requests-in-s3/file-contents?file_path="
     static url__api_list_files_metadata  = "/api/server/requests-in-s3/list-files-metadata?parent_folder="
     static url__api_list_folders         = "/api/server/requests-in-s3/list-folders?parent_folder="
 
@@ -27,13 +27,7 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         this.setup()
         await this.build()
         this.raise_event('build-complete')
-        //setTimeout(this.simulate_click,500)
     }
-
-    // simulate_click = () => {
-    //     const folder_link = this.shadowRoot.querySelector(".folder-link");
-    //     folder_link.click()
-    // }
 
     setup() {
         this.api_invoke  = new API__Invoke()
@@ -45,18 +39,20 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         this.target_path   = ''
 
         // this.current_folder = 'list-folders'
-        // this.current_path   = 'server-requests/cbr-website-dev-local/2024-09-16/00/api/server/requests-in-s3/list-folders'
-        // this.previous_path  = 'server-requests/cbr-website-dev-local/2024-09-16/00/api/server/requests-in-s3'
-        // this.target_path    = 'server-requests/cbr-website-dev-local/2024-09-15/23/api/server/requests-in-s3/list-folders'
+        // this.current_path   = 'server-requests/cbr-website-dev-local/2024-09-16/21/api/server/requests-in-s3/list-folders/'
+        // this.previous_path  = 'server-requests/cbr-website-dev-local/2024-09-16/21/api/server/requests-in-s3'
+        // this.target_path    = 'server-requests/cbr-website-dev-local/2024-09-16/21/api/server/requests-in-s3/list-folders/'
     }
 
-    async api_get_files(parent_folder) {
-        const api_path = WebC__S3_Browser__Server_Requests.url__api_list_files + (parent_folder || '')
-        const method   = 'GET'
-        const data     = null
-        return await this.api_invoke.invoke_api(api_path, method, data)
-    }
 
+    // async api_get_file_contents(file_path) {
+    //     const api_path = WebC__S3_Browser__Server_Requests.url__api_list_file_contents + file_path
+    //     const method = 'GET'
+    //     const data = null
+    //     return await this.api_invoke.invoke_api(api_path, method, data)
+    // }
+
+    // todo refactor all these api_get_* methods since the only thing that is really changing is the api_path
     async api_get_files_metadata(parent_folder) {
         const api_path = WebC__S3_Browser__Server_Requests.url__api_list_files_metadata + (parent_folder || '')
         const method   = 'GET'
@@ -73,8 +69,6 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
 
     async build() {
         let folders        = await this.api_get_folders(this.target_path)
-        //
-        // let files          = await this.api_get_files  (this.target_path)
         let files_metadata = await this.api_get_files_metadata  (this.target_path)
         let raw_html       = await this.html(folders, files_metadata)
         this.set_inner_html(raw_html)
@@ -113,7 +107,6 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         event.preventDefault()
         const clicked_element = event.target;                           // Get the clicked element (the anchor tag)
         const target_folder = clicked_element.attributes.href.value
-        //const folder_name = clicked_element.textContent.trim();     // Retrieve the folder path/name from the text content
         await this.add_folder(target_folder)
     }
 
@@ -142,20 +135,40 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
 
     async on_click__file_link(event) {
         event.preventDefault()
-        console.log('on on_click__file_link')
+        const clicked_element = event.target;                           // Get the clicked element (the anchor tag)
+        const file_name     = clicked_element.attributes.href.value
+        const file_path = `${this.current_path}${file_name}`
+        const api_path = WebC__S3_Browser__Server_Requests.url__api_list_file_contents + file_path
+
+        let webc_api_to_json                        = new WebC__API_To_Json().setup()
+        webc_api_to_json.api_path                   = api_path
+        webc_api_to_json.use_api_path_as_title      = false
+        webc_api_to_json.text_highlight.target_webc = this
+
+        await webc_api_to_json.text_highlight.load_css()
+        await webc_api_to_json.text_highlight.load_highlight_js()
+
+        let file_html = await webc_api_to_json.html()
+
+        let dom_file_contents = this.shadowRoot.querySelector('#file_contents')
+
+        dom_file_contents.innerHTML = file_html
     }
 
 
     async html(folders, files_metadata) {
-        console.log(files_metadata)
         let files_text          = `Files: ${files_metadata.file_count} in ${files_metadata.duration.seconds} secs`
         let div_root            = new Div({id:'api_to_table'    })
         let separator_pipe      = new Span({value:'|'})
         let hr_separator        = new HR()
+        let div_file_contents   = new Div({id:'file_contents', class: 'file_contents', value: 'file contents will go here'})
+
+        let container_two_cols = new Container__Two_Cols()
+
 
         let span_text_path      = new Span({ value: 'Path:'    })
         let span_text_folders   = new Span({ value: 'Folders:' })
-        let span_text_files     = new Span({ value: files_text })
+
         let a_reload            = new A({class:'reload-link',  value:'reload', attributes:{href: '#'}})
         let a_previous_path     = new A({class:'parent-link',  value:this.previous_path, attributes:{href:this.previous_path}})
         let b_current_folder    = new B({value: this.current_folder})
@@ -186,14 +199,15 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
             table_rows.push(table_row)
         }
 
-        let table    = new Table()
-            table.headers = table_headers
-            table.rows    = table_rows
-        div_root.add_elements(span_text_files, hr_separator, table)
+        let table_files    = new Table({headers:table_headers, rows: table_rows })
+        container_two_cols.col_1.add_element(table_files)
+        container_two_cols.col_2.add_element(div_file_contents)
 
+        div_root.add_element(container_two_cols)
+        this.add_css_rules(container_two_cols.css_rules())
         let html = div_root.html()
 
-        this.add_css_rules(table.table_css__simple())
+        this.add_css_rules(table_files.table_css__simple())
         return html
     }
 

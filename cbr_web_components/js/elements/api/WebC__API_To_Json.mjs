@@ -31,6 +31,8 @@ export default class WebC__API_To_Json extends Web_Component {
         this.api_invoke                = new API__Invoke()
         this.text_highlight            = new Text_Highlight(this)
         this.api_invoke.mock_responses = JSON.parse(this.getAttribute('mock_responses'))
+        this.use_api_path_as_title     = true
+        return this
     }
 
     async build() {
@@ -47,9 +49,13 @@ export default class WebC__API_To_Json extends Web_Component {
 
     async html () {
         let api_data = await this.invoke_api_path()
-        let data_str = `${JSON.stringify(api_data, null, ' ')}`
+        let data_str = `${JSON.stringify(api_data, null, '    ')}`
         let formatted_html = this.text_highlight.format_text(data_str, 'json')
-        let html_code = `<h2>${this.api_path}</h2><pre>${formatted_html}</pre>`
+        let html_code = ''
+        if (this.use_api_path_as_title) {
+            html_code = `<h2>${this.api_path}</h2>`
+        }
+        html_code += `<pre>${formatted_html}</pre>`
         return html_code
     }
 }

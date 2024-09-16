@@ -26,7 +26,6 @@ export default class Text_Highlight {
         try {
             if (typeof(hljs) !== 'undefined') {
                 this.js_loaded = true                           // since hljs has already been loaded by another instance (or test)
-                //console.log('hljs already loaded')
                 return
             }
             const path           = '/assets/plugins/highlight/highlight.min.js';

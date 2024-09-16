@@ -109,12 +109,6 @@ export default class WebC__Form_Input extends Web_Component {
         this.text_area_trigger_input_event()
     }
 
-    // on_invoke = (event) => {
-    //     console.log(this instanceof WebC__Form_Input)
-    //     //console.log(event)
-    //     event.callback('el 42...')
-    // }
-
     on_set_value = (event) => {
         let value = event.event_data.value
         this.text_area.value = value

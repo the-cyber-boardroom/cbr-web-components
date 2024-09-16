@@ -57,9 +57,9 @@ QUnit.module('WebC__S3_Browser__Server_Requests', function(hooks) {
     })
 
     QUnit.test ('.html', async (assert) => {
-        let element_html = webc_s3_browser_server_requests.inner_html()
+        const element_html = webc_s3_browser_server_requests.inner_html()
         //console.log(element_html)
-        assert.deepEqual(webc_s3_browser_server_requests.inner_html(), expected_html)
+        assert.deepEqual(element_html, expected_html)
     })
 
 })
@@ -79,22 +79,28 @@ const expected_html = '<div id="api_to_table">\n' +
 		  '    <span>|</span>\n' +
 		  '    <hr>\n' +
 		  '    \n' +
-		  '    <span>Files: 0 in 1 secs</span>\n' +
-		  '    <hr>\n' +
-		  '    \n' +
-		  '    <table>\n' +
-		  '        <thead>\n' +
-		  '            <tr>\n' +
-		  '                <td>req id</td>\n' +
-		  '                <td>method</td>\n' +
-		  '                <td>path</td>\n' +
-		  '                <td>duration</td>\n' +
-		  '                <td>status_code</td>\n' +
-		  '                <td>time</td>\n' +
-		  '            </tr>\n' +
-		  '        </thead>\n' +
-		  '        <tbody>\n' +
-		  '        </tbody>\n' +
-		  '    </table>\n' +
+		  '<div class="container">\n' +
+		  '    <div class="row">\n' +
+		  '        <div class="col">\n' +
+		  '            <table>\n' +
+		  '                <thead>\n' +
+		  '                    <tr>\n' +
+		  '                        <td>req id</td>\n' +
+		  '                        <td>method</td>\n' +
+		  '                        <td>path</td>\n' +
+		  '                        <td>duration</td>\n' +
+		  '                        <td>status_code</td>\n' +
+		  '                        <td>time</td>\n' +
+		  '                    </tr>\n' +
+		  '                </thead>\n' +
+		  '                <tbody>\n' +
+		  '                </tbody>\n' +
+		  '            </table>\n' +
+		  '        </div>\n' +
+		  '        <div class="col">\n' +
+		  '            <div id="file_contents" class="file_contents">file contents will go here</div>\n' +
+		  '        </div>\n' +
+		  '    </div>\n' +
+		  '</div>\n' +
 		  '</div>\n' +
 		  ''
