@@ -22,12 +22,16 @@ QUnit.module('WebC__S3_Browser__Server_Requests', function(hooks) {
     })
 
     function api_mock_data() {
-        let api__list_folders = WebC__S3_Browser__Server_Requests.url__api_list_folders
-        let api__list_files    = WebC__S3_Browser__Server_Requests.url__api_list_files
+        let api__list_folders        = WebC__S3_Browser__Server_Requests.url__api_list_folders
+        let api__list_files          = WebC__S3_Browser__Server_Requests.url__api_list_files
+        let api__list_files_metadata = WebC__S3_Browser__Server_Requests.url__api_list_files_metadata
         return {
-                 [api__list_folders                    ]: ["server-requests"],
+                 [api__list_folders                    ]: ["server-requests"               ],
                  [api__list_folders + "server-requests"]: ["qunit-server", 'another-server'],
-                 [api__list_files                      ]: ['file-a.json.gz']
+                 [api__list_files                      ]: ['file-a.json.gz'                ],
+                 [api__list_files_metadata             ]: {"file_count"    : 0              ,
+                                                           "duration"      : {"seconds": 1 },
+                                                           "files_metadata": []}
                 }
     }
 
@@ -53,34 +57,44 @@ QUnit.module('WebC__S3_Browser__Server_Requests', function(hooks) {
     })
 
     QUnit.test ('.html', async (assert) => {
-        const expected_html = '<div id="api_to_table">\n' +
-                              '    <hr>\n' +
-                              '    \n' +
-                              '    <a class="parent-link" href=""></a>\n' +
-                              '    <b>/</b>\n' +
-                              '    <hr>\n' +
-                              '    \n' +
-                              '    <span>|</span>\n' +
-                              '    <a class="folder-link" href="server-requests">server-requests</a>\n' +
-                              '    <hr>\n' +
-                              '    \n' +
-                              '    <table>\n' +
-                              '        <thead>\n' +
-                              '            <tr>\n' +
-                              '                <td>files</td>\n' +
-                              '            </tr>\n' +
-                              '        </thead>\n' +
-                              '        <tbody>\n' +
-                              '            <tr>\n' +
-                              '                <td><a class="file-link" href="file-a.json.gz">file-a.json.gz</a>\n' +
-                              '</td>\n' +
-                              '            </tr>\n' +
-                              '        </tbody>\n' +
-                              '    </table>\n' +
-                              '</div>\n' +
-                              ''
+        let element_html = webc_s3_browser_server_requests.inner_html()
+        //console.log(element_html)
         assert.deepEqual(webc_s3_browser_server_requests.inner_html(), expected_html)
     })
 
 })
 
+// todo: find a better way to test the html output
+const expected_html = '<div id="api_to_table">\n' +
+		  '    <a class="reload-link" href="#">reload</a>\n' +
+		  '    <hr>\n' +
+		  '    \n' +
+		  '    <span>Path:</span>\n' +
+		  '    <a class="parent-link" href=""></a>\n' +
+		  '    <b>/</b>\n' +
+		  '    <hr>\n' +
+		  '    \n' +
+		  '    <span>Folders:</span>\n' +
+		  '    <a class="folder-link" href="server-requests">server-requests</a>\n' +
+		  '    <span>|</span>\n' +
+		  '    <hr>\n' +
+		  '    \n' +
+		  '    <span>Files: 0 in 1 secs</span>\n' +
+		  '    <hr>\n' +
+		  '    \n' +
+		  '    <table>\n' +
+		  '        <thead>\n' +
+		  '            <tr>\n' +
+		  '                <td>req id</td>\n' +
+		  '                <td>method</td>\n' +
+		  '                <td>path</td>\n' +
+		  '                <td>duration</td>\n' +
+		  '                <td>status_code</td>\n' +
+		  '                <td>time</td>\n' +
+		  '            </tr>\n' +
+		  '        </thead>\n' +
+		  '        <tbody>\n' +
+		  '        </tbody>\n' +
+		  '    </table>\n' +
+		  '</div>\n' +
+		  ''

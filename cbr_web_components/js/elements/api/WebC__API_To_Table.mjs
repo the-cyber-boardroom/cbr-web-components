@@ -14,16 +14,7 @@ export default class WebC__API_To_Table extends Web_Component {
         super.connectedCallback()
         this.setup()
         await this.build()
-        this.add_css_rules(this.css_table())
         this.raise_event('build-complete')
-    }
-
-    css_table() {
-        return { '*'    : { 'padding'         : '5px'          },
-                 'table': { 'border'          : '0px solid black'},
-                 'thead': { 'background-color': 'lightgrey'      ,
-                            'font-color'      : 'black'          },
-                 'td'   : { 'border'          : '1px solid black'}}
     }
 
     load_attributes() {
@@ -54,7 +45,7 @@ export default class WebC__API_To_Table extends Web_Component {
             div.add_element(table)
             this.set_inner_html(div.html())
 
-            //this.set_inner_html(html)
+            this.add_css_rules(table.table_css__simple())
 
         }
         this.shadowRoot.querySelector("#data_reload" ).addEventListener('click', this.reload_data )

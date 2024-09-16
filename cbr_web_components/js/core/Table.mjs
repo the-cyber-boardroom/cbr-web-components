@@ -47,5 +47,14 @@ export default class Table extends Tag {
         this.build()        
         return super.html(depth)
     }
+
+
+    table_css__simple() {
+        return { 'table *' : { 'padding'         : '5px'            },
+                 'table'   : { 'border'          : '0px solid black'},
+                 'thead'   : { 'background-color': 'lightgrey'      ,
+                               'font-color'      : 'black'          },
+                 'td'      : { 'border'          : '1px solid black'}}
+    }
     
 }
