@@ -8,5 +8,5 @@ Repo for CBR Web Components
 
 ## Repo details
 
-![Current Release](https://img.shields.io/badge/release-v0.12.6-blue)
+![Current Release](https://img.shields.io/badge/release-v0.12.7-blue)
 
