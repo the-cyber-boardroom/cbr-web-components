@@ -35,19 +35,44 @@ export default class Container__Two_Cols extends Div {
                 "display": "flex",
                 "flex": "1",                            // Each row takes equal space within the container
                 "width": "100%",
-                "align-items": "top",                   // Vertically centers the items in the row
+                "align-items": "top",                   // Vertically aligns the items in the row
                 "justify-content": "center"             // Horizontally centers the items in the row
             },
             ".col": {
-                "flex"           : "1",                 // Each column takes equal space within the row
-                "display"        : "flex",
-                "align-items"    : "top",               // Centers content vertically
-                "justify-content": "center",            // Centers content horizontally
-                "height"         : "100%",              // Ensures columns stretch to fill the row height
-                "overflow-wrap"  : "break-word;"
-                //"width": "50%"
+                "flex": "1",                            // Each column takes equal space within the row
+                "display": "flex",
+                "align-items": "top",                   // Aligns content vertically
+                "justify-content": "center",            // Aligns content horizontally
+                "height": "100%",                       // Ensures columns stretch to fill the row height
+                "box-sizing": "border-box",
+                "padding": "10px",
+                "overflow-wrap": "break-word",
+                "word-wrap": "break-word",              // Ensures long words wrap properly
+                "white-space": "normal"                 // Allows the content to wrap naturally
+            },
+            ".col:nth-child(1)": {
+                "flex": "1",                            // First column takes equal space
+                "max-width": "50%",                     // Ensures an even 50% split for both columns
+                "overflow": "hidden"                    // Prevents overflow issues for the first column
+            },
+            ".col:nth-child(2)": {
+                "flex": "1",                            // Second column takes equal space
+                "max-width": "50%",                     // Ensures an even 50% split for both columns
+                "overflow": "auto",                     // Adds scroll when content exceeds available width
+                "white-space": "normal",                // Allows wrapping of content in the second column
+                "word-wrap": "break-word",              // Breaks long words if necessary
+                "overflow-wrap": "break-word"           // Handles overflow with long content
+            },
+            "#file_contents": {
+                "white-space": "pre-wrap",              // Ensures long content wraps within the column
+                "word-wrap": "break-word",              // Breaks long words if necessary
+                "overflow": "auto",                     // Scrolls content if it's too large
+                "max-width": "100%",                    // Makes sure the content doesn't exceed its container's width
+                "padding": "10px",
+                "border": "1px solid #ccc"
             }
         };
     }
+
 
 }

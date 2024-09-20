@@ -22,13 +22,13 @@ QUnit.module('WebC__S3_Browser__Server_Requests', function(hooks) {
     })
 
     function api_mock_data() {
+        let api__file_contents       = WebC__S3_Browser__Server_Requests.url__api_file_contents
         let api__list_folders        = WebC__S3_Browser__Server_Requests.url__api_list_folders
-        let api__list_files          = WebC__S3_Browser__Server_Requests.url__api_list_files
         let api__list_files_metadata = WebC__S3_Browser__Server_Requests.url__api_list_files_metadata
         return {
                  [api__list_folders                    ]: ["server-requests"               ],
                  [api__list_folders + "server-requests"]: ["qunit-server", 'another-server'],
-                 [api__list_files                      ]: ['file-a.json.gz'                ],
+                 [api__file_contents                   ]: ['file-a.json.gz'                ],
                  [api__list_files_metadata             ]: {"file_count"    : 0              ,
                                                            "duration"      : {"seconds": 1 },
                                                            "files_metadata": []}

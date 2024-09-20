@@ -10,12 +10,12 @@ import Table                from "../../core/Table.mjs";
 import Container__Two_Cols  from "../../core/layout/Container__Two_Cols.mjs";
 import WebC__API_To_Json    from "../api/WebC__API_To_Json.mjs";
 
+// todo refactor into base class since 90% of this class is the same as WebC__S3_Browser__Server_Requests
+export default class WebC__S3_Browser__Chat_Threads extends Web_Component {
 
-export default class WebC__S3_Browser__Server_Requests extends Web_Component {
-
-    static url__api_file_contents        = "/api/server/s3-server-requests/file-contents?file_path="
-    static url__api_list_files_metadata  = "/api/server/s3-server-requests/list-files-metadata?parent_folder="
-    static url__api_list_folders         = "/api/server/s3-server-requests/list-folders?parent_folder="
+    static url__api_list_file_contents   = "/api/server/s3-chat-threads/file-contents?file_path="
+    static url__api_list_files_metadata  = "/api/server/s3-chat-threads/list-files-metadata?parent_folder="
+    static url__api_list_folders         = "/api/server/s3-chat-threads/list-folders?parent_folder="
 
 
     constructor() {
@@ -39,21 +39,29 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         this.target_path   = ''
 
         // this.current_folder = 'list-folders'
-        // this.current_path   = 'server-requests/cbr-website-dev-local/2024-09-20/21/api/server/s3-server-requests/list-folders/'
-        // this.previous_path  = 'server-requests/cbr-website-dev-local/2024-09-20/21/api/server/s3-server-requests'
-        // this.target_path    = 'server-requests/cbr-website-dev-local/2024-09-20/21/api/server/s3-server-requests/list-folders/'
+        // this.current_path   = 'server-requests/cbr-website-dev-local/2024-09-16/21/api/server/s3-server-requests/list-folders/'
+        // this.previous_path  = 'server-requests/cbr-website-dev-local/2024-09-16/21/api/server/s3-server-requests'
+        // this.target_path    = 'server-requests/cbr-website-dev-local/2024-09-16/21/api/server/s3-server-requests/list-folders/'
     }
+
+
+    // async api_get_file_contents(file_path) {
+    //     const api_path = WebC__S3_Browser__Chat_Threads.url__api_list_file_contents + file_path
+    //     const method = 'GET'
+    //     const data = null
+    //     return await this.api_invoke.invoke_api(api_path, method, data)
+    // }
 
     // todo refactor all these api_get_* methods since the only thing that is really changing is the api_path
     async api_get_files_metadata(parent_folder) {
-        const api_path = WebC__S3_Browser__Server_Requests.url__api_list_files_metadata + (parent_folder || '')
+        const api_path = WebC__S3_Browser__Chat_Threads.url__api_list_files_metadata + (parent_folder || '')
         const method   = 'GET'
         const data     = null
         return await this.api_invoke.invoke_api(api_path, method, data)
     }
 
     async api_get_folders(parent_folder) {
-        const api_path = WebC__S3_Browser__Server_Requests.url__api_list_folders + (parent_folder || '')
+        const api_path = WebC__S3_Browser__Chat_Threads.url__api_list_folders + (parent_folder || '')
         const method   = 'GET'
         const data     = null
         return await this.api_invoke.invoke_api(api_path, method, data)
@@ -130,7 +138,7 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         const clicked_element = event.target;                           // Get the clicked element (the anchor tag)
         const file_name     = clicked_element.attributes.href.value
         const file_path = `${this.current_path}${file_name}`
-        const api_path = WebC__S3_Browser__Server_Requests.url__api_file_contents + file_path
+        const api_path = WebC__S3_Browser__Chat_Threads.url__api_list_file_contents + file_path
 
         let webc_api_to_json                        = new WebC__API_To_Json().setup()
         webc_api_to_json.api_path                   = api_path
@@ -175,19 +183,16 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         }
         div_root.add_element(hr_separator)
         let table_rows    = []
-        let table_headers = ['req id', 'method', 'path','duration', 'status_code','time']
+        let table_headers = ['req id', 'request_id', 'request_type']
 
         for (let file_metadata of files_metadata.files_metadata) {
             const metadata      = file_metadata.metadata
             let file_name       = file_metadata.file_name
-            let file_name_short = file_name.substring(0,5)
-            let a_file     = new A({class:'file-link',  value:file_name_short, attributes:{href:file_name}})
-            const table_row = [a_file.html(),
-                               metadata.method       ,
-                               metadata.request_path ,
-                               metadata.duration     ,
-                               metadata.status_code  ,
-                               metadata.time         ]
+            //let file_name_short = file_name.substring(0,5)
+            let a_file     = new A({class:'file-link',  value:file_name, attributes:{href:file_name}})
+            const table_row = [a_file.html()         ,
+                               metadata.request_id   ,
+                               metadata.request_type ]
             table_rows.push(table_row)
         }
 
@@ -204,15 +209,15 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
     }
 
     remove_last_path_element(path) {
-        let pathElements = path.split('/').filter(element => element !== '');           // Split the path into elements and filter out empty strings
-        pathElements.pop();                                                             // Remove the last element from the array
-        return pathElements.join('/') + '/';                                            // Join the remaining elements back into a string with '/' and add a trailing '/'
+        let pathElements = path.split('/').filter(element => element !== '');   // Split the path into elements and filter out empty strings
+        pathElements.pop();                                                     // Remove the last element from the array
+        return pathElements.join('/') + '/';                                    // Join the remaining elements back into a string with '/' and add a trailing '/'
     }
     get_last_path_element(path) {
-        let pathElements = path.split('/').filter(element => element !== '');           // Split the path into elements and filter out empty strings
-        return pathElements.pop() || '';                                                // Get the last element from the array or return an empty string if the array is empty
+        let pathElements = path.split('/').filter(element => element !== '');       // Split the path into elements and filter out empty strings
+        return pathElements.pop() || ''; // Get the last element from the array or return an empty string if the array is empty
     }
 }
 
 
-WebC__S3_Browser__Server_Requests.define()
+WebC__S3_Browser__Chat_Threads.define()
