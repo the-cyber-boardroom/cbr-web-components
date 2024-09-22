@@ -97,6 +97,7 @@ QUnit.module('WebC__Chat_Bot', function(hooks) {
         const expected_html_code =
 `<div class="chatbot-ui">
     <div class="chat-header">ChatBot</div>
+    <div id="chat_ids" class="chat-ids">...</div>
     <webc-chat-messages id=\"chat_messages\" class=\"chat-messages\" channel show_sent_messages=\"true\" edit_mode=\"true\">
     </webc-chat-messages>
     <webc-chat-input id="chat_input" channel>
@@ -117,6 +118,8 @@ QUnit.module('WebC__Chat_Bot', function(hooks) {
 
         const expected_css__webc_chat_bot =  { '*'                 : '* { font-family: Verdana; }',
                                                 '.chatbot-ui'      : '.chatbot-ui { display: flex; flex: 1 1 0%; flex-direction: column; max-width: 100%; height: 100%; background-color: rgb(255, 255, 255); border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px; overflow: hidden; }',
+                                                '.chat-ids'        : '.chat-ids { background-color: black; color: white; padding: 10px; }'  ,
+	                                            '.chat-ids a'      : '.chat-ids a { color: white; }'                                        ,
                                                 '.chat-header'     : '.chat-header { background-color: rgb(90, 74, 209); color: rgb(255, 255, 255); padding: 10px; text-align: center; font-size: 1.2em; }',
                                                 '.chat-messages'   : '.chat-messages { display: flex; flex-direction: column; flex-grow: 1; padding: 10px; overflow-y: auto; }',
                                                 '.chat-input'      : '.chat-input { padding: 10px; background: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.1) 0px -2px 10px; }',

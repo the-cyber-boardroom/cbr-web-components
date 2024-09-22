@@ -131,6 +131,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
     }
 
     raise_event_for__chat_ids(headers) {
+        if (!headers) { return }
         const cbr_chat_id        = headers.get('cbr__chat_id')
         const cbr_chat_thread_id = headers.get('cbr__chat_thread_id')
 
