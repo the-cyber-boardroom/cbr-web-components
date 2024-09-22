@@ -135,6 +135,11 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         this.stop_fetch = false
         try {
             const response = await this.fetch_request_post(this.url, data)
+            const cbr_chat_id        = response.headers.get('cbr__chat_id')
+            const cbr_chat_thread_id = response.headers.get('cbr__chat_thread_id')
+            console.log('cbr_chat_id', cbr_chat_id)
+            console.log('cbr_chat_thread_id', cbr_chat_thread_id)
+
             if (!response.ok) {                                           // todo : refator to raise event method
                 detail__stream_data.data = `HTTP error! Status: ${response.status}`
                 this.dispatchEvent(new CustomEvent('streamData', { bubbles : true,  composed: true, detail: detail__stream_data }));
