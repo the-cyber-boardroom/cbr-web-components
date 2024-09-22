@@ -180,8 +180,8 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
         for (let file_metadata of files_metadata.files_metadata) {
             const metadata      = file_metadata.metadata
             let file_name       = file_metadata.file_name
-            let file_name_short = file_name.substring(0,5)
-            let a_file     = new A({class:'file-link',  value:file_name_short, attributes:{href:file_name}})
+            //let file_name_short = file_name.substring(0,5)
+            let a_file     = new A({class:'file-link',  value:file_name, attributes:{href:file_name}})
             const table_row = [a_file.html(),
                                metadata.method       ,
                                metadata.request_path ,
