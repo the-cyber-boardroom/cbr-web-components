@@ -130,15 +130,25 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
           });
     }
 
+    raise_event_for__chat_ids(headers) {
+        const cbr_chat_id        = headers.get('cbr__chat_id')
+        const cbr_chat_thread_id = headers.get('cbr__chat_thread_id')
+
+        let detail__chat_ids = {channel            : this.channel       ,
+                                cbr_chat_id        : cbr_chat_id        ,
+                                cbr_chat_thread_id : cbr_chat_thread_id }
+
+        this.dispatchEvent(new CustomEvent('new_chat_ids', { bubbles : true,  composed: true, detail: detail__chat_ids }));
+    }
     async fetch_data_from_server(data) {            // todo refactor this method into smaller methods
         let detail__stream_data  = {'channel':this.channel, 'data': null}
         this.stop_fetch = false
         try {
             const response = await this.fetch_request_post(this.url, data)
-            const cbr_chat_id        = response.headers.get('cbr__chat_id')
-            const cbr_chat_thread_id = response.headers.get('cbr__chat_thread_id')
-            console.log('cbr_chat_id', cbr_chat_id)
-            console.log('cbr_chat_thread_id', cbr_chat_thread_id)
+
+            this.raise_event_for__chat_ids(response.headers)
+
+
 
             if (!response.ok) {                                           // todo : refator to raise event method
                 detail__stream_data.data = `HTTP error! Status: ${response.status}`
@@ -253,6 +263,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
             this.stop_fetch = true
         }
     }
+
     async on_select_model(event) {
         this.platform = event.detail?.platform
         this.provider = event.detail?.provider

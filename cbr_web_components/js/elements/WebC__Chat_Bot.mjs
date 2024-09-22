@@ -2,7 +2,11 @@ import Web_Component       from "../core/Web_Component.mjs"        ;
 import Data__Chat_Bot      from "../data/Data__Chat_Bot.mjs" ;
 import WebC__Chat_Input    from "./WebC__Chat_Input.mjs"     ;
 import WebC__Chat_Messages from "./WebC__Chat_Messages.mjs"  ;
-import Tag                 from "../core/Tag.mjs"              ;
+import A                   from "../core/A.mjs"              ;
+import B                   from "../core/B.mjs"              ;
+import Div                 from "../core/Div.mjs"            ;
+import Text                from "../core/Text.mjs"           ;
+import Tag                 from "../core/Tag.mjs"            ;
 
 export default class WebC__Chat_Bot extends Web_Component {
     constructor() {
@@ -26,6 +30,10 @@ export default class WebC__Chat_Bot extends Web_Component {
     }
 
     // properties
+
+    get chat_ids() {
+        return this.query_selector('#chat_ids')
+    }
 
     get input() {
         return this.query_selector('#chat_input').input
@@ -61,20 +69,20 @@ export default class WebC__Chat_Bot extends Web_Component {
             this.clear_messages()
         }
     }
+    handle_new_chat_ids(event_data) {
+        if (event_data?.channel === this.channel) {
+            this.html_update_chat_ids_value(event_data)
+        }
+    }
     clear_messages() {
         $(this.messages.childNodes).remove()
     }
 
     add_event_hooks() {
-        window.addEventListener('new_input_message', (e)=>{
-            this.handle_new_input_message(e.detail)
-        });
-        window.addEventListener('channel_message', (e)=>{
-            //console.log("received channel_message")
-        })
-        window.addEventListener('clear_messages', (e)=>{
-            this.handle_clear_messages(e.detail)
-        })
+        window.addEventListener('new_input_message', (e)=>{ this.handle_new_input_message(e.detail) });
+        //window.addEventListener('channel_message'  , (e)=>{ })
+        window.addEventListener('clear_messages'   , (e)=>{ this.handle_clear_messages   (e.detail) })
+        window.addEventListener('new_chat_ids'     , (e)=>{ this.handle_new_chat_ids     (e.detail) })
     }
 
     css_rules__chat_bot() {
@@ -89,6 +97,10 @@ export default class WebC__Chat_Bot extends Web_Component {
                                          "border-radius": "10px",
                                          "box-shadow": "0 0 10px rgba(0,0,0,0.1)",
                                          overflow: "hidden"},
+                    ".chat-ids"      : { backgroundColor: "black"  ,
+                                         color          : "white"  ,
+                                         padding        : "10px"   },
+                    ".chat-ids a"    : { color          : "white"   },
                     ".chat-header"   : { "background-color": "#5a4ad1",
                                          color: "#fff",
                                          padding: "10px",
@@ -121,6 +133,7 @@ export default class WebC__Chat_Bot extends Web_Component {
 
         const div_chatbot_ui     = tag.clone({tag:'div'            , class:'chatbot-ui'                           })
         const div_chat_header    = tag.clone({tag:'div'            , class:'chat-header'  , value:this.bot_name   })
+        const div_chat_ids       = new Tag  ({tag:'div'            , class:'chat-ids'     , id: 'chat_ids'        })
         const webc_chat_messages = new Tag  ({tag:tag_chat_messages, class:'chat-messages', id: chat_messages__id })
         const webc_chat_input    = new Tag  ({tag:tag_chat_input   ,                        id: chat_input__id    })
         //const div_chat_input     = tag.clone({tag:'div'            , class:'chat-input'                           })
@@ -132,6 +145,7 @@ export default class WebC__Chat_Bot extends Web_Component {
         webc_chat_messages.attributes.edit_mode          = this.edit_mode
 
         div_chatbot_ui.add(div_chat_header  )
+        div_chatbot_ui.add(div_chat_ids     )
         div_chatbot_ui.add(webc_chat_messages)
         div_chatbot_ui.add(webc_chat_input)
 
@@ -140,8 +154,28 @@ export default class WebC__Chat_Bot extends Web_Component {
 
         div_chatbot_ui  .html_config.trim_final_html_code = true
         //input_chat_input.html_config.include_end_tag    = false
+
+        div_chat_ids.value ='...'
         return div_chatbot_ui
     }
+
+    html_update_chat_ids_value(event_data) {
+        if (!event_data) {
+            return
+        }
+        const cbr_chat_id        = event_data?.cbr_chat_id          || ''
+        const cbr_chat_thread_id = event_data?.cbr_chat_thread_id   || ''
+        const link__chat         = `chat/view/${cbr_chat_id}`
+        const link__thread       = `chat/view/${cbr_chat_thread_id}`
+
+        const div_chat_ids = new Div()
+        const text_pipe     = new Text({value: '|'})
+        const a_chat_thread = new A   ({value: 'view thread', attributes: { href: link__thread, target:'_blank'}})
+        const a_chat        = new A   ({value: 'view chat'  , attributes: { href: link__chat  , target:'_blank'}})
+        div_chat_ids.add_elements(a_chat_thread,  text_pipe , a_chat)
+        this.chat_ids.innerHTML = div_chat_ids.html()
+    }
+
 
     build() {
         this.add_css_rules(this.css_rules__chat_bot())
