@@ -90,7 +90,7 @@ export default class WebC__Chat_Bot extends Web_Component {
                     ".chatbot-ui"    : { display: "flex",
                                          flex: 1,
                                          "flex-direction": "column",
-x                                         "max-width": "100%",
+                                         "max-width": "100%",
                                          //"max-height": "calc(100vh - 320px)",  // todo find a better way to do this, since this had a number of side effects (like loosing the help buttons in mobile)
                                          "height": "100%"                   , // Adjust to the height of the content-center div
                                          "background-color": "#fff",
