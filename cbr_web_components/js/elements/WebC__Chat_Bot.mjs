@@ -90,7 +90,7 @@ export default class WebC__Chat_Bot extends Web_Component {
                     ".chatbot-ui"    : { display: "flex",
                                          flex: 1,
                                          "flex-direction": "column",
-                                         "max-width": "100%",
+x                                         "max-width": "100%",
                                          //"max-height": "calc(100vh - 320px)",  // todo find a better way to do this, since this had a number of side effects (like loosing the help buttons in mobile)
                                          "height": "100%"                   , // Adjust to the height of the content-center div
                                          "background-color": "#fff",
@@ -164,15 +164,16 @@ export default class WebC__Chat_Bot extends Web_Component {
             return
         }
         const cbr_chat_id        = event_data?.cbr_chat_id          || ''
-        const cbr_chat_thread_id = event_data?.cbr_chat_thread_id   || ''
-        const link__chat         = `chat/view/${cbr_chat_id}`
-        const link__thread       = `chat/view/${cbr_chat_thread_id}`
+        //const cbr_chat_thread_id = event_data?.cbr_chat_thread_id   || ''
+        const link__chat         = `/web/chat/view/${cbr_chat_id}`
+        //const link__thread       = `chat/view/${cbr_chat_thread_id}`
 
         const div_chat_ids = new Div()
         const text_pipe     = new Text({value: '|'})
-        const a_chat_thread = new A   ({value: 'view thread', attributes: { href: link__thread, target:'_blank'}})
+        //const a_chat_thread = new A   ({value: 'view thread', attributes: { href: link__thread, target:'_blank'}})
         const a_chat        = new A   ({value: 'view chat'  , attributes: { href: link__chat  , target:'_blank'}})
-        div_chat_ids.add_elements(a_chat_thread,  text_pipe , a_chat)
+        //div_chat_ids.add_elements(a_chat_thread,  text_pipe , a_chat)
+        div_chat_ids.add_elements( a_chat)
         this.chat_ids.innerHTML = div_chat_ids.html()
     }
 
