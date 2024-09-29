@@ -13,10 +13,6 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
     static class__markdown_description                 = 'markdown_description'
     static on_error_return_value                       = { html:'(error loading markdown content)', metadata:{}}
 
-    constructor() {
-        super();
-    }
-
     // base class methods overrides
     async connectedCallback() {
         super.connectedCallback()
