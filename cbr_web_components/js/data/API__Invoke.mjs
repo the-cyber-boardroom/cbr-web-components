@@ -2,29 +2,11 @@
 
 export default class API__Invoke {
     constructor(channel) {
-        //this.events_utils   = new Events__Utils()
-        this.channel        = channel || this.random_id('api_invoke_')
-        this.mock_responses = false
-        //this.connect_event_listeners()
+        this.channel               = channel || this.random_id('api_invoke_')
+        this.mock_responses        = false
+        this.on_error_return_value = null
     }
 
-    // connect_event_listeners() {
-    //     this.add_event_listener('api_invoke', this.channel, this.on_api_invoke)
-    // }
-    //
-    // add_event_listener(event_name, channel, callback) {
-    //     this.events_utils.events_receive.add_event_listener(event_name, channel, callback)
-    // }
-
-    // on_api_invoke = (event) => {
-    //     let event_data = event.event_data;
-    //     let callback   = event.callback;
-    //
-    //     this.invoke_api(event_data.path, event_data.method, event_data.data)                  // Invoke the API asynchronously
-    //         .then (response => { callback( response               ); })                      // Call the callback with the response if the API call is successful
-    //         .catch(error    => { callback({ error: error.message }); });                     // Handle any errors that occurred during the API call
-    //
-    // }
 
     // Method to invoke the API asynchronously using fetch
     async invoke_api(api_path, method = 'GET', data = null) {
@@ -47,13 +29,16 @@ export default class API__Invoke {
             const response = await fetch(url, options);
 
             if (!response.ok) {
+                if (this.on_error_return_value) {
+                    return this.on_error_return_value
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const jsonResponse = await response.json();
             return jsonResponse
         } catch (error) {
-            console.error('Error invoking API:', error);
+            console.error('Error invoking API:', error, api_path);
             throw error;
         }
     }

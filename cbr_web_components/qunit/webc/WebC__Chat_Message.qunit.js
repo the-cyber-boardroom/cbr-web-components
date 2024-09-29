@@ -18,17 +18,17 @@ QUnit.module('WebC__Chat_Message', function(hooks) {
     QUnit.test('.add_message_sent, add_message_received', (assert) =>  {
         const div_setup = {top: "200px",width:"100px"}
         const target_div = WebC__Target_Div.add_to_body().build(div_setup)
-        assert.propEqual(target_div.css_rules(), { ".target_div": { border         : "3px solid #724ae8",
-                                                                   bottom         : "10px"             ,
-                                                                   left           : null               ,
-                                                                   overflow       : "auto"             ,
-                                                                   position       : "fixed"            ,
-                                                                   right          : "10px"             ,
-                                                                   top            : "10px"             ,
-                                                                   height         : null               ,
-                                                                   width          : '70%'              ,
-                                                                   zIndex         : "1000"             ,
-                                                                   backgroundColor: "white"            }})
+        assert.deepEqual(target_div.css_rules(), { ".target_div": { border         : "3px solid #724ae8",
+                                                                    bottom         : "10px"             ,
+                                                                    left           : null               ,
+                                                                    overflow       : "auto"             ,
+                                                                    position       : "fixed"            ,
+                                                                    right          : "10px"             ,
+                                                                    top            : "10px"             ,
+                                                                    height         : null               ,
+                                                                    width          : '70%'              ,
+                                                                    zIndex         : "1000"             ,
+                                                                    backgroundColor: "white"            }})
         const chat_messages = WebC__Chat_Messages.create()
         const message_1     = 'This is \nsent'
         const message_2     = 'this is <br>received...123'
