@@ -4,10 +4,9 @@ import Div           from "../../core/Div.mjs";
 
 export default class WebC__API_Markdown_To_Html extends Web_Component {
 
-    static url__api_markdown_content = '/markdown/static_content/content-file?path='
-    static url__api_markdown_to_html = '/markdown/render/markdown-to-html'
-    static class_markdown_content    = 'markdown_content'
-    static on_error_return_value     = `(error loading markdown content)`
+    static url__api_markdown_file_to_html_and_metadata = '/markdown/render/markdown_file_to_html_and_metadata?path='
+    static class_markdown_content                      = 'markdown_content'
+    static on_error_return_value                       = { html:'(error loading markdown content)', metadata:{}}
 
     constructor() {
         super();
@@ -24,7 +23,7 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
 
     load_attributes() {
         super.load_attributes()
-        this.content_path  = this.getAttribute('content_path') || WebC__API_Markdown_To_Html.path__test_page
+        this.content_path  = this.getAttribute('content_path')
     }
 
     // class methods
@@ -45,28 +44,28 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
 
     }
 
-    async load_html_content() {
-        const method           = 'POST'
-        const data             = {'text': this.markdown_content}
-        const target_url       = WebC__API_Markdown_To_Html.url__api_markdown_to_html
-        this.markdown_html     = await this.api_invoke.invoke_api(target_url, method, data)
+    async load_html_content_and_metadata() {
+        const method           = 'get'
+        const target_url       = WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + this.content_path
+        const html_and_metadata = await this.api_invoke.invoke_api(target_url, method)
+        this.markdown_html     = html_and_metadata.html
+        this.markdown_metadata = html_and_metadata.metadata
     }
 
-    async load_markdown_content() {
-        this.api_invoke.on_error_return_value = WebC__API_Markdown_To_Html.on_error_return_value
-        const method           = 'GET'
-        const target_url       = WebC__API_Markdown_To_Html.url__api_markdown_content + this.content_path
-        this.markdown_content  = await this.api_invoke.invoke_api(target_url, method)
-    }
+    // async load_markdown_content() {
+    //     this.api_invoke.on_error_return_value = WebC__API_Markdown_To_Html.on_error_return_value
+    //     const method           = 'GET'
+    //     const target_url       = WebC__API_Markdown_To_Html.url__api_markdown_content + this.content_path
+    //     this.markdown_content  = await this.api_invoke.invoke_api(target_url, method)
+    // }
 
 
     async setup() {
-        this.markdown_content = null
-        this.markdown_html    = null
+        this.markdown_metadata         = null
+        this.markdown_html             = null
         this.api_invoke                = new API__Invoke()
         this.api_invoke.mock_responses = JSON.parse(this.getAttribute('mock_responses'))
-        await this.load_markdown_content()
-        await this.load_html_content()
+        await this.load_html_content_and_metadata()
     }
 
 

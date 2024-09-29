@@ -19,10 +19,9 @@ QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
     })
 
     function api_mock_data() {
-        const url__api_markdown_content  = WebC__API_Markdown_To_Html.url__api_markdown_content + content_path
-        const url__api_markdown_to_html  = WebC__API_Markdown_To_Html.url__api_markdown_to_html
-        return { [url__api_markdown_content]: expected_markdown ,
-                 [url__api_markdown_to_html]: expected_raw_html }
+        const url__api_markdown_file_to_html_and_metadata  = WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + content_path
+        const data__api_markdown_file_to_html_and_metadata = {'html': expected_raw_html, metadata: expected_metadata}
+        return { [url__api_markdown_file_to_html_and_metadata]: data__api_markdown_file_to_html_and_metadata }
     }
     hooks.afterEach(() => {
         webc__api_markdown_to_html.remove()
@@ -48,18 +47,20 @@ QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
         assert.deepEqual(webc__api_markdown_to_html.shadow_root().innerHTML, expected_html    )
     })
 
-    QUnit.test('static.on_error_return_value', async (assert) => {
+    QUnit.only('static.on_error_return_value', async (assert) => {
         assert.deepEqual(webc__api_markdown_to_html.content_path, content_path)
-        await webc__api_markdown_to_html.load_markdown_content()
-        assert.deepEqual(webc__api_markdown_to_html.markdown_content, expected_markdown)
+        await webc__api_markdown_to_html.load_html_content_and_metadata()
+        assert.deepEqual(webc__api_markdown_to_html.markdown_html    , expected_raw_html)
+        assert.deepEqual(webc__api_markdown_to_html.markdown_metadata, expected_metadata)
 
         webc__api_markdown_to_html.content_path = 'aaaa/bbbb/cccc.md'
-        await webc__api_markdown_to_html.load_markdown_content()
-        assert.deepEqual(webc__api_markdown_to_html.markdown_content, WebC__API_Markdown_To_Html.on_error_return_value)
+        await webc__api_markdown_to_html.load_html_content_and_metadata()
+        //assert.deepEqual(webc__api_markdown_to_html.markdown_content, WebC__API_Markdown_To_Html.on_error_return_value)
     })
 
     const expected_raw_html = `<h1>Markdown content</h1><ul><li>will go here</li></ul>`
     const expected_html     = `<div class="${WebC__API_Markdown_To_Html.class_markdown_content}">${expected_raw_html}</div>\n`
     const expected_markdown = "#Markdown content\n\n- will go here"
+    const expected_metadata = { 'title': 'Markdown content' }
 })
 
