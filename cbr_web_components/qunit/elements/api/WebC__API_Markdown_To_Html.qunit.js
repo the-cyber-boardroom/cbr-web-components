@@ -42,12 +42,11 @@ QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
     })
 
     QUnit.test('.build', (assert) => {
-        assert.deepEqual(webc__api_markdown_to_html.markdown_content       , expected_markdown)
         assert.deepEqual(webc__api_markdown_to_html.markdown_html          , expected_raw_html    )
         assert.deepEqual(webc__api_markdown_to_html.shadow_root().innerHTML, expected_html    )
     })
 
-    QUnit.only('static.on_error_return_value', async (assert) => {
+    QUnit.test('static.on_error_return_value', async (assert) => {
         assert.deepEqual(webc__api_markdown_to_html.content_path, content_path)
         await webc__api_markdown_to_html.load_html_content_and_metadata()
         assert.deepEqual(webc__api_markdown_to_html.markdown_html    , expected_raw_html)
@@ -55,12 +54,21 @@ QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
 
         webc__api_markdown_to_html.content_path = 'aaaa/bbbb/cccc.md'
         await webc__api_markdown_to_html.load_html_content_and_metadata()
-        //assert.deepEqual(webc__api_markdown_to_html.markdown_content, WebC__API_Markdown_To_Html.on_error_return_value)
+        assert.deepEqual(webc__api_markdown_to_html.markdown_html    , WebC__API_Markdown_To_Html.on_error_return_value.html    )
+        assert.deepEqual(webc__api_markdown_to_html.markdown_metadata, WebC__API_Markdown_To_Html.on_error_return_value.metadata)
     })
-
     const expected_raw_html = `<h1>Markdown content</h1><ul><li>will go here</li></ul>`
-    const expected_html     = `<div class="${WebC__API_Markdown_To_Html.class_markdown_content}">${expected_raw_html}</div>\n`
-    const expected_markdown = "#Markdown content\n\n- will go here"
-    const expected_metadata = { 'title': 'Markdown content' }
+    const expected_metadata = { 'title': 'Markdown content' , 'sub_title': 'will go here', 'description': 'an description' , 'error': 'an error'}
+    const expected_html = `\
+<div class="markdown_section">
+    <div class="markdown_metadata">
+        <div class="markdown_error">an error</div>
+        <div class="markdown_title">Markdown content</div>
+        <div class="markdown_sub_title">will go here</div>
+        <div class="markdown_description">an description</div>
+    </div>
+    <div class="markdown_html"><h1>Markdown content</h1><ul><li>will go here</li></ul></div>
+</div>
+`
 })
 
