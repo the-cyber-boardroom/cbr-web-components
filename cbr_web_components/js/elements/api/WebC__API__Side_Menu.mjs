@@ -73,17 +73,14 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
 
     css_rules() {
         return {
-            [`.${WebC__API__Side_Menu.class__side_menu_section}`]: {
-                'width': '220px', // Adjusted width
-                'padding': '15px 10px',
-                'background-color': 'red' ,
-                'border-right': '1px solid #ddd',
-                'height': '100vh',
+            [`.${WebC__API__Side_Menu.class__side_menu}`]: {
+                'width'             : '210px'           ,
+                //'height'            : '100vh',
             },
             [`.${WebC__API__Side_Menu.class__side_menu_item}`]: {
                 'display'        : 'flex',
                 'align-items'    : 'center',
-                'padding'        : '8px 0px 8px 15px',
+                'padding'        : '8px 0px 8px 5px',
                 'margin'         : '0px 15px',
                 'cursor'         : 'pointer',
                 'border-radius'  : '4px',
@@ -91,7 +88,7 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
             [`.${WebC__API__Side_Menu.class__side_menu_item}_active`]: {
                 'display'         : 'flex',
                 'align-items'     : 'center',
-                'padding'         : '4px 0px 4px 15px',
+                'padding'         : '4px 0px 4px 5px',
                 'margin'          : '0px 15px',
                 'cursor'          : 'pointer',
                 'border-radius'   : '5px',
