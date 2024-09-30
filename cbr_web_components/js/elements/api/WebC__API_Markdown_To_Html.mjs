@@ -1,6 +1,7 @@
 import Web_Component from "../../core/Web_Component.mjs";
 import API__Invoke   from "../../data/API__Invoke.mjs";
 import Div           from "../../core/Div.mjs";
+import Load_Libraries__CSS from "../../utils/Load_Libraries__CSS.mjs";
 
 export default class WebC__API_Markdown_To_Html extends Web_Component {
     static url__api_markdown_file_to_html_and_metadata = '/markdown/render/markdown-file-to-html-and-metadata?path='
@@ -20,7 +21,6 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
         await this.build()
         this.add_css_rules(this.css_rules())
         this.raise_event('build-complete')
-
     }
 
     load_attributes() {
@@ -93,10 +93,12 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
     }
 
     async setup() {
+        const mock_responses                  = JSON.parse(this.getAttribute('mock_responses'))
+        this.load_libraries__css              = new Load_Libraries__CSS({target:this, mock_responses:mock_responses})
         this.markdown_metadata                = null
         this.markdown_html                    = null
         this.api_invoke                       = new API__Invoke()
-        this.api_invoke.mock_responses        = JSON.parse(this.getAttribute('mock_responses'))
+        this.api_invoke.mock_responses        = mock_responses
         this.api_invoke.on_error_return_value = WebC__API_Markdown_To_Html.on_error_return_value
         await this.load_html_content_and_metadata()
     }

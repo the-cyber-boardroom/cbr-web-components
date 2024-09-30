@@ -3,7 +3,7 @@
 export default class API__Invoke {
     constructor(channel) {
         this.channel               = channel || this.random_id('api_invoke_')
-        this.mock_responses        = false
+        this.mock_responses        = null
         this.on_error_return_value = null
     }
 
