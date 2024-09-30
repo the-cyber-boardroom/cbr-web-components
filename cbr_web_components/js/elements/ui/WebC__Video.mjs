@@ -45,7 +45,7 @@ export default class WebC__Video extends Web_Component {
         return {
             [`.${WebC__Video.class__video_section}`] : { 'display'          : 'block'             ,
                                                          'text-align'       : 'center'            ,
-                                                         'background-color' : '#f9f9f9'           ,
+                                                         'background-color' : '#fff'           ,
                                                          'border'           : '1px solid #ddd'    ,
                                                          'padding'          : '10px'              ,
                                                          'border-radius'    : '8px'               },

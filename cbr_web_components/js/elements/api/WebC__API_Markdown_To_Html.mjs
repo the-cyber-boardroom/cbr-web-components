@@ -18,6 +18,7 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
         super.connectedCallback()
         await this.setup()
         await this.build()
+        this.add_css_rules(this.css_rules())
         this.raise_event('build-complete')
 
     }
@@ -57,13 +58,14 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
 
         const html         = div_markdown.html()
         this.set_inner_html(html)
-        this.add_css_rules(this.css_rules())
     }
 
     css_rules() {
         return {
-            [`.${WebC__API_Markdown_To_Html.class__markdown_section}`    ] : { 'background-color' : '#F0F0FF'           ,
+            [`.${WebC__API_Markdown_To_Html.class__markdown_section}`    ] : { 'background-color' : '#fff'           ,
                                                                                'margin'           : '10px'              ,
+                                                                               'border'           : '1px solid #ddd'      ,
+                                                                               'border-radius'    : '8px'                 ,
                                                                                'padding'          : '10px'              },
             [`.${WebC__API_Markdown_To_Html.class__markdown_title}`      ] : { 'font-size'        : '24px'              ,
                                                                                'font-weight'      : 'bold'              ,

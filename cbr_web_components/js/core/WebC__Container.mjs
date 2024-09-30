@@ -12,8 +12,8 @@ export default class WebC__Container extends Web_Component {
         }
         ::slotted(*) {
           flex: auto;
-          padding: 1px;
-          margin: 1px;
+          padding: 0px;
+          margin: 10px;
         }
       </style>
       <slot></slot>
