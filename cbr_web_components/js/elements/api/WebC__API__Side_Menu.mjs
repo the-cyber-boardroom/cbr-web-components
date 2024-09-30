@@ -141,10 +141,8 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
 
     async load_menu_data() {
         const url_data = WebC__API__Side_Menu.url__api__data_file + this.data_file
-        console.log(url_data)
         const method   = 'GET'
         this.menu_data = await this.api_invoke.invoke_api(url_data, method)
-        console.log(this.menu_data)
     }
 }
 

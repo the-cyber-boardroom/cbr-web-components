@@ -36,6 +36,8 @@ QUnit.module('WebC__API__Side_Menu', function(hooks) {
     }
 
     QUnit.test('.constructor', (assert) => {
+        const  url__api__data_file = WebC__API__Side_Menu.url__api__data_file + WebC__API__Side_Menu.data_file__default_menu
+        assert.deepEqual(url__api__data_file, '/markdown/static_content/data-file?path=en/web-pages/dev/web-components/api/side-menu/side-menu-1.toml')
         assert.deepEqual(target_div.constructor.name                  , 'WebC__Target_Div'                            )
         assert.deepEqual(WebC__API__Side_Menu.name                    , 'WebC__API__Side_Menu'                   )
         assert.deepEqual(webc__api_side_menu.data_file                , data_file                                  )

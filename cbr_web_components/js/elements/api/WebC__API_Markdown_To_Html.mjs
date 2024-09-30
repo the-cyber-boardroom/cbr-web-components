@@ -85,6 +85,7 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
     }
 
     async load_html_content_and_metadata() {
+        if (!this.content_path) { return }
         const method           = 'get'
         const target_url       = WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + this.content_path
         const html_and_metadata = await this.api_invoke.invoke_api(target_url, method)
