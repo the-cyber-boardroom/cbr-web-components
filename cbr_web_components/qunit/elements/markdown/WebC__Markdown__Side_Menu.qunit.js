@@ -35,7 +35,7 @@ QUnit.module('WebC__Markdown__Side_Menu', function(hooks) {
                  [url__css__material_design_icons]            : '.simple {css : "code"} ' }
     }
 
-    QUnit.only('.constructor', (assert) => {
+    QUnit.test('.constructor', (assert) => {
         assert.deepEqual(target_div.constructor.name                       , 'WebC__Target_Div'                            )
         assert.deepEqual(WebC__Markdown__Side_Menu.name                    , 'WebC__Markdown__Side_Menu'                   )
         assert.deepEqual(webc__markdown_side_menu.content_path             , content_path                                  )
