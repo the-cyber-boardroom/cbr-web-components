@@ -160,6 +160,35 @@ export default class Web_Component extends HTMLElement {
         return styleSheet
     }
 
+    //todo figure out what is wrong with the code below. it is almost working (to handle recursive css rules), but it adding lots of extra rules
+    //     and not really working ok with nested rules (it did worked once and I think it is really close)
+    // create_stylesheet_from_css_rules(css_rules) {
+    //     const styleSheet = new CSSStyleSheet();
+    //
+    //     const process_rules = (selector, properties) => {                               // Helper function to recursively flatten the CSS rules
+    //         Object.entries(properties).forEach(([key, value]) => {
+    //             if (typeof value === 'object') {
+    //                 process_rules(`${selector} ${key}`, value);                         // If the value is an object, it's a nested rule (e.g., '.active')
+    //             } else {
+    //                 if (!styleSheet.cssRules[selector]) {                               // Otherwise, it's a CSS property, so we apply it directly
+    //                     const css_init = `${selector} {}`;                              // Create a new empty rule
+    //                     const rules_length = styleSheet.cssRules.length;
+    //                     styleSheet.insertRule(css_init, rules_length);
+    //                 }
+    //                 const cssRule = Array.from(styleSheet.cssRules).find(rule => rule.selectorText === selector);
+    //                 cssRule.style[key] = value;
+    //             }
+    //         });
+    //     };
+    //
+    //     Object.entries(css_rules).forEach(([css_selector, css_properties]) => {     // Iterate over the top-level selectors and process each rule
+    //         process_rules(css_selector, css_properties);
+    //     });
+    //
+    //     return styleSheet;
+    // }
+
+
     inner_html() {
         return this.shadowRoot.innerHTML 
     }

@@ -6,6 +6,7 @@ import Load_Libraries__CSS from "../../utils/Load_Libraries__CSS.mjs";
 export default class WebC__Markdown__Side_Menu extends WebC__API_Markdown_To_Html {
 
     static url__markdown__side_menu = 'en/web-site/home-page/side-menu.md'
+
   // base class methods overrides
     async connectedCallback() {
         super.connectedCallback();
@@ -54,20 +55,29 @@ export default class WebC__Markdown__Side_Menu extends WebC__API_Markdown_To_Htm
     static class__side_menu_text      = 'side_menu_text';
 
     renderMenu() {
-        const menu_data = this.menu_data()
+        const menu_data     = this.menu_data()
+        const currentPath   = window.location.pathname;
         const div_side_menu = new Div({class: WebC__Markdown__Side_Menu.class__side_menu})
         for (const key in menu_data) {
             const item = menu_data[key];
             if (item.visibility !== true){
                 continue }
-            const class_icon          = `mdi me-2 ${item.icon} ${WebC__Markdown__Side_Menu.class__side_menu_icon}`
-            const div_side_menu_item  = new Div({class: WebC__Markdown__Side_Menu.class__side_menu_item })
-            const a_side_menu_link    = new A  ({class: WebC__Markdown__Side_Menu.class__side_menu_link, attributes: {href: item.href}})
+            let class_icon            = `mdi me-2 ${item.icon} ${WebC__Markdown__Side_Menu.class__side_menu_icon}`
+            let class__side_menu_item = WebC__Markdown__Side_Menu.class__side_menu_item
+            let class__side_menu_link = WebC__Markdown__Side_Menu.class__side_menu_link
+
+            if (currentPath.includes(item.href)) {
+                class__side_menu_item += '_active'
+                class__side_menu_link += '_active'              // hack to deal with current lack for support for nested css rules
+            }
+            const div_side_menu_item  = new Div({class: class__side_menu_item })
+            const a_side_menu_link    = new A  ({class: class__side_menu_link, attributes: {href: item.href}})
             const i_side_menu_icon    = new Div({class: class_icon })
             const div_side_menu_text  = new Div({class: WebC__Markdown__Side_Menu.class__side_menu_text , value: item.text })
             a_side_menu_link  .add_elements(i_side_menu_icon, div_side_menu_text)
             div_side_menu_item.add_element (a_side_menu_link                    )
             div_side_menu     .add_element (div_side_menu_item                  )
+
         }
         this.set_inner_html(div_side_menu.html())
     }
@@ -75,42 +85,74 @@ export default class WebC__Markdown__Side_Menu extends WebC__API_Markdown_To_Htm
     css_rules() {
         return {
             [`.${WebC__Markdown__Side_Menu.class__side_menu_section}`]: {
-              'width': '200px',
-              'padding': '10px',
-              'background-color': '#f8f9fa',
-              'border-right': '1px solid #ddd',
-              'height': '100vh',
+                'width': '220px', // Adjusted width
+                'padding': '15px 10px',
+                'background-color': '#f8f9fa',
+                'border-right': '1px solid #ddd',
+                'height': '100vh',
             },
             [`.${WebC__Markdown__Side_Menu.class__side_menu_item}`]: {
-              'display': 'flex',
-              'align-items': 'center',
-              'padding': '10px',
-              'margin': '5px 0',
-              'cursor': 'pointer',
-              'border-radius': '4px',
-              'transition': 'background 0.3s',
+                'display': 'flex',
+                'align-items': 'center',
+                'padding': '8px 15px',                     // Adjusted padding for better spacing
+                'margin': '5px 0',
+                'cursor': 'pointer',
+                'border-radius': '4px',
+                //'transition': 'background 0.3s, color 0.3s',
             },
-            [`.${WebC__Markdown__Side_Menu.class__side_menu_item}:hover`]: {
-              'background-color': '#e9ecef',
+            [`.${WebC__Markdown__Side_Menu.class__side_menu_item}_active`]: {
+                'display'         : 'flex',
+                'align-items'     : 'center',
+                'padding'         : '8px 15px',                     // Adjusted padding for better spacing
+                'margin'          : '5px 0',
+                'cursor'          : 'pointer',
+                'border-radius'   : '10px',
+                'background-color': '#26c6da',
             },
             [`.${WebC__Markdown__Side_Menu.class__side_menu_link}`]: {
-              'display': 'flex',
-              'align-items': 'center',
-              'text-decoration': 'none',
-              'color': '#343a40',
-              'width': '100%',
+                'display'        : 'flex',
+                'align-items'    : 'center',
+                'text-decoration': 'none',
+                'color'          : '#96a5ac' ,
+                'width'          : '100%',
+                // '.active' : {                                            // todo: this need fix on Web_Component.create_stylesheet_from_css_rules()
+                //     'background-color': 'red'
+                // }
             },
+            [`.${WebC__Markdown__Side_Menu.class__side_menu_link}_active`]: {       // short term hack to deal with prob with nested css rules
+                'display'         : 'flex'   ,
+                'align-items'     : 'center' ,
+                'text-decoration' : 'none'   ,
+                'color'           : '#FFFFFF',
+                'width'           : '100%'   ,
+            },
+            [`.${WebC__Markdown__Side_Menu.class__side_menu_link}:hover`]: {
+                'color': '#26c6da', // Text color changes to blue on hover
+            },
+
             [`.${WebC__Markdown__Side_Menu.class__side_menu_icon}`]: {
-              'font-size': '18px',
-              'margin-right': '10px',
+                'font-size'   : '20px', // Adjust icon size
+                'margin-right': '12px',
+                //'color'       : '#a6b7bf'
+            },
+            [`.${WebC__Markdown__Side_Menu.class__side_menu_icon} .active`]: {
+                'background-color': 'red'
             },
             [`.${WebC__Markdown__Side_Menu.class__side_menu_text}`]: {
-              'font-size': '16px',
+                'font-size'      : '16px',
+                'font-weight'    : '400',
+            },
+            [`.${WebC__Markdown__Side_Menu.class__side_menu_link} .active`]: {
+                //'color': '#26c6da', // Active link text color
+            },
+            [`.${WebC__Markdown__Side_Menu.class__side_menu_item} .active`]: {
+                //'background-color': '#e3f2fd', // Light blue background for active item
             }
         };
     }
 
 
+    //todo: replace this with dynamic data
   menu_data() {
       return {
           'home'              : { 'href': 'home'                         , 'icon': 'mdi-home'                  , 'text': 'Home'                , 'logged_in': false , 'visibility': true                                                                    },
