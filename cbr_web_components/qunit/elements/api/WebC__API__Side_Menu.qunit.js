@@ -18,7 +18,7 @@ QUnit.module('WebC__API__Side_Menu', function(hooks) {
         data_file                = WebC__API__Side_Menu.data_file__default_menu
         target_div               = WebC__Target_Div.add_to_body()
         mock_responses           = JSON.stringify(api_mock_data())
-        let attributes           = { data_file: data_file, mock_responses: mock_responses, api_path: api_path }
+        let attributes           = { ['data-file']: data_file, mock_responses: mock_responses, api_path: api_path }
         webc__api_side_menu = await target_div.append_child(WebC__API__Side_Menu, attributes)
     })
 
@@ -41,7 +41,7 @@ QUnit.module('WebC__API__Side_Menu', function(hooks) {
         assert.deepEqual(target_div.constructor.name                  , 'WebC__Target_Div'                            )
         assert.deepEqual(WebC__API__Side_Menu.name                    , 'WebC__API__Side_Menu'                   )
         assert.deepEqual(webc__api_side_menu.data_file                , data_file                                  )
-        assert.deepEqual(webc__api_side_menu.getAttributeNames()      , ['data_file', 'mock_responses', 'api_path'])
+        assert.deepEqual(webc__api_side_menu.getAttributeNames()      , ['data-file', 'mock_responses', 'api_path'])
         assert.deepEqual(webc__api_side_menu.api_invoke.mock_responses, JSON.parse(mock_responses)                    )
 
         assert.ok       (WebC__API__Side_Menu.prototype          instanceof Web_Component              )

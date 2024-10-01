@@ -19,13 +19,16 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
         super.connectedCallback()
         await this.setup()
         await this.build()
-        this.add_css_rules(this.css_rules())
+        if (this.apply_css) {                                                   // todo: find a better place to put this logic
+            this.add_css_rules(this.css_rules())
+        }
         this.raise_event('build-complete')
     }
 
     load_attributes() {
         super.load_attributes()
-        this.content_path  = this.getAttribute('content_path')
+        this.content_path  = this.getAttribute('content-path')
+        this.apply_css     = this.hasAttribute('apply-css'   )
     }
 
     // class methods
@@ -61,27 +64,44 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
     }
 
     css_rules() {
-        return {
-            [`.${WebC__API_Markdown_To_Html.class__markdown_section}`    ] : { 'background-color' : '#fff'           ,
-                                                                               'margin'           : '10px'              ,
-                                                                               'border'           : '1px solid #ddd'      ,
-                                                                               'border-radius'    : '8px'                 ,
-                                                                               'padding'          : '10px'              },
-            [`.${WebC__API_Markdown_To_Html.class__markdown_title}`      ] : { 'font-size'        : '24px'              ,
-                                                                               'font-weight'      : 'bold'              ,
-                                                                               'margin-bottom'    : '8px'               },
-            [`.${WebC__API_Markdown_To_Html.class__markdown_sub_title}`  ] : { 'font-size'        : '20px'              ,
-                                                                               'font-weight'     : 'normal'             ,
-                                                                               'color'           : '#555'               ,
-                                                                               'margin-bottom'   : '6px'                },
-            [`.${WebC__API_Markdown_To_Html.class__markdown_description}`] : { 'font-size'        : '16px'              ,
-                                                                               'font-style'      : 'italic'             ,
-                                                                               'color'           : '#666'               ,
-                                                                               'margin-bottom'   : '12px'               },
-            [`.${WebC__API_Markdown_To_Html.class__markdown_error}`      ] : { 'font-size'        : '16px'              ,
-                                                                               'font-style'      : 'italic'             ,
-                                                                               'color'           : 'red'                },
-            [`.${WebC__API_Markdown_To_Html.class__markdown_html}`]        : { }};
+        return {    [`.${WebC__API_Markdown_To_Html.class__markdown_section}`    ] : { 'background-color' : '#fff'           ,
+                                                                                       'margin'           : '10px'              ,
+                                                                                       'border'           : '1px solid #ddd'      ,
+                                                                                       'border-radius'    : '8px'                 ,
+                                                                                       'padding'          : '10px'              },
+                    [`.${WebC__API_Markdown_To_Html.class__markdown_title}`      ] : { 'font-size'        : '24px'              ,
+                                                                                       'font-weight'      : 'bold'              ,
+                                                                                       'margin-bottom'    : '8px'               },
+                    [`.${WebC__API_Markdown_To_Html.class__markdown_sub_title}`  ] : { 'font-size'        : '20px'              ,
+                                                                                       'font-weight'     : 'normal'             ,
+                                                                                       'color'           : '#555'               ,
+                                                                                       'margin-bottom'   : '6px'                },
+                    [`.${WebC__API_Markdown_To_Html.class__markdown_description}`] : { 'font-size'        : '16px'              ,
+                                                                                       'font-style'      : 'italic'             ,
+                                                                                       'color'           : '#666'               ,
+                                                                                       'margin-bottom'   : '12px'               },
+                    [`.${WebC__API_Markdown_To_Html.class__markdown_error}`      ] : { 'font-size'        : '16px'              ,
+                                                                                       'font-style'      : 'italic'             ,
+                                                                                       'color'           : 'red'                },
+                    [`.${WebC__API_Markdown_To_Html.class__markdown_html}`       ] : { },
+
+                    // extra class which will need to be moved somewhere else since these are inspired by Bootstrap and will be very useful in other modules
+                    [`.alert`                                                    ] : { 'padding'         : '20px'                 ,
+                                                                                       'margin-bottom'   : '20px'                 ,
+                                                                                       'border'          : '1px solid transparent',
+                                                                                       'border-radius'   : '4px'                  ,
+                                                                                       'font-family'     : 'Arial, sans-serif'    },
+
+                    [`.alert-warning`                                            ] : { 'background-color': '#fff0d5'              ,
+                                                                                       'border-color'    : '#ffe8bf'              ,
+                                                                                       'color'           : '#664711'              },
+                    [`.alert .alert-heading`                                     ] : { 'font-size'       : '1.5em'                ,
+                                                                                       'margin-top'      : '0'                    ,
+                                                                                       'margin-bottom'   : '10px'                 ,
+                                                                                       'color'           : '#664711'              },
+                    [`.alert p`                                                  ] : { 'margin'          : '0'                    ,
+                                                                                       'font-size'       : '1em'                  },
+                }
     }
 
     async load_html_content_and_metadata() {

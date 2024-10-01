@@ -14,7 +14,7 @@ QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
         content_path               = 'en/web-pages/demos/index.md'
         target_div                 = WebC__Target_Div.add_to_body()
         mock_responses             = JSON.stringify(api_mock_data())
-        let attributes             = { content_path:content_path, mock_responses: mock_responses, api_path: api_path }
+        let attributes             = { ['content-path']:content_path, mock_responses: mock_responses, api_path: api_path }
         webc__api_markdown_to_html = await target_div.append_child(WebC__API_Markdown_To_Html, attributes)
     })
 
@@ -32,7 +32,7 @@ QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
         assert.deepEqual(target_div.constructor.name                         , 'WebC__Target_Div'                            )
         assert.deepEqual(WebC__API_Markdown_To_Html.name                     , 'WebC__API_Markdown_To_Html'                  )
         assert.deepEqual(webc__api_markdown_to_html.content_path             , content_path                                  )
-        assert.deepEqual(webc__api_markdown_to_html.getAttributeNames()      , ['content_path', 'mock_responses', 'api_path'])
+        assert.deepEqual(webc__api_markdown_to_html.getAttributeNames()      , ['content-path', 'mock_responses', 'api_path'])
         assert.deepEqual(webc__api_markdown_to_html.api_invoke.mock_responses, JSON.parse(mock_responses)                    )
 
         assert.ok       (WebC__API_Markdown_To_Html.prototype      instanceof Web_Component     )
