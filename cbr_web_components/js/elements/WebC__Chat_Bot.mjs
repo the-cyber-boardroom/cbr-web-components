@@ -163,17 +163,23 @@ export default class WebC__Chat_Bot extends Web_Component {
         if (!event_data) {
             return
         }
+
         const cbr_chat_id        = event_data?.cbr_chat_id          || ''
         //const cbr_chat_thread_id = event_data?.cbr_chat_thread_id   || ''
         const link__chat         = `/web/chat/view/${cbr_chat_id}`
+        const link__chat_pdf     = `${link__chat}/pdf`
+        const link__chat_image   = `${link__chat}/image`
+
         //const link__thread       = `chat/view/${cbr_chat_thread_id}`
 
         const div_chat_ids = new Div()
         const text_pipe     = new Text({value: '|'})
         //const a_chat_thread = new A   ({value: 'view thread', attributes: { href: link__thread, target:'_blank'}})
-        const a_chat        = new A   ({value: 'view chat'  , attributes: { href: link__chat  , target:'_blank'}})
+        const a_chat        = new A   ({value: 'share chat' , attributes: { href: link__chat       , target:'_blank'}})
+        const a_chat_pdf    = new A   ({value: 'share pdf'  , attributes: { href: link__chat_pdf   , target:'_blank'}})
+        const a_chat_image  = new A   ({value: 'share image', attributes: { href: link__chat_image , target:'_blank'}})
         //div_chat_ids.add_elements(a_chat_thread,  text_pipe , a_chat)
-        div_chat_ids.add_elements( a_chat)
+        div_chat_ids.add_elements( a_chat, text_pipe, a_chat_pdf, text_pipe, a_chat_image)
         this.chat_ids.innerHTML = div_chat_ids.html()
     }
 
