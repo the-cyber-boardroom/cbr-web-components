@@ -1,7 +1,7 @@
 export default class Tag {
-    constructor({tag: tag = 'tag', id=null, 'class': class_value=null , attributes={}, value=null}={}) {
+    constructor({tag: tag = 'tag', id=null, 'class': class_value=null , attributes={}, value=null, ...kwargs}={}) {
         this.tag            = tag                                 // needs to be first some since it is used by others (like in this.generate_random_id)
-        this.attributes     = attributes
+        this.attributes     = { ...attributes, ...kwargs };
         this.class          = class_value
         this.element_dom    = null
         this.element_parent = null

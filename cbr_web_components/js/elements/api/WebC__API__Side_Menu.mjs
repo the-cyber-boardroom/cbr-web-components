@@ -1,11 +1,19 @@
 import A                          from "../../core/A.mjs";
 import Div                        from "../../core/Div.mjs";
+import HR                         from "../../core/HR.mjs";
+import Svg__Icons                 from "../../core/Svg__Icons.mjs";
 import WebC__API_Markdown_To_Html from "./WebC__API_Markdown_To_Html.mjs";
 
 export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
 
-    static url__api__data_file     = '/markdown/static_content/data-file?path='
-    static data_file__default_menu = 'en/web-pages/dev/web-components/api/side-menu/side-menu-1.toml'
+    static url__api__data_file        = '/markdown/static_content/data-file?path='
+    static data_file__default_menu    = 'en/web-pages/dev/web-components/api/side-menu/side-menu-1.toml'
+    static class__side_menu           = 'side_menu_section';
+    static class__side_menu_item      = 'side_menu_item';
+    static class__side_menu_link      = 'side_menu_link';
+    static class__side_menu_icon      = 'side_menu_icon';
+    static class__side_menu_text      = 'side_menu_text';
+    static class__svg_style__monitor = 'svg_style__monitor';
 
   // base class methods overrides
     async connectedCallback() {
@@ -35,12 +43,6 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
         this.renderMenu();
     }
 
-    static class__side_menu           = 'side_menu_section';
-    static class__side_menu_item      = 'side_menu_item';
-    static class__side_menu_link      = 'side_menu_link';
-    static class__side_menu_icon      = 'side_menu_icon';
-    static class__side_menu_text      = 'side_menu_text';
-
     renderMenu() {
         const currentPath   = window.location.pathname;
         const div_side_menu = new Div({class: WebC__API__Side_Menu.class__side_menu})
@@ -67,16 +69,28 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
             div_side_menu_item.add_element (a_side_menu_link                    )
             div_side_menu     .add_element (div_side_menu_item                  )
 
+
+
         }
+
+        const url_screenshot = `/web/screenshot${location.pathname}`
+        const hr_separator   = new HR()
+        const a_screenshot   = new A({href:url_screenshot, target:'_blank'})
+        const svg_screenshot = new Svg__Icons().screenshot_monitor({class:'svg_style__monitor'})
+
+        a_screenshot .add_element (svg_screenshot)
+        div_side_menu.add_elements(hr_separator, a_screenshot)
+
         this.set_inner_html(div_side_menu.html())
     }
 
     css_rules() {
         return {
-            [`.${WebC__API__Side_Menu.class__side_menu}`]: {
-                'width'             : '210px'           ,
-                //'height'            : '100vh',
-            },
+            [`.${WebC__API__Side_Menu.class__svg_style__monitor}`]: { 'fill'        : '#1e88e5'  ,
+                                                                       'padding'    : '10px'     ,
+                                                                       'width'      : '50px'     ,
+                                                                       'height'     : '50px'     },
+            [`.${WebC__API__Side_Menu.class__side_menu}`         ]: { 'width'       : '210px'    },
             [`.${WebC__API__Side_Menu.class__side_menu_item}`]: {
                 'display'        : 'flex',
                 'align-items'    : 'center',

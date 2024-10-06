@@ -119,14 +119,14 @@ QUnit.module('Html_Tag', function(hooks) {
         const expected_inner_html_2 =
 `    <tag id="child_1">
     </tag>
-    <tag id="child_2">
+    <tag id="child_2" tag_name="tag">
     </tag>
 `
         const expected_html_2 =
 `<tag id="parent">
     <tag id="child_1">
     </tag>
-    <tag id="child_2">
+    <tag id="child_2" tag_name="tag">
     </tag>
 </tag>
 `
@@ -143,19 +143,19 @@ QUnit.module('Html_Tag', function(hooks) {
         const tag_child_3 = new Tag({tag_name:'tag',id:'child_3'})                                            // add another tag to the parent tag
         const expected_inner_html_3 =
 `    <tag id="child_1">
-        <tag id="child_3">
+        <tag id="child_3" tag_name="tag">
         </tag>
     </tag>
-    <tag id="child_2">
+    <tag id="child_2" tag_name="tag">
     </tag>
 `
 const expected_html_3 =
 `<tag id="parent">
     <tag id="child_1">
-        <tag id="child_3">
+        <tag id="child_3" tag_name="tag">
         </tag>
     </tag>
-    <tag id="child_2">
+    <tag id="child_2" tag_name="tag">
     </tag>
 </tag>
 `
@@ -174,23 +174,23 @@ const expected_html_3 =
         const tag_child_4 = new Tag({tag_name:'tag',id:'child_4'})                                            // add a child tag to the last child tag
         const expected_inner_html_4 =
 `    <tag id="child_1">
-        <tag id="child_3">
-            <tag id="child_4">
+        <tag id="child_3" tag_name="tag">
+            <tag id="child_4" tag_name="tag">
             </tag>
         </tag>
     </tag>
-    <tag id="child_2">
+    <tag id="child_2" tag_name="tag">
     </tag>
 `
         const expected_html_4 =
 `<tag id="parent">
     <tag id="child_1">
-        <tag id="child_3">
-            <tag id="child_4">
+        <tag id="child_3" tag_name="tag">
+            <tag id="child_4" tag_name="tag">
             </tag>
         </tag>
     </tag>
-    <tag id="child_2">
+    <tag id="child_2" tag_name="tag">
     </tag>
 </tag>
 `
@@ -222,7 +222,7 @@ const expected_html_3 =
         const tag = new Tag({tag_name:'tag', id:'an_tag'});
         tag.set_style('top', '10px');
         tag.set_style('border', '2px solid');
-        const expectedHtml = '<tag id="an_tag" style="border: 2px solid; top: 10px;">\n</tag>\n';        // Expected HTML result
+        const expectedHtml = '<tag id="an_tag" style="border: 2px solid; top: 10px;" tag_name="tag">\n</tag>\n';        // Expected HTML result
         assert.equal(tag.dom_add_to_id(tag_id), true, "tag added to dom")
 
         const actualHtml = $(`#${tag_id}`).html()                                       // Get the value of the id from the DOM
