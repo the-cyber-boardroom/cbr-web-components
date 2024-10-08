@@ -17,6 +17,7 @@ export default class WebC__Form_Input extends Web_Component {
     add_event_listeners() {
         this.text_area.addEventListener                    ('input'       , this.on_input  );
         this.text_area.addEventListener                    ('keydown'     , this.on_keydown);
+        this.text_area.addEventListener                    ('paste'       , this.on_paste  );
         //this.events_utils.events_receive.add_event_listener('keydown'     , this.channel, this.keydown   );
         this.events_utils.events_receive.add_event_listener('set_value'   , this.channel, this.on_set_value   );
         this.events_utils.events_receive.add_event_listener('append_value', this.channel, this.on_append_value);
@@ -101,6 +102,10 @@ export default class WebC__Form_Input extends Web_Component {
 
     on_keydown = (keyboard_event) => {
         this.events_utils.events_dispatch.send_to_channel('keydown', this.channel, { keyboard_event: keyboard_event})
+    }
+
+    on_paste = (paste_event) => {
+        this.events_utils.events_dispatch.send_to_channel('paste', this.channel, { paste_event: paste_event})
     }
 
     on_append_value = (event) => {

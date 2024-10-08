@@ -239,12 +239,14 @@ export default class WebC__Chat_Input extends Web_Component {
         this.dispatchEvent(new CustomEvent(event_name, event_data))
     }
 
-    async process_paste(event) {
+    process_paste = async  (event) =>{
+        let paste_event = event.event_data?.paste_event
+
         let items;
 
-        if (event.clipboardData)                                           { items = event.clipboardData.items;                 }
-        else if (event.originalEvent && event.originalEvent.clipboardData) { items = event.originalEvent.clipboardData.items;   }
-        else                                                               { items = []                                         }
+        if (paste_event.clipboardData)                                                 { items = paste_event.clipboardData.items;                 }
+        else if (paste_event.originalEvent && paste_event.originalEvent.clipboardData) { items = paste_event.originalEvent.clipboardData.items;   }
+        else                                                                           { items = []                                         }
 
 
         const imageItem = Array.from(items).find(item => item.type.startsWith('image')); // Find the first image item in the paste data
