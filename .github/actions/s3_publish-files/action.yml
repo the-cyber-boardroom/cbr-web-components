@@ -5,15 +5,15 @@ runs:
   using: 'composite'
   steps:
 
-    - name: Install AWS CLI
-      shell: bash
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y awscli
-        
-    - name: Check AWS CLI Installation
-      shell: bash
-      run: aws --version
+#    - name: Install AWS CLI
+#      shell: bash
+#      run: |
+#        sudo apt-get update
+#        sudo apt-get install -y awscli
+#
+#    - name: Check AWS CLI Installation
+#      shell: bash
+#      run: aws --version
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -35,8 +35,7 @@ runs:
 
     - name: Sync files to S3
       shell: bash
-      run: |
-        shell: bash
+      run: |        
         aws s3 sync ./cbr_web_components s3://cyber-boardroom-654654216424-public/cbr-web-components/${VERSION}/ --delete
       env:
         VERSION: ${{ env.VERSION }}
