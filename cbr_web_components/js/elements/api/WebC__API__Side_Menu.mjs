@@ -7,6 +7,7 @@ import WebC__API_Markdown_To_Html from "./WebC__API_Markdown_To_Html.mjs";
 export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
 
     static url__api__data_file        = '/markdown/static_content/data-file?path='
+    //static url__api__data_file        = 'https://static.dev.aws.cyber-boardroom.com/cbr-content/latest/'          # this needs the feature for the cbr-content to be hydrated to S3 (namely the *.toml need to be .json and the .md need to be html)
     static data_file__default_menu    = 'en/web-pages/dev/web-components/api/side-menu/side-menu-1.toml'
     static class__side_menu           = 'side_menu_section';
     static class__side_menu_item      = 'side_menu_item';
