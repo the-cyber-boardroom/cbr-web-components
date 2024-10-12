@@ -1,6 +1,6 @@
 export default  class Load_Libraries__CSS {
 
-    static url__css__material_design_icons = '/assets/css/icons/material-design-iconic-font/css/materialdesignicons.min.css'
+    static url__css__material_design_icons = 'https://static.dev.aws.cyber-boardroom.com/cbr-static/latest/assets/css/icons/material-design-iconic-font/css/materialdesignicons.min.css'
 
     constructor({target, mock_responses=null}) {
         this.target          = target
