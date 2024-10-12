@@ -12,7 +12,6 @@ env:
 jobs:
 
   run-qunit-tests:
-    if: False
     name: Run QUnit tests
     runs-on: ubuntu-latest
     steps:
@@ -37,20 +36,6 @@ jobs:
           release_type: 'minor'
     needs:
       - run-qunit-tests
-
-#  trigger-deploy-community-dev:
-#    name: "Deploy Community (DEV)"
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Trigger target repository workflow
-#        run: |
-#          curl -X POST \
-#          -H "Accept: application/vnd.github.v3+json" \
-#          -H "Authorization: token ${{ secrets.GIT_HUB__ACCESS_TOKEN }}" \
-#          https://api.github.com/repos/the-cyber-boardroom/cbr-community/dispatches \
-#          -d '{"event_type":"deploy-community-dev"}'
-#    needs:
-#      - increment-tag
 
   publish-to-pypi:
     permissions:
@@ -84,6 +69,6 @@ jobs:
           S3_PUBLISH_BUCKET    : cyber-boardroom-654654216424-public
           S3_PUBLISH_FOLDER    : cbr-web-components
           PACKAGE_NAME         : cbr_web_components
-#    needs:
-#      - increment-tag
+    needs:
+      - increment-tag
 
