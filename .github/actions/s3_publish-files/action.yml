@@ -1,0 +1,32 @@
+name: 's3_publish-files'
+description: 's3_publish-files'
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id    : ${{ env.AWS_ACCESS_KEY_ID__654654216424     }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY__654654216424 }}
+        aws-region           : ${{ env.AWS_DEFAULT_REGION__654654216424    }}
+
+    - name: Git Update Current Branch
+      uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/git__update_branch@dev
+
+    - name: Set $Version from file
+      uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/git__read_version@dev
+
+
+    - name: Get the version tag
+      shell: bash
+      run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+    - name: Sync files to S3
+      shell: bash
+      run: |
+        shell: bash
+        aws s3 sync ./cbr_web_components s3://cyber-boardroom-654654216424-public/cbr-web-components/${VERSION}/ --delete
+      env:
+        VERSION: ${{ env.VERSION }}
