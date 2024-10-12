@@ -34,6 +34,6 @@ runs:
     - name: Invalidate CloudFront Cache
       shell: bash
       run: |
-            aws cloudfront create-invalidation              \  
+            aws cloudfront create-invalidation              \
                 --distribution-id ${CLOUDFRONT_DIST_ID}     \
                 --paths "/cbr-web-components/latest/*"
