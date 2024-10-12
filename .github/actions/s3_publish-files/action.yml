@@ -24,11 +24,13 @@ runs:
             aws s3 sync                                                                                       \
                 ./cbr_web_components s3://cyber-boardroom-654654216424-public/cbr-web-components/${VERSION}/  \
                 --delete                                                                                      \
+                --acl public-read                                                                             \
                 --cache-control "public, max-age=3600"
     
             aws s3 sync                                                                                       \
                 ./cbr_web_components s3://cyber-boardroom-654654216424-public/cbr-web-components/latest/      \
                 --delete                                                                                      \
+                --acl public-read                                                                             \
                 --cache-control "public, max-age=3600"
 
     - name: Invalidate CloudFront Cache
