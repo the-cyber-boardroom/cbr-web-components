@@ -5,6 +5,16 @@ runs:
   using: 'composite'
   steps:
 
+    - name: Install AWS CLI
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y awscli
+        
+    - name: Check AWS CLI Installation
+      shell: bash
+      run: aws --version
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
