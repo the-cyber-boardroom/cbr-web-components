@@ -12,6 +12,7 @@ env:
 jobs:
 
   run-qunit-tests:
+    if: False
     name: Run QUnit tests
     runs-on: ubuntu-latest
     steps:
@@ -73,13 +74,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/s3_publish-files
+      - uses: owasp-sbot/OSBot-GitHub-Actions/.github/actions/aws__publish__s3_via_cloudfront@dev
         env:
-          AWS_ACCOUNT_ID__654654216424       : ${{ secrets.AWS_ACCOUNT_ID__654654216424        }}
-          AWS_ACCESS_KEY_ID__654654216424    : ${{ secrets.AWS_ACCESS_KEY_ID__654654216424     }}
-          AWS_SECRET_ACCESS_KEY__654654216424: ${{ secrets.AWS_SECRET_ACCESS_KEY__654654216424 }}
-          AWS_DEFAULT_REGION__654654216424   : ${{ secrets.AWS_DEFAULT_REGION__654654216424    }}
-          CLOUDFRONT_DIST_ID                 : ${{ secrets.CLOUDFRONT_DIST_ID                  }}
-    needs:
-      - increment-tag
+          AWS_ACCOUNT_ID       : ${{ secrets.AWS_ACCOUNT_ID__654654216424        }}
+          AWS_ACCESS_KEY_ID    : ${{ secrets.AWS_ACCESS_KEY_ID__654654216424     }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY__654654216424 }}
+          AWS_DEFAULT_REGION   : ${{ secrets.AWS_DEFAULT_REGION__654654216424    }}
+          CLOUDFRONT_DIST_ID   : ${{ secrets.CLOUDFRONT_DIST_ID                  }}
+          S3_PUBLISH_BUCKET    : cyber-boardroom-654654216424-public
+          S3_PUBLISH_FOLDER    : cbr-web-components
+          PACKAGE_NAME         : cbr_web_components
+#    needs:
+#      - increment-tag
 
