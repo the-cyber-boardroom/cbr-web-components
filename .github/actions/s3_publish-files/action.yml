@@ -21,12 +21,12 @@ runs:
     - name: Sync files to S3
       shell: bash
       run: |               
-            aws s3 sync                                                                                       \ 
+            aws s3 sync                                                                                       \
                 ./cbr_web_components s3://cyber-boardroom-654654216424-public/cbr-web-components/${VERSION}/  \
                 --delete                                                                                      \
                 --cache-control "public, max-age=3600"
     
-            aws s3 sync                                                                                       \ 
+            aws s3 sync                                                                                       \
                 ./cbr_web_components s3://cyber-boardroom-654654216424-public/cbr-web-components/latest/      \
                 --delete                                                                                      \
                 --cache-control "public, max-age=3600"
