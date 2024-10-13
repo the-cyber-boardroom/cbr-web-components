@@ -4,6 +4,7 @@ import Div           from "../../core/Div.mjs";
 import Load_Libraries__CSS from "../../utils/Load_Libraries__CSS.mjs";
 
 export default class WebC__API_Markdown_To_Html extends Web_Component {
+    static url__cdn_markdown_file_to_html_and_metadata = 'https://static.dev.aws.cyber-boardroom.com/cbr-content/latest/'
     static url__api_markdown_file_to_html_and_metadata = '/markdown/render/markdown-file-to-html-and-metadata?path='
     static class__markdown_section                     = 'markdown_section'
     static class__markdown_html                        = 'markdown_html'
@@ -27,8 +28,9 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
 
     load_attributes() {
         super.load_attributes()
-        this.content_path  = this.getAttribute('content-path')
-        this.apply_css     = this.hasAttribute('apply-css'   )
+        this.content_path                      = this.getAttribute('content-path')
+        this.apply_css                         = this.hasAttribute('apply-css'   )
+        this.use_cdn_for_markdown_file_content = this.hasAttribute('disable-cdn' ) === false
     }
 
     // class methods
@@ -107,20 +109,29 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
     async load_html_content_and_metadata() {
         if (!this.content_path) { return }
         const method           = 'get'
-        const target_url       = WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + this.content_path
+        //const target_url       = WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + this.content_path
+        const  target_url      = this.resolve_target_url()
         const html_and_metadata = await this.api_invoke.invoke_api(target_url, method)
         this.markdown_html     = html_and_metadata.html
         this.markdown_metadata = html_and_metadata.metadata
     }
 
+    resolve_target_url() {
+        if (this.use_cdn_for_markdown_file_content) {
+            return WebC__API_Markdown_To_Html.url__cdn_markdown_file_to_html_and_metadata + this.content_path + '.json'
+        } else {
+            return WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + this.content_path
+        }
+    }
+
     async setup() {
-        const mock_responses                  = JSON.parse(this.getAttribute('mock_responses'))
-        this.load_libraries__css              = new Load_Libraries__CSS({target:this, mock_responses:mock_responses})
-        this.markdown_metadata                = null
-        this.markdown_html                    = null
-        this.api_invoke                       = new API__Invoke()
-        this.api_invoke.mock_responses        = mock_responses
-        this.api_invoke.on_error_return_value = WebC__API_Markdown_To_Html.on_error_return_value
+        const mock_responses                   = JSON.parse(this.getAttribute('mock_responses'))
+        this.load_libraries__css               = new Load_Libraries__CSS({target:this, mock_responses:mock_responses})
+        this.markdown_metadata                 = null
+        this.markdown_html                     = null
+        this.api_invoke                        = new API__Invoke()
+        this.api_invoke.mock_responses         = mock_responses
+        this.api_invoke.on_error_return_value  = WebC__API_Markdown_To_Html.on_error_return_value
         await this.load_html_content_and_metadata()
     }
 }

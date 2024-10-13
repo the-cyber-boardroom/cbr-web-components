@@ -17,8 +17,8 @@ QUnit.module('WebC__Markdown__Card', function(hooks) {
         content_path               = 'en/web-pages/demos/index.md'
         target_div                 = WebC__Target_Div.add_to_body()
         mock_responses             = JSON.stringify(api_mock_data())
-        let attributes             = { ['content-path']:content_path, mock_responses: mock_responses, api_path: api_path }
-        webc__markdown_card = await target_div.append_child(WebC__Markdown__Card, attributes)
+        let attributes             = { ['disable-cdn']:'True', ['content-path']:content_path, mock_responses: mock_responses, api_path: api_path }
+        webc__markdown_card        = await target_div.append_child(WebC__Markdown__Card, attributes)
     })
 
     hooks.afterEach(() => {
@@ -38,7 +38,7 @@ QUnit.module('WebC__Markdown__Card', function(hooks) {
         assert.deepEqual(target_div.constructor.name                  , 'WebC__Target_Div'                            )
         assert.deepEqual(WebC__Markdown__Card.name                    , 'WebC__Markdown__Card'                        )
         assert.deepEqual(webc__markdown_card.content_path             , content_path                                  )
-        assert.deepEqual(webc__markdown_card.getAttributeNames()      , ['content-path', 'mock_responses', 'api_path'])
+        assert.deepEqual(webc__markdown_card.getAttributeNames()      , ['disable-cdn', 'content-path', 'mock_responses', 'api_path'])
         assert.deepEqual(webc__markdown_card.api_invoke.mock_responses, JSON.parse(mock_responses)                    )
 
         assert.ok       (WebC__Markdown__Card.prototype      instanceof Web_Component            )
