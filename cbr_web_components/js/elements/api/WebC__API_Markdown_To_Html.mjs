@@ -4,7 +4,7 @@ import Div           from "../../core/Div.mjs";
 import Load_Libraries__CSS from "../../utils/Load_Libraries__CSS.mjs";
 
 export default class WebC__API_Markdown_To_Html extends Web_Component {
-    static url__cdn_markdown_file_to_html_and_metadata = 'https://static.dev.aws.cyber-boardroom.com/cbr-content/latest/'
+    static url__cdn_files                              = 'https://static.dev.aws.cyber-boardroom.com/cbr-content/latest/'
     static url__api_markdown_file_to_html_and_metadata = '/markdown/render/markdown-file-to-html-and-metadata?path='
     static class__markdown_section                     = 'markdown_section'
     static class__markdown_html                        = 'markdown_html'
@@ -118,7 +118,7 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
 
     resolve_target_url() {
         if (this.use_cdn_for_markdown_file_content) {
-            return WebC__API_Markdown_To_Html.url__cdn_markdown_file_to_html_and_metadata + this.content_path + '.json'
+            return WebC__API_Markdown_To_Html.url__cdn_files + this.content_path + '.json'
         } else {
             return WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + this.content_path
         }

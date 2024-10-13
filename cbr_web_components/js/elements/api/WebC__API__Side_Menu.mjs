@@ -5,9 +5,8 @@ import Svg__Icons                 from "../../core/Svg__Icons.mjs";
 import WebC__API_Markdown_To_Html from "./WebC__API_Markdown_To_Html.mjs";
 
 export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
-
+    static url__cdn_files             = 'https://static.dev.aws.cyber-boardroom.com/cbr-content/latest/'
     static url__api__data_file        = '/markdown/static_content/data-file?path='
-    //static url__api__data_file        = 'https://static.dev.aws.cyber-boardroom.com/cbr-content/latest/'          # this needs the feature for the cbr-content to be hydrated to S3 (namely the *.toml need to be .json and the .md need to be html)
     static data_file__default_menu    = 'en/web-pages/dev/web-components/api/side-menu/side-menu-1.toml'
     static class__side_menu           = 'side_menu_section';
     static class__side_menu_item      = 'side_menu_item';
@@ -23,7 +22,8 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
 
     async load_attributes() {
         super.load_attributes();
-        this.data_file = this.getAttribute('data-file') || WebC__API__Side_Menu.data_file__default_menu ;
+        this.data_file                     = this.getAttribute('data-file') || WebC__API__Side_Menu.data_file__default_menu ;
+        this.use_cdn_for_toml_file_content = this.hasAttribute('disable-cdn' ) === false
     }
 
     async setup() {
@@ -152,12 +152,20 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
     }
 
 
-    //todo: replace this with dynamic data
-
     async load_menu_data() {
-        const url_data = WebC__API__Side_Menu.url__api__data_file + this.data_file
+        //const url_data = WebC__API__Side_Menu.url__api__data_file + this.data_file
+        const url_data = this.resolve_target_url()
         const method   = 'GET'
         this.menu_data = await this.api_invoke.invoke_api(url_data, method)
+    }
+
+    // to refactor with version from WebC__API_Markdown_To_Html
+    resolve_target_url() {
+        if (this.use_cdn_for_toml_file_content) {
+            return WebC__API__Side_Menu.url__cdn_files + this.data_file + '.json'
+        } else {
+            return WebC__API__Side_Menu.url__api__data_file + this.data_file
+        }
     }
 }
 
