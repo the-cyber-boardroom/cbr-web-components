@@ -227,10 +227,9 @@ export default class WebC__Chat_Bot extends Web_Component {
     async on_save_chat_click(event, cbr_chat_id) {
         event.preventDefault()
         const url = WebC__Chat_Bot.url_current_user_add_chat_id + cbr_chat_id
-        console.log(url)
         const response = await fetch(url, { method : 'GET'});
-        if (await response.text() === 'true') {
-            console.log('chat saved')
+        const saved_chat = await response.json()
+        if (saved_chat.chat_path === cbr_chat_id) {
             this.save_chat_link.innerHTML = 'saved'
             this.save_chat_link.style.backgroundColor = 'DarkGreen'
             this.save_chat_link.style.fontWeight      = '100'
