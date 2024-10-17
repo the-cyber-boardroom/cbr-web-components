@@ -9,6 +9,9 @@ import Text                from "../core/Text.mjs"           ;
 import Tag                 from "../core/Tag.mjs"            ;
 
 export default class WebC__Chat_Bot extends Web_Component {
+
+    static url_current_user_add_chat_id = '/api/current-user/user-data/chat-add?chat_path='
+
     constructor() {
         super();
         this.target_element     = null
@@ -41,6 +44,10 @@ export default class WebC__Chat_Bot extends Web_Component {
 
     get messages() {
         return this.query_selector('#chat_messages')        //todo: refactor chat_messages
+    }
+
+    get save_chat_link() {
+        return this.query_selector('#save-chat')
     }
 
     get target_element_style() {
@@ -112,14 +119,20 @@ export default class WebC__Chat_Bot extends Web_Component {
                                          padding: "10px",
                                          "overflow-y": "auto" },
                     // todo: refactor to chat-input WebC
-                    ".chat-input"    : { padding: "10px",
-                                         background: "#fff",
-                                         "box-shadow": "0 -2px 10px rgba(0,0,0,0.1)" },
+                    ".chat-input"      : { padding: "10px",
+                                           background: "#fff",
+                                           "box-shadow": "0 -2px 10px rgba(0,0,0,0.1)" },
                     ".chat-input input": {  width: "90%",
                                             padding: "10px",
                                             "border-radius": "20px",
                                             border: "1px solid #ccc",
-                                        }};}
+                                         } ,
+                    ".save-chat:link"  : {  backgroundColor: '#007bff'  ,
+                                            color          : '#fff'     ,
+                                            padding        : '5px'      ,
+                                            borderRadius   : "10px"     ,
+                                            fontWeight     : '600'     }}
+    }
 
     div_chatbot_ui() {
 
@@ -174,13 +187,15 @@ export default class WebC__Chat_Bot extends Web_Component {
 
         const div_chat_ids = new Div()
         const text_pipe     = new Text({value: '|'})
-        //const a_chat_thread = new A   ({value: 'view thread', attributes: { href: link__thread, target:'_blank'}})
+        const a_save        = new A   ({value: 'save'       , attributes: { href: '#'              , id:'save-chat' , class:'save-chat'}})
         const a_chat        = new A   ({value: 'share chat' , attributes: { href: link__chat       , target:'_blank'}})
         const a_chat_pdf    = new A   ({value: 'share pdf'  , attributes: { href: link__chat_pdf   , target:'_blank'}})
         const a_chat_image  = new A   ({value: 'share image', attributes: { href: link__chat_image , target:'_blank'}})
-        //div_chat_ids.add_elements(a_chat_thread,  text_pipe , a_chat)
-        div_chat_ids.add_elements( a_chat, text_pipe, a_chat_pdf, text_pipe, a_chat_image)
+
+        div_chat_ids.add_elements( a_save, text_pipe, a_chat, text_pipe, a_chat_pdf, text_pipe, a_chat_image)
         this.chat_ids.innerHTML = div_chat_ids.html()
+
+        this.save_chat_link.addEventListener('click'         , async (event) => this.on_save_chat_click(event, cbr_chat_id))
     }
 
 
@@ -189,6 +204,8 @@ export default class WebC__Chat_Bot extends Web_Component {
         const html = this.div_chatbot_ui().html()
         this.set_inner_html(html)
         this.add_event_hooks()
+
+        //this.html_update_chat_ids_value({a:42})
     }
 
     hide() {
@@ -207,57 +224,25 @@ export default class WebC__Chat_Bot extends Web_Component {
         return this
     }
 
-    // todo: re-add this capability to load messages from saved data
-    //
-    // load_messages(user_messages) {
-    //     user_messages.forEach((item) => {
-    //         if (item.type === 'sent') {
-    //             this.messages__add_sent(item.message)
-    //         }
-    //         if (item.type === 'received') {
-    //             this.messages__add_received(item.message)
-    //         }
-    //     });
-    //     return this
-    // }
-    //
-    // set_user_messages(user_messages) {
-    //     //this.data_chat_bot.user_messages = user_messages            // set data_chat_bot.user_messages value
-    //     this.reset_user_messages()
-    //     this.load_messages(user_messages)                           // reload messages in UI
-    //     return this
-    // }
-    //
-    // reset_user_messages() {
-    //     this.data_chat_bot.user_messages = []
-    //     webc_chat_bot.div_chat_messages.innerHTML =''
-    //     return this
-    // }
-    // store_message(message, type) {
-    //     this.data_chat_bot.add_user_message(message, type)
-    //     return this
-    // }
-    //
-    // messages__add(template, message) {
-    //     const formatted_message = message.replace(/\n/g, '<br>');
-    //     const new_message = template.content.cloneNode(true)
-    //     new_message.querySelector('.message').innerHTML = formatted_message;
-    //     const document_fragment = this.div_chat_messages.appendChild(new_message);
-    //     this.div_chat_messages.scrollTop = this.div_chat_messages.scrollHeight;      // todo: add check if we should do this
-    //     return document_fragment
-    // }
-    //
-    // messages__add_sent (message) {
-    //     const template = this.target_element.querySelector('#template_sent') //.content.cloneNode(true);
-    //     this.messages__add(template, message)
-    //     this.data_chat_bot.add_user_message(message, 'sent')
-    // }
-    //
-    // messages__add_received (message) {
-    //     const template = this.target_element.querySelector('#template_received') //.content.cloneNode(true);
-    //     this.messages__add(template, message)
-    //     this.data_chat_bot.add_user_message(message, 'received')
-    // }
+    async on_save_chat_click(event, cbr_chat_id) {
+        event.preventDefault()
+        const url = WebC__Chat_Bot.url_current_user_add_chat_id + cbr_chat_id
+        console.log(url)
+        const response = await fetch(url, { method : 'GET'});
+        if (await response.text() === 'true') {
+            console.log('chat saved')
+            this.save_chat_link.innerHTML = 'saved'
+            this.save_chat_link.style.backgroundColor = 'DarkGreen'
+            this.save_chat_link.style.fontWeight      = '100'
+        }
+        else {
+            this.save_chat_link.style.backgroundColor = 'DarkRed'
+            this.save_chat_link.style.fontWeight      = '100'
+            this.save_chat_link.innerHTML             = 'error'
+        }
+
+
+    }
 }
 
 WebC__Chat_Bot.define()

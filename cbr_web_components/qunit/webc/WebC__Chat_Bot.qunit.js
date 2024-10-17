@@ -124,6 +124,8 @@ QUnit.module('WebC__Chat_Bot', function(hooks) {
                                                 '.chat-messages'   : '.chat-messages { display: flex; flex-direction: column; flex-grow: 1; padding: 10px; overflow-y: auto; }',
                                                 '.chat-input'      : '.chat-input { padding: 10px; background: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.1) 0px -2px 10px; }',
                                                 '.chat-input input': '.chat-input input { width: 90%; padding: 10px; border-radius: 20px; border: 1px solid rgb(204, 204, 204); }',
+                                                '.save-chat:link'  : '.save-chat:link { background-color: rgb(0, 123, 255); color: rgb(255, 255, 255); padding: 5px; border-radius: 10px; font-weight: 600; }',
+
 		                                      }
 
         assert.propEqual(target_div.all_css_rules()   , expect_css__target_div     )
