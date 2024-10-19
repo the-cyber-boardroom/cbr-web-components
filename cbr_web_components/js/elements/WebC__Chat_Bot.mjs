@@ -10,7 +10,7 @@ import Tag                 from "../core/Tag.mjs"            ;
 
 export default class WebC__Chat_Bot extends Web_Component {
 
-    static url_current_user_add_chat_id = '/api/current-user/user-data/chat-add?chat_path='
+    static url_current_user_add_chat_id = '/api/user-data/chats/chat-add?chat_path='
 
     constructor() {
         super();
