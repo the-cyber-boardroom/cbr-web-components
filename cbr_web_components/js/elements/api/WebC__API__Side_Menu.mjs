@@ -4,6 +4,7 @@ import HR                         from "../../core/HR.mjs";
 import Svg__Icons                 from "../../core/Svg__Icons.mjs";
 import WebC__API_Markdown_To_Html from "./WebC__API_Markdown_To_Html.mjs";
 
+import CBR_User_Data              from "../../cbr/CBR_User_Data.mjs";
 export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
     static url__cdn_files             = 'https://static.dev.aws.cyber-boardroom.com/cbr-content/latest/'
     static url__api__data_file        = '/markdown/static_content/data-file?path='
@@ -18,6 +19,8 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
   // base class methods overrides
     async connectedCallback() {
         super.connectedCallback();
+
+        window.cbr_user_data = new CBR_User_Data()
     }
 
     async load_attributes() {
