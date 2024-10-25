@@ -7,16 +7,12 @@ export default class API__Invoke {
         this.on_error_return_value = null
     }
 
-
     // Method to invoke the API asynchronously using fetch
-    async invoke_api(api_path, method = 'GET', data = null) {
-        const url = `${api_path}`;
-        const options = {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        };
+    async invoke_api(api_path, method = 'GET', data = null, auth_header = null) {
+        const url     = `${api_path}`;
+        const options = { method,  headers: { 'Content-Type': 'application/json' }};
+
+        if (auth_header) { options.headers['Authorization'] = auth_header; }
 
         if (data && (method === 'POST' || method === 'PUT')) {
             options.body = JSON.stringify(data);
