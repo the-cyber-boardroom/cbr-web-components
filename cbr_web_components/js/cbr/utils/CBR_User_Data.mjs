@@ -5,7 +5,7 @@ export default class CBR_User_Data {
     target_server             = ''
     url__api__user_profile    = '/api/user-data/user/user-profile'
     url__api__current_session = '/api/user-session/session/current-session'
-    auth_header               = null
+    auth_header               = 'null'
 
     constructor() {
         this.setup()

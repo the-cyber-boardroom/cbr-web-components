@@ -9,6 +9,10 @@ export default class API__Invoke {
 
     // Method to invoke the API asynchronously using fetch
     async invoke_api(api_path, method = 'GET', data = null, auth_header = null) {
+
+        //console.log(api_path)
+        //console.log(auth_header)
+
         const url     = `${api_path}`;
         const options = { method,  headers: { 'Content-Type': 'application/json' }};
 
