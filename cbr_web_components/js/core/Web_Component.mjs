@@ -56,7 +56,7 @@ export default class Web_Component extends HTMLElement {
         return false;
     }
 
-    // instance - connection methods
+    // instance - connection and usually overridden methods
 
     add_event_listeners__web_component() {                              // todo: see if there is a better way to do this (ie. invoke the add_event_listeners() method from this
         this.events_utils.events_receive.add_event_listener('invoke' , this.channel, this.on_invoke      );
@@ -66,6 +66,7 @@ export default class Web_Component extends HTMLElement {
         this.load_attributes()
         this.channels.push(this.channel)
         this.add_event_listeners__web_component()
+        this.render()
     }
 
     disconnectedCallback() {
@@ -76,6 +77,10 @@ export default class Web_Component extends HTMLElement {
         this.channel  = this.getAttribute('channel') || this.random_id('webc_channel_')
         this.webc_id  = this.getAttribute('webc_id') || this.random_id('webc_id_')
     }
+    render () {                         // override this method in the child class to render the component (called from connectedCallback)
+    }
+
+    // other methods
     remove_event_listeners__webc_component() {
         this.events_utils.events_receive.remove_all_event_listeners()
     }
