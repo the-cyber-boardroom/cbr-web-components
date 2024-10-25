@@ -24,9 +24,11 @@ export default class WebC__CSS__Demo__Forms extends Web_Component {
         let div_root = new Div({id: 'forms-demo'})
 
         // Header elements
+        let header_text = 'Forms Demo'
+        if (this.apply_css) { header_text += ' (with CSS)' }
         let header = [
             new HR(),
-            new Text({value: 'Forms Demo'}),
+            new Text({value: header_text}),
             new HR()
         ]
 
@@ -206,41 +208,20 @@ export default class WebC__CSS__Demo__Forms extends Web_Component {
 
         // File Inputs Section
         let h_files = new H({level: 2, value: 'File Inputs'})
-        let files = [
-            new Div({class: 'field-group'}).add_elements(
-                new Label({class: 'label', value: 'Default file input'}),
-                new Input({
-                    type: 'file',
-                    class: 'input-file'
-                })
-            ),
-            new Div({class: 'field-group'}).add_elements(
-                new Label({class: 'label', value: 'Multiple files input'}),
-                new Input({ type: 'file',   class: 'input-file', attributes: {multiple: true} })
-            ),
-            new Div({class: 'field-group'}).add_elements(
-                new Label({class: 'label', value: 'Disabled file input'}),
-                new Input({
-                    type: 'file',
-                    class: 'input-file',
-                    attributes: {disabled: true}
-                })
-            ),
-            new Div({class: 'field-group'}).add_elements(
-                new Label({class: 'label', value: 'Small file input'}),
-                new Input({
-                    type: 'file',
-                    class: 'input-file input-small'
-                })
-            ),
-            new Div({class: 'field-group'}).add_elements(
-                new Label({class: 'label', value: 'Large file input'}),
-                new Input({
-                    type: 'file',
-                    class: 'input-file input-large'
-                })
-            )
-        ]
+        let files   = [ new Div({class: 'field-group'}).add_elements(new Label({ class: 'label', value: 'Default file input'                       }),
+                                                                     new Input({ type : 'file' ,  class: 'input-file'                              })),
+
+                        new Div({class: 'field-group'}).add_elements(new Label({ class: 'label', value: 'Multiple files input'                     }),
+                                                                     new Input({ type : 'file' , class: 'input-file', attributes: {multiple: true} })),
+
+                        new Div({class: 'field-group'}).add_elements(new Label({ class: 'label', value: 'Disabled file input'                      }),
+                                                                     new Input({ type : 'file' , class: 'input-file', attributes: {disabled: true} }) ),
+
+                        new Div({class: 'field-group'}).add_elements(new Label({ class: 'label', value: 'Small file input'                         }),
+                                                                     new Input({ type : 'file' , class: 'input-file input-small'                   })),
+
+                        new Div({class: 'field-group'}).add_elements(new Label({ class: 'label', value: 'Large file input'                         }),
+                                                                     new Input({ type : 'file' , class: 'input-file input-large'                   }) )]
 
         div_root.add_elements(...header,
                               h_basic     , ...basics     ,

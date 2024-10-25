@@ -74,7 +74,6 @@ export default class CSS__Forms {
             },
             // Input sizes
             ".input-large": {
-                padding: "0.75rem",
                 fontSize: "1.125rem"
             },
             ".input-small": {
@@ -192,7 +191,6 @@ export default class CSS__Forms {
             ".input-file": {
                 display: "block",
                 width: "100%",
-                padding: "0.5rem",
                 fontSize: "1rem",
                 lineHeight: "1.5",
                 color: "#374151",
