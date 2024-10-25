@@ -383,6 +383,32 @@ const expected_html_3 =
         assert.equal(tag.dom().style.top, '20px')
     });
 
+    QUnit.test('.html_escape', function (assert) {
+        const tag = new Tag()
+
+        assert.equal(tag.html_escape(null       ), ''                                   , 'handles null input')
+        assert.equal(tag.html_escape(undefined  ), ''                                   , 'handles undefined input')
+
+        const unsafe_string  = '<script>alert("xss")</script>'
+        const escaped_html   = tag.html_escape(unsafe_string)
+        const expected       = '&lt;script&gt;alert("xss")&lt;/script&gt;'
+        assert.equal(escaped_html, expected                                             , 'escapes HTML entities correctly')
+
+        const mixed_content  = '<div class="test">Hello & World</div>'
+        const expected_mixed = '&lt;div class="test"&gt;Hello &amp; World&lt;/div&gt;'
+        assert.equal(tag.html_escape(mixed_content), expected_mixed                     , 'handles mixed content with attributes')
+
+        const special_chars  = '< > & " \''
+        const expected_chars = '&lt; &gt; &amp; " \''
+        assert.equal(tag.html_escape(special_chars), expected_chars                     , 'escapes only HTML structural characters')
+
+        const safe_string    = 'Hello World 123'
+        assert.equal(tag.html_escape(safe_string), safe_string                          , 'does not modify safe strings')
+
+        const number_input  = 42
+        assert.equal(tag.html_escape(number_input), '42'                                , 'handles number input')
+    });
+
     QUnit.test('_should be an instance and inherit from Html_Tag', function(assert) {
         const html_tag = new Tag();
         assert.ok(html_tag instanceof Tag                     , 'Instance created is an instance of Html_Tag');

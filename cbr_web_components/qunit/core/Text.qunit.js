@@ -50,4 +50,11 @@ QUnit.module('Text', function(hooks) {
         assert.ok(Text.prototype instanceof Tag, '.prototype is an instance of Html_Tag');
         assert.equal(text.tag, 'text');
     });
+
+    QUnit.test('_should escapte html payloads', function (assert) {
+        let payload       = '<script>alert("hello")</script>'
+        let expected_html = '&lt;script&gt;alert("hello")&lt;/script&gt;'
+        const text = new Text({value:payload});
+        assert.equal(text.inner_html(), expected_html)
+    })
 })

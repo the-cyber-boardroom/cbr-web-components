@@ -169,18 +169,6 @@ export default class Tag {
         return `${this.tag.toLowerCase()}_${random_part}`;
     }
 
-    html_render_extra_attributes() {
-        let extra_attributes = ''
-        for (const key in this.attributes) {
-            if (this.attributes.hasOwnProperty(key)) {
-                const value = this.attributes[key]
-                if (value === null) {                                    // special case where attributes that have the value of null are added with no value (which is sometimes needed in html attributes)
-                    extra_attributes += `${key} `
-                } else {
-                    extra_attributes += `${key}="${value}" ` }}}
-        return extra_attributes.trim()
-    }
-
     html(depth=0) {
         let attributes  = '';
         const attributes_string = this.html_render_extra_attributes()
@@ -236,6 +224,26 @@ export default class Tag {
             return html }
     }
 
+    html_escape(unsafe_string) {
+        if (unsafe_string === null || unsafe_string === undefined)              // Handle null/undefined values
+            return '';
+        const div          = document.createElement('div');                     // Create temporary DOM element
+        div.textContent    = String(unsafe_string);                             // Coerce to string & escape chars
+        const escaped_html = div.innerHTML;                                     // Get escaped HTML entities string
+        return escaped_html;                                                    // Return string safe for innerHTML
+    }
+
+    html_render_extra_attributes() {
+        let extra_attributes = ''
+        for (const key in this.attributes) {
+            if (this.attributes.hasOwnProperty(key)) {
+                const value = this.attributes[key]
+                if (value === null) {                                    // special case where attributes that have the value of null are added with no value (which is sometimes needed in html attributes)
+                    extra_attributes += `${key} `
+                } else {
+                    extra_attributes += `${key}="${value}" ` }}}
+        return extra_attributes.trim()
+    }
     html_render_styles() {
         let style_string = ''
         if (this.styles && Object.keys(this.styles).length) {

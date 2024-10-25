@@ -14,12 +14,12 @@ export default class Text extends Tag {
         return this
     }
 
-    add_element(element) {              // text elements should NOT have any child elements
-        return false                    // return false to indicate that the element was not added
+    add_element(element) {                                          // text elements should NOT have any child elements
+        return false                                                // return false to indicate that the element was not added
     }
 
     inner_html() {
-        return this.value               // inner_html for text elements is always a string
+        return this.html_escape(this.value)                         // all data inside the text should html escaped
     }
 
     just_text() {
