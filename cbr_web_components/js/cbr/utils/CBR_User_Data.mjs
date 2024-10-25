@@ -32,4 +32,42 @@ export default class CBR_User_Data {
         await this.api_invoke.invoke_api(api_path)
         location.reload()
     }
+
+    set_mock_responses() {
+        this.api_invoke.set_mock_response(this.url__api__current_session, this.mock__api__current_session)
+        this.api_invoke.set_mock_response(this.url__api__user_profile   , this.mock__api____user_profile)
+
+        return this
+    }
+
+    mock__api__current_session = { data   : { username: 'guest_aabbcc' },
+                                   security: {
+                                     is_admin_global: false,
+                                     is_admin_site: false,
+                                     is_blocked: false,
+                                     is_customer: false,
+                                     is_guest: false,
+                                     is_malicious: false,
+                                     is_user: false,
+                                     is_user_qa: false,
+                                     is_suspended: false,
+                                     is_suspicious: false
+                                   },
+                                   session_id: '19ac690e-aaaa-bbbb-cccc-6a1588b47c0d',
+                                   user_name: 'guest_aabbcc',
+                                   user_id: '9da9279c-aaaa-bbbb-cccc-38cf21a69658',
+                                   created__date: '2024-10-24',
+                                   created__time: '17:10:01',
+                                   timestamp: 1729789801637
+                                 }
+
+    mock__api____user_profile = { first_name: 'Guest',
+                                  last_name: 'One',
+                                  role: 'Board member',
+                                  organisation: 'Retail',
+                                  sector: 'Food',
+                                  size_of_organisation: '10000',
+                                  country: 'UK',
+                                  linkedin: '',
+                                  additional_system_prompt: 'Answer in bullet points'}
 }
