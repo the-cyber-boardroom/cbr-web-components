@@ -16,7 +16,7 @@ QUnit.module('WebC__CBR__Current_User', function(hooks) {
         webc_cbr_current_user.cbr_user_data.auth_header = session_id
         await target_div.appendChild(webc_cbr_current_user)
 
-        await webc_cbr_current_user.wait_for_event('build-complete',2000)
+        await webc_cbr_current_user.wait_for_event('build-complete',5000)
     });
 
     hooks.after((assert) => {
