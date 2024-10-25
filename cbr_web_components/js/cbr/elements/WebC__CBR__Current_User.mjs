@@ -23,12 +23,12 @@ export default class WebC__CBR__Current_User extends Web_Component {
             const user_profile        = await this.cbr_user_data.user_profile()
             const svg_screenshot      = new Svg__Icons().screenshot_monitor()
             const div_current_user    = new Div({class:'current_user'})
-            const h2_user_profile     = new Text({level:1, value:'<h1>User Profile'})
+            const h2_user_profile     = new Text({level:1, value:'User Profile'})
             const pre_user_profile    = new Pre({value: JSON.stringify(user_profile, null, 2)})
 
-            // div_current_user.add_elements(svg_screenshot)
-            // div_current_user.add_elements(h2_user_profile,pre_user_profile)
-            div_current_user.add_elements(h2_user_profile)
+            div_current_user.add_elements(svg_screenshot)
+            div_current_user.add_elements(h2_user_profile,pre_user_profile)
+            //div_current_user.add_elements(h2_user_profile)
             this.set_inner_html(div_current_user.html())
         } catch (error) {
             console.error(error)
