@@ -57,7 +57,7 @@ QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
         assert.deepEqual(webc__api_markdown_to_html.markdown_html    , WebC__API_Markdown_To_Html.on_error_return_value.html    )
         assert.deepEqual(webc__api_markdown_to_html.markdown_metadata, WebC__API_Markdown_To_Html.on_error_return_value.metadata)
     })
-    const expected_raw_html = `<h1>Markdown content</h1><ul><li>will go here</li></ul>`
+    const expected_raw_html = `<div>\n    <h1>Markdown content</h1><ul><li>will go here</li></ul>\n</div>\n`
     const expected_metadata = { 'title': 'Markdown content' , 'sub_title': 'will go here', 'description': 'an description' , 'error': 'an error'}
     const expected_html = `\
 <div class="markdown_section">
@@ -67,7 +67,12 @@ QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
         <div class="markdown_sub_title">will go here</div>
         <div class="markdown_description">an description</div>
     </div>
-    <div class="markdown_html"><h1>Markdown content</h1><ul><li>will go here</li></ul></div>
+    <div class="markdown_html">
+        <div>
+            <h1>Markdown content</h1><ul><li>will go here</li></ul>
+        </div>
+        
+    </div>
 </div>
 `
 })

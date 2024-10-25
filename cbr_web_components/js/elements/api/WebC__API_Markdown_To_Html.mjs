@@ -1,7 +1,8 @@
-import Web_Component from "../../core/Web_Component.mjs";
-import API__Invoke   from "../../data/API__Invoke.mjs";
-import Div           from "../../core/Div.mjs";
-import Load_Libraries__CSS from "../../utils/Load_Libraries__CSS.mjs";
+import Web_Component        from "../../core/Web_Component.mjs";
+import API__Invoke          from "../../data/API__Invoke.mjs";
+import Div                  from "../../core/Div.mjs";
+import Raw_Html             from "../../core/Raw_Html.mjs";
+import Load_Libraries__CSS  from "../../utils/Load_Libraries__CSS.mjs";
 
 export default class WebC__API_Markdown_To_Html extends Web_Component {
     static url__cdn_files                              = 'https://static.dev.aws.cyber-boardroom.com/cbr-content/latest/'
@@ -36,16 +37,17 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
     // class methods
 
     async build() {
-        const div_markdown    = new Div({class: WebC__API_Markdown_To_Html.class__markdown_section     })
-        const div_html        = new Div({class: WebC__API_Markdown_To_Html.class__markdown_html        })
-        const div_metadata    = new Div({class: WebC__API_Markdown_To_Html.class__markdown_metadata    })
-        const div_error       = new Div({class: WebC__API_Markdown_To_Html.class__markdown_error       })
-        const div_title       = new Div({class: WebC__API_Markdown_To_Html.class__markdown_title       })
-        const div_sub_title   = new Div({class: WebC__API_Markdown_To_Html.class__markdown_sub_title   })
-        const div_description = new Div({class: WebC__API_Markdown_To_Html.class__markdown_description })
+        const div_markdown    = new Div     ({class: WebC__API_Markdown_To_Html.class__markdown_section     })
+        const div_html        = new Raw_Html({class: WebC__API_Markdown_To_Html.class__markdown_html        })
+        const div_metadata    = new Div     ({class: WebC__API_Markdown_To_Html.class__markdown_metadata    })
+        const div_error       = new Div     ({class: WebC__API_Markdown_To_Html.class__markdown_error       })
+        const div_title       = new Div     ({class: WebC__API_Markdown_To_Html.class__markdown_title       })
+        const div_sub_title   = new Div     ({class: WebC__API_Markdown_To_Html.class__markdown_sub_title   })
+        const div_description = new Div     ({class: WebC__API_Markdown_To_Html.class__markdown_description })
 
 
-        div_html.value      = this.markdown_html
+        div_html.raw_html     = this.markdown_html
+
         if (this.markdown_metadata) {
             div_error      .value = this.markdown_metadata.error
             div_title      .value = this.markdown_metadata.title

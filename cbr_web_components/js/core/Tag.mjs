@@ -7,7 +7,7 @@ export default class Tag {
         this.element_parent = null
         this.elements       = [];
         this.html_config    = this.default_html_config();         // set default html config
-        this.id             = id // || this.generate_random_id();    // ensure there is alwasys an id
+        this.id             = id
         this.parent_dom     = null
         this.styles         = this.default_styles();              // set default styles
         this.value          = value
@@ -202,7 +202,8 @@ export default class Tag {
         }
         if (this.html_config.include_end_tag) {
             if (this.value != null) {                                   // when value is set, use it for the inner_html value
-                html += this.value
+                //html += this.value
+                html += this.html_escape(this.value)                   // breaking change where now all values are html escaped by default
             }
             else {
                 if (this.html_config.new_line_before_elements) {

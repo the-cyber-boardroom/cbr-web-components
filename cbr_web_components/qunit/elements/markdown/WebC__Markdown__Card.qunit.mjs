@@ -49,10 +49,15 @@ QUnit.module('WebC__Markdown__Card', function(hooks) {
     })
 
     QUnit.test('.build', (assert) => {
-        assert.deepEqual(webc__markdown_card.inner_html(), expected_html    )
+        assert.deepEqual(webc__markdown_card.inner_html(), expected_html)
     })
 
-    const expected_raw_html = `<h1>Markdown content</h1><ul><li>will go here</li></ul>`
+    const expected_raw_html = `\
+<h1>Markdown content</h1>
+<ul>
+    <li>will go here
+    </li>
+</ul>`
     const expected_metadata = { 'title': 'Markdown content' ,
                                 'sub_title': 'will go here' ,
                                 'action_link': 'some/page'  ,
@@ -62,7 +67,13 @@ QUnit.module('WebC__Markdown__Card', function(hooks) {
     <div class="markdown_card_body">
         <div class="markdown_card_title">${expected_metadata.title}</div>
         <div class="markdown_card_subtitle">${expected_metadata.sub_title}</div>
-        <div class="markdown_content_div">${expected_raw_html}</div>
+        <div class="markdown_content_div">
+            <h1>Markdown content</h1>
+            <ul>
+                <li>will go here
+                </li>
+            </ul>
+        </div>
         <div class="markdown_action">
             <a class="markdown_action_link" href="${expected_metadata.action_link}">${expected_metadata.action_text}</a>
         </div>
@@ -70,3 +81,5 @@ QUnit.module('WebC__Markdown__Card', function(hooks) {
 </div>
 `
 })
+
+

@@ -1,4 +1,4 @@
-import Span from "./Span.mjs";
+import Raw_Html from "./Raw_Html.mjs";
 
 export default class Svg__Icons{
     constructor() {
@@ -6,13 +6,13 @@ export default class Svg__Icons{
 
     picture_as_pdf(...attributes) {
         const svg_code = this.apply_attributes_to_svg_code(Svg__Icons.picture_as_pdf,...attributes)
-        const span_svg = new Span({class:'icon-svg picture-as-pdf', value:svg_code})
+        const span_svg = new Raw_Html({class:'icon-svg picture-as-pdf', value:svg_code})
         return span_svg
     }
 
     screenshot_monitor(...attributes) {
         const svg_code = this.apply_attributes_to_svg_code(Svg__Icons.screenshot_monitor,...attributes)
-        return new Span({class:'icon-svg screenshot-monitor', value:svg_code})
+        return new Raw_Html({class:'icon-svg screenshot-monitor', value:svg_code})
     }
 
     apply_attributes_to_svg_code(svg_code, attributes) {

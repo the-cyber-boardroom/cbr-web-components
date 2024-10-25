@@ -1,5 +1,6 @@
 import A                          from "../../core/A.mjs";
 import Div                        from "../../core/Div.mjs";
+import Raw_Html                   from "../../core/Raw_Html.mjs";
 import WebC__API_Markdown_To_Html from "../api/WebC__API_Markdown_To_Html.mjs";
 
 export default class WebC__Markdown__Card extends WebC__API_Markdown_To_Html {
@@ -13,27 +14,27 @@ export default class WebC__Markdown__Card extends WebC__API_Markdown_To_Html {
     static class__action_link    = 'markdown_action_link';
 
     async build() {
-        const div_card        = new Div({ class: WebC__Markdown__Card.class__card           });                     // Create individual Div components for the card structure
-        const div_card_body   = new Div({ class: WebC__Markdown__Card.class__card_body      });
-        const div_title       = new Div({ class: WebC__Markdown__Card.class__card_title     });
-        const div_sub_title   = new Div({ class: WebC__Markdown__Card.class__card_subtitle  });
-        const div_content     = new Div({ class: WebC__Markdown__Card.class__content_div    });
-        const div_action      = new Div({ class: WebC__Markdown__Card.class__action         });                     // Create a div for the button (action button)
+        const div_card        = new Div ({ class: WebC__Markdown__Card.class__card           });                     // Create individual Div components for the card structure
+        const div_card_body   = new Div ({ class: WebC__Markdown__Card.class__card_body      });
+        const div_title       = new Div ({ class: WebC__Markdown__Card.class__card_title     });
+        const div_sub_title   = new Div ({ class: WebC__Markdown__Card.class__card_subtitle  });
+        const html_content    = new Raw_Html({ class: WebC__Markdown__Card.class__content_div    });
+        const div_action      = new Div ({ class: WebC__Markdown__Card.class__action         });                     // Create a div for the button (action button)
 
 
         const action_href     = this.markdown_metadata.action_link
         const action_text     = this.markdown_metadata.action_text || 'Go'
         const a_action        = new A({ class: WebC__Markdown__Card.class__action_link, value: this.markdown_metadata.action_text , attributes: { href: action_href } });
 
-        div_title    .value = this.markdown_metadata.title     || '';                                               // Set values from the Markdown metadata and content
-        div_sub_title.value = this.markdown_metadata.sub_title || '';
-        div_content  .value = this.markdown_html               || '';
+        div_title    .value    = this.markdown_metadata.title     || '';                                               // Set values from the Markdown metadata and content
+        div_sub_title.value    = this.markdown_metadata.sub_title || '';
+        html_content .raw_html = this.markdown_html               || '';                                                // todo: Security risk: need to a way to sanitize the html content (although this is currently being used a feature to allow for markdown files to have html and js code)
 
         if (this.markdown_metadata.title     ) { div_card_body.add_element(div_title     ); }                       // Add metadata elements to the card body
         if (this.markdown_metadata.sub_title ) { div_card_body.add_element(div_sub_title ); }
 
         div_action   .add_element(a_action     );                                                                   // Add the action button to the card body
-        div_card_body.add_element(div_content  );                                                                   // Add content section to the card body
+        div_card_body.add_element(html_content );                                                                   // Add content section to the card body
         div_card_body.add_element(div_action   );                                                                   // Add action button to the card body
         div_card     .add_element(div_card_body);                                                                   // Assemble the card structure
 
