@@ -1,14 +1,16 @@
 import Web_Component from '../../core/Web_Component.mjs';
-import Div from           '../../core/Div.mjs';
-import Input from         '../../core/Input.mjs';
-import H from             '../../core/H.mjs';
-import HR from            '../../core/HR.mjs';
-import Label from         '../../core/Label.mjs';
-import Option from        '../../core/Option.mjs';
-import Select from        '../../core/Select.mjs';
-import Text from          '../../core/Text.mjs';
-import Textarea from      '../../core/Textarea.mjs';
-import CSS__Forms from    '../CSS__Forms.mjs';
+import Button        from '../../core/Button.mjs'       ;
+import Div           from '../../core/Div.mjs'          ;
+import Input         from '../../core/Input.mjs'        ;
+import Form          from '../../core/Form.mjs'         ;
+import H             from '../../core/H.mjs'            ;
+import HR            from '../../core/HR.mjs'           ;
+import Label         from '../../core/Label.mjs'        ;
+import Option        from '../../core/Option.mjs'       ;
+import Select        from '../../core/Select.mjs'       ;
+import Text          from '../../core/Text.mjs'         ;
+import Textarea      from '../../core/Textarea.mjs'     ;
+import CSS__Forms    from  '../CSS__Forms.mjs'          ;
 
 
 export default class WebC__CSS__Demo__Forms extends Web_Component {
@@ -155,15 +157,101 @@ export default class WebC__CSS__Demo__Forms extends Web_Component {
             )
         ]
 
-        div_root.add_elements(
-            ...header,
-            h_basic, ...basics,
-            h_sizes, ...sizes,
-            h_select, ...selects,
-            h_validation, ...validations,
-            h_checks, ...checks,
-            h_groups, ...groups
-        )
+        // Plaintext Readonly Section
+        let h_plaintext = new H({level: 2, value: 'Readonly Plain Text'})
+        let plaintext = [
+            new Div({class: 'field-group'}).add_elements(
+                new Label({class: 'label', value: 'Email'}),
+                new Input({
+                    type: 'text',
+                    class: 'input input-plain',
+                    value: 'email@example.com',
+                    attributes: {readonly: true}
+                })
+            ),
+            new Div({class: 'field-group'}).add_elements(
+                new Label({class: 'label', value: 'Password'}),
+                new Input({
+                    type: 'password',
+                    class: 'input',
+                    attributes: {readonly: true}
+                })
+            )
+        ]
+
+        // Inline Form Section
+        let h_inline = new H({level: 2, value: 'Inline Form'})
+        let inline = [
+            new Form({class: 'inline-form'}).add_elements(
+                new Div({class: 'field-group'}).add_elements(
+                    new Label({ class: 'label visually-hidden', value: 'Email'}),
+                    new Input({ type: 'text', class: 'input input-plain',
+                                value: 'email@example.com', attributes: {readonly: true}
+                    })
+                ),
+                new Div({class: 'field-group'}).add_elements(
+                    new Label({ class: 'label visually-hidden', value: 'Password'}),
+                    new Input({ type: 'password',
+                                class: 'input',
+                                value: 'secure password',
+                                placeholder: 'Password'
+                    })
+                ),
+                new Button({
+                    class: 'button button-primary',
+                    value: 'Confirm identity'
+                })
+            )
+        ]
+
+        // File Inputs Section
+        let h_files = new H({level: 2, value: 'File Inputs'})
+        let files = [
+            new Div({class: 'field-group'}).add_elements(
+                new Label({class: 'label', value: 'Default file input'}),
+                new Input({
+                    type: 'file',
+                    class: 'input-file'
+                })
+            ),
+            new Div({class: 'field-group'}).add_elements(
+                new Label({class: 'label', value: 'Multiple files input'}),
+                new Input({ type: 'file',   class: 'input-file', attributes: {multiple: true} })
+            ),
+            new Div({class: 'field-group'}).add_elements(
+                new Label({class: 'label', value: 'Disabled file input'}),
+                new Input({
+                    type: 'file',
+                    class: 'input-file',
+                    attributes: {disabled: true}
+                })
+            ),
+            new Div({class: 'field-group'}).add_elements(
+                new Label({class: 'label', value: 'Small file input'}),
+                new Input({
+                    type: 'file',
+                    class: 'input-file input-small'
+                })
+            ),
+            new Div({class: 'field-group'}).add_elements(
+                new Label({class: 'label', value: 'Large file input'}),
+                new Input({
+                    type: 'file',
+                    class: 'input-file input-large'
+                })
+            )
+        ]
+
+        div_root.add_elements(...header,
+                              h_basic     , ...basics     ,
+                              h_sizes     , ...sizes      ,
+                              h_select    , ...selects    ,
+                              h_validation, ...validations,
+                              h_checks    , ...checks     ,
+                              h_groups    , ...groups     ,
+                              h_plaintext, ...plaintext   ,
+                              h_inline    , ...inline     ,
+                              h_files     , ...files      )
 
         // Apply CSS and render
         if (this.apply_css) {

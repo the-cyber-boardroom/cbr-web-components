@@ -129,6 +129,114 @@ export default class CSS__Forms {
             // Select specific styling
             ".input[multiple]": {
                 padding: "0.5rem"
+            },
+
+            // Plain text input styling
+            ".input-plain": {
+                backgroundColor: "transparent",
+                border: "none",
+                padding: "0.375rem 0",
+                "&:focus": {
+                    outline: "none",
+                    boxShadow: "none"
+                }
+            },
+
+            // Inline form styling
+            ".inline-form": {
+                display: "flex",
+                alignItems: "baseline",
+                gap: "1rem",
+                ".field-group": {
+                    marginBottom: "0",
+                }
+            },
+
+            // Visually hidden (for accessibility)
+            ".visually-hidden": {
+                position: "absolute",
+                width: "1px",
+                height: "1px",
+                padding: "0",
+                margin: "-1px",
+                overflow: "hidden",
+                clip: "rect(0,0,0,0)",
+                border: "0"
+            },
+
+            // Button styling
+            ".button": {
+                display: "inline-block",
+                padding: "0.5rem 1rem",
+                fontSize: "1rem",
+                fontWeight: "500",
+                lineHeight: "1.5",
+                textAlign: "center",
+                textDecoration: "none",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+                border: "1px solid transparent",
+                transition: "all 0.2s ease" ,
+                margin:'10px'
+            },
+
+            ".button-primary": {
+                backgroundColor: "#3b82f6",
+                color: "#ffffff",
+                "&:hover": {
+                    backgroundColor: "#2563eb"
+                }
+            },
+
+            // File input styling
+            ".input-file": {
+                display: "block",
+                width: "100%",
+                padding: "0.5rem",
+                fontSize: "1rem",
+                lineHeight: "1.5",
+                color: "#374151",
+                backgroundColor: "#ffffff",
+                border: "1px solid #cbd5e1",
+                borderRadius: "0.25rem",
+                cursor: "pointer",
+
+                "&::-webkit-file-upload-button": {
+                    padding: "0.375rem 0.75rem",
+                    marginRight: "0.75rem",
+                    color: "#374151",
+                    backgroundColor: "#f3f4f6",
+                    border: "none",
+                    borderRadius: "0.25rem",
+                    cursor: "pointer"
+                },
+
+                "&:disabled": {
+                    backgroundColor: "#f1f5f9",
+                    cursor: "not-allowed",
+                    "&::-webkit-file-upload-button": {
+                        backgroundColor: "#e5e7eb",
+                        cursor: "not-allowed"
+                    }
+                }
+            },
+
+            ".input-file.input-small": {
+                padding: "0.25rem",
+                fontSize: "0.875rem",
+                "&::-webkit-file-upload-button": {
+                    padding: "0.25rem 0.5rem",
+                    fontSize: "0.875rem"
+                }
+            },
+
+            ".input-file.input-large": {
+                padding: "0.75rem",
+                fontSize: "1.125rem",
+                "&::-webkit-file-upload-button": {
+                    padding: "0.5rem 1rem",
+                    fontSize: "1.125rem"
+                }
             }
         }
     }
