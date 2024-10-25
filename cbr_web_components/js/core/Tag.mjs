@@ -33,6 +33,7 @@ export default class Tag {
         for(let element of elements){
             this.add_element(element)
         }
+        return this
     }
 
     clear_elements() {
