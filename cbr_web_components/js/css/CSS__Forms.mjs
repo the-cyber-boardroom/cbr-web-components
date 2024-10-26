@@ -24,15 +24,18 @@ export default class CSS__Forms {
                 borderRadius: "0.25rem",
                 transition: "border-color 0.2s ease"
             },
+
             ".input:focus": {
                 outline: "none",
                 borderColor: "#3b82f6",
                 boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.1)"
             },
+
             ".input:disabled": {
                 backgroundColor: "#f1f5f9",
                 cursor: "not-allowed"
             },
+
             ".input[readonly]": {
                 backgroundColor: "#f8fafc"
             },
@@ -63,19 +66,24 @@ export default class CSS__Forms {
             ".valid": {
                 borderColor: "#10b981"
             },
+
             ".valid + .help": {
                 color: "#10b981"
             },
+
             ".invalid": {
                 borderColor: "#ef4444"
             },
+
             ".invalid + .help": {
                 color: "#ef4444"
             },
+
             // Input sizes
             ".input-large": {
                 fontSize: "1.125rem"
             },
+
             ".input-small": {
                 padding: "0.25rem",
                 fontSize: "0.875rem"
@@ -87,12 +95,14 @@ export default class CSS__Forms {
                 alignItems: "center",
                 marginBottom: "0.5rem"
             },
+
             ".checkbox, .radio": {
                 width: "1rem",
                 height: "1rem",
                 marginRight: "0.5rem",
                 cursor: "pointer"
             },
+
             ".checkbox-label, .radio-label": {
                 fontSize: "0.875rem",
                 cursor: "pointer"
@@ -103,6 +113,7 @@ export default class CSS__Forms {
                 display: "flex",
                 alignItems: "stretch"
             },
+
             ".input-addon": {
                 display: "flex",
                 alignItems: "center",
@@ -113,13 +124,16 @@ export default class CSS__Forms {
                 border: "1px solid #cbd5e1",
                 borderRadius: "0.25rem"
             },
+
             ".input-group .input": {
                 borderRadius: "0"
             },
+
             ".input-group > :first-child": {
                 borderTopRightRadius: "0",
                 borderBottomRightRadius: "0"
             },
+
             ".input-group > :last-child": {
                 borderTopLeftRadius: "0",
                 borderBottomLeftRadius: "0"
@@ -134,21 +148,23 @@ export default class CSS__Forms {
             ".input-plain": {
                 backgroundColor: "transparent",
                 border: "none",
-                padding: "0.375rem 0",
-                "&:focus": {
-                    outline: "none",
-                    boxShadow: "none"
-                }
+                padding: "0.375rem 0"
+            },
+
+            ".input-plain:focus": {
+                outline: "none",
+                boxShadow: "none"
             },
 
             // Inline form styling
             ".inline-form": {
                 display: "flex",
                 alignItems: "baseline",
-                gap: "1rem",
-                ".field-group": {
-                    marginBottom: "0",
-                }
+                gap: "1rem"
+            },
+
+            ".inline-form .field-group": {
+                marginBottom: "0"
             },
 
             // Visually hidden (for accessibility)
@@ -175,16 +191,17 @@ export default class CSS__Forms {
                 borderRadius: "0.25rem",
                 cursor: "pointer",
                 border: "1px solid transparent",
-                transition: "all 0.2s ease" ,
-                margin:'10px'
+                transition: "all 0.2s ease",
+                margin: "10px"
             },
 
             ".button-primary": {
                 backgroundColor: "#3b82f6",
-                color: "#ffffff",
-                "&:hover": {
-                    backgroundColor: "#2563eb"
-                }
+                color: "#ffffff"
+            },
+
+            ".button-primary:hover": {
+                backgroundColor: "#2563eb"
             },
 
             // File input styling
@@ -197,44 +214,47 @@ export default class CSS__Forms {
                 backgroundColor: "#ffffff",
                 border: "1px solid #cbd5e1",
                 borderRadius: "0.25rem",
-                cursor: "pointer",
+                cursor: "pointer"
+            },
 
-                "&::-webkit-file-upload-button": {
-                    padding: "0.375rem 0.75rem",
-                    marginRight: "0.75rem",
-                    color: "#374151",
-                    backgroundColor: "#f3f4f6",
-                    border: "none",
-                    borderRadius: "0.25rem",
-                    cursor: "pointer"
-                },
+            ".input-file::-webkit-file-upload-button": {
+                padding: "0.375rem 0.75rem",
+                marginRight: "0.75rem",
+                color: "#374151",
+                backgroundColor: "#f3f4f6",
+                border: "none",
+                borderRadius: "0.25rem",
+                cursor: "pointer"
+            },
 
-                "&:disabled": {
-                    backgroundColor: "#f1f5f9",
-                    cursor: "not-allowed",
-                    "&::-webkit-file-upload-button": {
-                        backgroundColor: "#e5e7eb",
-                        cursor: "not-allowed"
-                    }
-                }
+            ".input-file:disabled": {
+                backgroundColor: "#f1f5f9",
+                cursor: "not-allowed"
+            },
+
+            ".input-file:disabled::-webkit-file-upload-button": {
+                backgroundColor: "#e5e7eb",
+                cursor: "not-allowed"
             },
 
             ".input-file.input-small": {
                 padding: "0.25rem",
-                fontSize: "0.875rem",
-                "&::-webkit-file-upload-button": {
-                    padding: "0.25rem 0.5rem",
-                    fontSize: "0.875rem"
-                }
+                fontSize: "0.875rem"
+            },
+
+            ".input-file.input-small::-webkit-file-upload-button": {
+                padding: "0.25rem 0.5rem",
+                fontSize: "0.875rem"
             },
 
             ".input-file.input-large": {
                 padding: "0.75rem",
-                fontSize: "1.125rem",
-                "&::-webkit-file-upload-button": {
-                    padding: "0.5rem 1rem",
-                    fontSize: "1.125rem"
-                }
+                fontSize: "1.125rem"
+            },
+
+            ".input-file.input-large::-webkit-file-upload-button": {
+                padding: "0.5rem 1rem",
+                fontSize: "1.125rem"
             }
         }
     }
