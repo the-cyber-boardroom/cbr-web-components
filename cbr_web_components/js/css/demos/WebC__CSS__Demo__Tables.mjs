@@ -2,7 +2,7 @@ import Web_Component   from '../../core/Web_Component.mjs';
 import Div             from '../../core/Div.mjs';
 import H               from '../../core/H.mjs';
 import HR              from '../../core/HR.mjs';
-import P               from '../../core/p.mjs';
+import P               from '../../core/P.mjs';
 import Text            from '../../core/Text.mjs';
 import Table           from '../../core/Table.mjs';
 import THead           from '../../core/THead.mjs';
