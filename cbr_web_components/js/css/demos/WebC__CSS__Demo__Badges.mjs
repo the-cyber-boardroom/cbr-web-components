@@ -56,13 +56,20 @@ export default class WebC__CSS__Demo__Badges extends Web_Component {
                              new Button({ class: 'btn btn-secondary' }).add_elements(new Text({ value: 'Messages ' }),
                                                                                      new Span({ class: 'badge badge-light', value: '8' }))]
 
+        // Positioned Badges
+        let h_positioned = new H({ level: 2, value: 'Positioned Badges' })
+        let positioned_badges = [new Button({ class: 'btn btn-primary position-relative', type: 'button'                              }).add_elements(new Text({ value: 'Inbox ' }),
+                                                                                                                                                      new Span({class: 'position-absolute top-0 start-100 translate-middle badge badge-danger badge-pill',  value: '99+'}),
+                                                                                                                                                      new Span({ class: 'visually-hidden', value: 'unread messages' })),
+                                 new Button({ class: 'btn btn-primary position-relative', type: 'button', style: 'margin-left: 2rem;' }).add_elements(new Text({ value: 'Profile ' }),
+                                                                                                                                                      new Span({class: 'position-absolute top-0 start-100 translate-middle badge badge-danger rounded-pill',  style: 'padding: 0.4em 0.4em;'}),
+                                                                                                                                                      new Span({ class: 'visually-hidden', value: 'New alerts' }))]
         // Add all sections to root
-        div_root.add_elements(
-            ...header,
-            h_colors, ...color_badges,
-            h_pills, ...pill_badges,
-            h_buttons, ...button_badges
-        )
+        div_root.add_elements(...header   ,
+                              h_colors    , ...color_badges     ,
+                              h_pills     , ...pill_badges      ,
+                              h_buttons   , ...button_badges    ,
+                              h_positioned, ...positioned_badges)
 
         // Apply CSS if needed
         if (this.apply_css) {

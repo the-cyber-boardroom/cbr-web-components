@@ -67,10 +67,37 @@ export default class CSS__Badges {
                 backgroundColor: "#212529"
             },
 
-            // Position adjustments for inline text
-            "button .badge": {
-                position: "relative",
-                top: "-1px"
+            // Position helpers
+            ".position-relative": {
+                position: "relative"
+            },
+
+            ".position-absolute": {
+                position: "absolute"
+            },
+
+            ".top-0": {
+                top: "0"
+            },
+
+            ".start-100": {
+                left: "100%"
+            },
+
+            ".translate-middle": {
+                transform: "translate(-50%, -50%)"
+            },
+
+            // Visually hidden (for screen readers)
+            ".visually-hidden": {
+                position: "absolute",
+                width: "1px",
+                height: "1px",
+                padding: "0",
+                margin: "-1px",
+                overflow: "hidden",
+                clip: "rect(0, 0, 0, 0)",
+                border: "0"
             }
         }
     }
