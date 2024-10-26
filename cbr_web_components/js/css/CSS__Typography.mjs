@@ -77,6 +77,7 @@ export default class CSS__Typography {
             ".bg-error"                : { backgroundColor: "#d93025" },
             ".bg-info"                 : { backgroundColor: "#1967d2" },
             ".bg-muted"                : { backgroundColor: "#5f6368" },
+            ".bg-dark"                 : { backgroundColor: "#212529" },
 
             // Special text types
             ".type-lead"               : { fontSize: "1.25rem", fontWeight: "300", lineHeight: "1.6", marginBottom: "1rem" },
