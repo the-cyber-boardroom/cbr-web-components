@@ -100,26 +100,26 @@ export default class WebC__CSS__Demo__Cards extends Web_Component {
         let card_deck = new Div({ class: 'card-deck' }).add_elements(
             new Div({ class: 'card card-hover' }).add_elements(
                 new Div({ class: 'card-body' }).add_elements(
-                    new H({ level: 5, class: 'card-title', value: 'Hoverable Card 1' }),
+                    new Div({ class: 'card-title', value: 'Hoverable Card 1' }),
                     new P({ class: 'card-text', value: 'This is a wider card with supporting text below as a natural lead-in to additional content.' })
                 )
             ),
             new Div({ class: 'card card-hover' }).add_elements(
                 new Div({ class: 'card-body' }).add_elements(
-                    new H({ level: 5, class: 'card-title', value: 'Hoverable Card 2' }),
+                    new Div({  class: 'card-title', value: 'Hoverable Card 2' }),
                     new P({ class: 'card-text', value: 'This card has supporting text below as a natural lead-in to additional content.' })
                 )
             ),
             new Div({ class: 'card card-hover' }).add_elements(
                 new Div({ class: 'card-body' }).add_elements(
-                    new H({ level: 5, class: 'card-title', value: 'Hoverable Card 3' }),
+                    new Div({  class: 'card-title', value: 'Hoverable Card 3' }),
                     new P({ class: 'card-text', value: 'This is a wider card with supporting text below as a natural lead-in to additional content.' })
                 )
             )
         )
 
         // Image Overlay Card
-        let h_overlay = new H({ level: 2, value: 'Image Overlay Card' })
+        let h_overlay    = new H({ level: 2, value: 'Image Overlay Card' })
         let overlay_card = new Div({ class: 'card' }).add_elements(
             new Img({ class: 'card-img', src: '/assets/dev/img/400x200.png', alt: 'Card image' }),
             new Div({ class: 'card-img-overlay' }).add_elements(
@@ -128,16 +128,84 @@ export default class WebC__CSS__Demo__Cards extends Web_Component {
             )
         )
 
+        // Color variations
+        let h_color_cards = new H({ level: 2, value: 'Background Colors' })
+        let color_cards   = [
+            // Primary Card
+            new Div({ class: 'card bg-primary color-white', style: 'max-width: 18rem;' }).add_elements(
+                new Div({ class: 'card-header', value: 'Header' }),
+                new Div({ class: 'card-body' }).add_elements(
+                    new Div({ class: 'card-title', value: 'Primary card title' }),
+                    new P({ class: 'card-text', value: 'Some quick example text to build on the card title and make up the bulk of the card\'s content.' })
+                )
+            ),
+
+            // Secondary Card
+            new Div({ class: 'card bg-secondary color-white', style: 'max-width: 18rem;' }).add_elements(
+                new Div({ class: 'card-header', value: 'Header' }),
+                new Div({ class: 'card-body' }).add_elements(
+                    new Div({ class: 'card-title', value: 'Secondary card title' }),
+                    new P({ class: 'card-text', value: 'Some quick example text to build on the card title and make up the bulk of the card\'s content.' })
+                )
+            ),
+
+            // Success Card
+            new Div({ class: 'card bg-success color-white', style: 'max-width: 18rem;' }).add_elements(
+                new Div({ class: 'card-header', value: 'Header' }),
+                new Div({ class: 'card-body' }).add_elements(
+                    new Div({ class: 'card-title', value: 'Success card title' }),
+                    new P({ class: 'card-text', value: 'Some quick example text to build on the card title and make up the bulk of the card\'s content.' })
+                )
+            ),
+
+            // Error/Danger Card
+            new Div({ class: 'card bg-error color-white', style: 'max-width: 18rem;' }).add_elements(
+                new Div({ class: 'card-header', value: 'Header' }),
+                new Div({ class: 'card-body' }).add_elements(
+                    new Div({ class: 'card-title', value: 'Danger card title' }),
+                    new P({ class: 'card-text', value: 'Some quick example text to build on the card title and make up the bulk of the card\'s content.' })
+                )
+            ),
+
+            // Warning Card (with dark text)
+            new Div({ class: 'card bg-warning', style: 'max-width: 18rem;' }).add_elements(
+                new Div({ class: 'card-header', value: 'Header' }),
+                new Div({ class: 'card-body' }).add_elements(
+                    new Div({ class: 'card-title', value: 'Warning card title' }),
+                    new P({ class: 'card-text', value: 'Some quick example text to build on the card title and make up the bulk of the card\'s content.' })
+                )
+            ),
+
+            // Info Card (with dark text)
+            new Div({ class: 'card bg-info', style: 'max-width: 18rem;' }).add_elements(
+                new Div({ class: 'card-header', value: 'Header' }),
+                new Div({ class: 'card-body' }).add_elements(
+                    new Div({ class: 'card-title', value: 'Info card title' }),
+                    new P({ class: 'card-text', value: 'Some quick example text to build on the card title and make up the bulk of the card\'s content.' })
+                )
+            ),
+
+            // Muted/Light Card (with dark text)
+            new Div({ class: 'card bg-muted', style: 'max-width: 18rem;' }).add_elements(
+                new Div({ class: 'card-header', value: 'Header' }),
+                new Div({ class: 'card-body' }).add_elements(
+                    new Div({ class: 'card-title', value: 'Light card title' }),
+                    new P({ class: 'card-text', value: 'Some quick example text to build on the card title and make up the bulk of the card\'s content.' })
+                )
+            )
+        ]
+
         // Add all sections to root
         div_root.add_elements(
             ...header,
-            h_basic, basic_card,
-            h_header_footer, header_footer_card,
-            h_image, image_card,
-            h_horizontal, horizontal_card,
-            h_group, card_group,
-            h_deck, card_deck,
-            h_overlay, overlay_card
+            h_basic         , basic_card        ,
+            h_header_footer , header_footer_card,
+            h_image         , image_card        ,
+            h_horizontal    , horizontal_card   ,
+            h_group         , card_group        ,
+            h_deck          , card_deck         ,
+            h_overlay       , overlay_card      ,
+            h_color_cards   , ...color_cards
         )
 
         // Apply CSS if needed
