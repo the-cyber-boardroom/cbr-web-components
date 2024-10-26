@@ -1,14 +1,14 @@
-import Web_Component from '../../core/Web_Component.mjs';
-import Div from '../../core/Div.mjs';
-import H from '../../core/H.mjs';
-import HR from '../../core/HR.mjs';
-import Text from '../../core/Text.mjs';
-import CSS__Progress from '../CSS__Progress.mjs';
+import Web_Component   from '../../core/Web_Component.mjs';
+import Div             from '../../core/Div.mjs';
+import H               from '../../core/H.mjs';
+import HR              from '../../core/HR.mjs';
+import Text            from '../../core/Text.mjs';
+import CSS__Progress   from '../CSS__Progress.mjs';
 import CSS__Typography from '../CSS__Typography.mjs';
 
 export default class WebC__CSS__Demo__Progress extends Web_Component {
     load_attributes() {
-        this.css_progress = new CSS__Progress(this)
+        this.css_progress   = new CSS__Progress  (this)
         this.css_typography = new CSS__Typography(this)
         this.apply_css = this.hasAttribute('no-css') === false
     }
@@ -72,8 +72,8 @@ export default class WebC__CSS__Demo__Progress extends Web_Component {
 
         // Apply CSS if needed
         if (this.apply_css) {
-            this.css_progress.apply_framework()
-            this.css_typography.apply_framework()
+            this.css_progress   .apply_framework()
+            this.css_typography .apply_framework()
         }
 
         this.set_inner_html(div_root.html())

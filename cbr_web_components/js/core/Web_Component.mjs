@@ -152,35 +152,6 @@ export default class Web_Component extends HTMLElement {
         this.shadowRoot.innerHTML  += value
     }
 
-    //todo figure out what is wrong with the code below. it is almost working (to handle recursive css rules), but it adding lots of extra rules
-    //     and not really working ok with nested rules (it did worked once and I think it is really close)
-    // create_stylesheet_from_css_rules(css_rules) {
-    //     const styleSheet = new CSSStyleSheet();
-    //
-    //     const process_rules = (selector, properties) => {                               // Helper function to recursively flatten the CSS rules
-    //         Object.entries(properties).forEach(([key, value]) => {
-    //             if (typeof value === 'object') {
-    //                 process_rules(`${selector} ${key}`, value);                         // If the value is an object, it's a nested rule (e.g., '.active')
-    //             } else {
-    //                 if (!styleSheet.cssRules[selector]) {                               // Otherwise, it's a CSS property, so we apply it directly
-    //                     const css_init = `${selector} {}`;                              // Create a new empty rule
-    //                     const rules_length = styleSheet.cssRules.length;
-    //                     styleSheet.insertRule(css_init, rules_length);
-    //                 }
-    //                 const cssRule = Array.from(styleSheet.cssRules).find(rule => rule.selectorText === selector);
-    //                 cssRule.style[key] = value;
-    //             }
-    //         });
-    //     };
-    //
-    //     Object.entries(css_rules).forEach(([css_selector, css_properties]) => {     // Iterate over the top-level selectors and process each rule
-    //         process_rules(css_selector, css_properties);
-    //     });
-    //
-    //     return styleSheet;
-    // }
-
-
     inner_html() {
         return this.shadowRoot.innerHTML 
     }
@@ -220,29 +191,88 @@ export default class Web_Component extends HTMLElement {
         return all_stylesheets.filter((stylesheet, index, self) => index === self.findIndex(s => s === stylesheet))
     }
 
-    create_stylesheet_from_css_rules(css_rules) {
-        const styleSheet = new CSSStyleSheet();
-
-        Object.entries(css_rules).forEach(([css_selector, css_properties]) => {        // Iterate over each key (selector) in cssProperties
-            const css_init          = `${css_selector} {}`;                                     // note: it looks like at the moment there isn't another way to create an empty CSSStyleRule and populate it
-            const rules_length      = styleSheet.cssRules.length                                // get size of css rules
-            const insert_position   = styleSheet.insertRule(css_init, rules_length);            // so that we can create a new one at the end
-            const cssRule           = styleSheet.cssRules[insert_position];                     // get a reference to the one we added
-            this.populate_rule(cssRule, css_properties);                                        // populate new css rule with provided css properties
-        });
-        return styleSheet
-    }
-
-    populate_rule(css_rule, css_properties) {
-        for (let prop_name in css_properties) {
-            const css_prop_name = prop_name.replace(/([A-Z])/g, '-$1').toLowerCase();           // Convert camelCase to kebab-case
-            const css_prop_value = css_properties[prop_name]                                    // get css prop value
-            css_rule.style.setProperty(css_prop_name, css_prop_value);                          // set property in css_rule
-        }
-    }
-
     async wait_for(duration=1000) {
         return new Promise(resolve => setTimeout(resolve, duration));
+    }
+    // this is the previous version of create_stylesheet_from_css_rules, after testing on all devices and no side effects noticed, this can be removed
+    // create_stylesheet_from_css_rules(css_rules) {
+    //     const styleSheet = new CSSStyleSheet();
+    //     Object.entries(css_rules).forEach(([css_selector, css_properties]) => {        // Iterate over each key (selector) in cssProperties
+    //         const css_init          = `${css_selector} {}`;                                     // note: it looks like at the moment there isn't another way to create an empty CSSStyleRule and populate it
+    //         const rules_length      = styleSheet.cssRules.length                                // get size of css rules
+    //         const insert_position   = styleSheet.insertRule(css_init, rules_length);            // so that we can create a new one at the end
+    //         const cssRule           = styleSheet.cssRules[insert_position];                     // get a reference to the one we added
+    //         this.populate_rule(cssRule, css_properties);                                        // populate new css rule with provided css properties
+    //     });
+    //     return styleSheet
+    // }
+    //
+    // populate_rule(css_rule, css_properties) {
+    //     for (let prop_name in css_properties) {
+    //         const css_prop_name = prop_name.replace(/([A-Z])/g, '-$1').toLowerCase();           // Convert camelCase to kebab-case
+    //         const css_prop_value = css_properties[prop_name]                                    // get css prop value
+    //         css_rule.style.setProperty(css_prop_name, css_prop_value);                          // set property in css_rule
+    //     }
+    // }
+
+    create_stylesheet_from_css_rules(css_rules) {
+        const styleSheet = new CSSStyleSheet();
+        this.process_rules(styleSheet, css_rules);
+        return styleSheet;
+    }
+
+    process_rules(styleSheet, rules, parentRule = null) {
+        Object.entries(rules).forEach(([selector, properties]) => {
+            if (typeof properties !== 'object') {
+                // Skip if properties is not an object
+                return;
+            }
+            if (selector.startsWith('@')) {
+                // Handle at-rules like @keyframes
+                const ruleText = `${selector} { }`;
+                const insertIndex = parentRule ? parentRule.cssRules.length : styleSheet.cssRules.length;
+                if (parentRule && 'insertRule' in parentRule) {
+                    parentRule.insertRule(ruleText, insertIndex);
+                    const atRule = parentRule.cssRules[insertIndex];
+                    this.process_rules(styleSheet, properties, atRule);
+                } else {
+                    styleSheet.insertRule(ruleText, insertIndex);
+                    const atRule = styleSheet.cssRules[insertIndex];
+                    this.process_rules(styleSheet, properties, atRule);
+                }
+            } else {
+                if (parentRule && parentRule.type === CSSRule.KEYFRAMES_RULE) {
+                    // Handle keyframe selectors like "0%", "100%"
+                    let ruleText = `${selector} { }`;
+                    parentRule.appendRule(ruleText);
+                    const keyframeRule = parentRule.findRule(selector);
+                    this.populate_rule(keyframeRule, properties);
+                } else {
+                    // Handle regular selectors
+                    const ruleText = `${selector} { }`;
+                    const insertIndex = parentRule ? parentRule.cssRules.length : styleSheet.cssRules.length;
+                    if (parentRule && 'insertRule' in parentRule) {
+                        parentRule.insertRule(ruleText, insertIndex);
+                        const cssRule = parentRule.cssRules[insertIndex];
+                        this.populate_rule(cssRule, properties);
+                    } else {
+                        styleSheet.insertRule(ruleText, insertIndex);
+                        const cssRule = styleSheet.cssRules[insertIndex];
+                        this.populate_rule(cssRule, properties);
+                    }
+                }
+            }
+        });
+    }
+
+    populate_rule(cssRule, properties) {
+        if (cssRule.type === CSSRule.STYLE_RULE || cssRule.type === CSSRule.KEYFRAME_RULE) {
+            for (let propName in properties) {                                                             // Handle style and keyframe rules
+                const cssPropName = propName.replace(/([A-Z])/g, '-$1').toLowerCase();
+                const cssPropValue = properties[propName];
+                cssRule.style.setProperty(cssPropName, cssPropValue);
+            }
+        }
     }
 }
 
