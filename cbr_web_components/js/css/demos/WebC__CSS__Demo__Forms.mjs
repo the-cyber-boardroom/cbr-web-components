@@ -1,23 +1,25 @@
-import Web_Component from '../../core/Web_Component.mjs';
-import Button        from '../../core/Button.mjs'       ;
-import Div           from '../../core/Div.mjs'          ;
-import Input         from '../../core/Input.mjs'        ;
-import Form          from '../../core/Form.mjs'         ;
-import H             from '../../core/H.mjs'            ;
-import HR            from '../../core/HR.mjs'           ;
-import Label         from '../../core/Label.mjs'        ;
-import Option        from '../../core/Option.mjs'       ;
-import Select        from '../../core/Select.mjs'       ;
-import Text          from '../../core/Text.mjs'         ;
-import Textarea      from '../../core/Textarea.mjs'     ;
-import CSS__Forms    from  '../CSS__Forms.mjs'          ;
+import Web_Component   from '../../core/Web_Component.mjs';
+import Button          from '../../core/Button.mjs'       ;
+import Div             from '../../core/Div.mjs'          ;
+import Input           from '../../core/Input.mjs'        ;
+import Form            from '../../core/Form.mjs'         ;
+import H               from '../../core/H.mjs'            ;
+import HR              from '../../core/HR.mjs'           ;
+import Label           from '../../core/Label.mjs'        ;
+import Option          from '../../core/Option.mjs'       ;
+import Select          from '../../core/Select.mjs'       ;
+import Text            from '../../core/Text.mjs'         ;
+import Textarea        from '../../core/Textarea.mjs'     ;
+import CSS__Forms      from  '../CSS__Forms.mjs'          ;
+import CSS__Typography from "../CSS__Typography.mjs";
 
 
 export default class WebC__CSS__Demo__Forms extends Web_Component {
 
     load_attributes() {
-        this.css_forms = new CSS__Forms(this)
-        this.apply_css = this.hasAttribute('no-css') === false
+        this.css_forms      = new CSS__Forms(this)
+        this.css_typography = new CSS__Typography(this)
+        this.apply_css      = this.hasAttribute('no-css') === false
     }
 
     render() {
@@ -236,7 +238,8 @@ export default class WebC__CSS__Demo__Forms extends Web_Component {
 
         // Apply CSS and render
         if (this.apply_css) {
-            this.css_forms.apply_framework()
+            this.css_forms     .apply_framework()
+            this.css_typography.apply_framework()
         }
         this.set_inner_html(div_root.html())
     }
