@@ -152,19 +152,6 @@ export default class Web_Component extends HTMLElement {
         this.shadowRoot.innerHTML  += value
     }
 
-    create_stylesheet_from_css_rules(css_rules) {
-        const styleSheet = new CSSStyleSheet();
-
-        Object.entries(css_rules).forEach(([css_selector, css_properties]) => {        // Iterate over each key (selector) in cssProperties
-            const css_init          = `${css_selector} {}`;                                     // note: it looks like at the moment there isn't another way to create an empty CSSStyleRule and populate it
-            const rules_length      = styleSheet.cssRules.length                                // get size of css rules
-            const insert_position   = styleSheet.insertRule(css_init, rules_length);            // so that we can create a new one at the end
-            const cssRule           = styleSheet.cssRules[insert_position];                     // get a reference to the one we added
-            this.populate_rule(cssRule, css_properties);                                        // populate new css rule with provided css properties
-        });
-        return styleSheet
-    }
-
     //todo figure out what is wrong with the code below. it is almost working (to handle recursive css rules), but it adding lots of extra rules
     //     and not really working ok with nested rules (it did worked once and I think it is really close)
     // create_stylesheet_from_css_rules(css_rules) {
@@ -229,10 +216,21 @@ export default class Web_Component extends HTMLElement {
             all_stylesheets.push(...Array.from(this.shadowRoot.styleSheets)) }
         if (include_shadow) {
             all_stylesheets.push(...this.shadowRoot.adoptedStyleSheets) }
-        // this is required for Safari which was duplicating the entires
-        return all_stylesheets.filter((stylesheet, index, self) =>      // return unique list
-            index === self.findIndex(s => s === stylesheet))
-        return all_stylesheets
+        // this is required for Safari which was duplicating the entries
+        return all_stylesheets.filter((stylesheet, index, self) => index === self.findIndex(s => s === stylesheet))
+    }
+
+    create_stylesheet_from_css_rules(css_rules) {
+        const styleSheet = new CSSStyleSheet();
+
+        Object.entries(css_rules).forEach(([css_selector, css_properties]) => {        // Iterate over each key (selector) in cssProperties
+            const css_init          = `${css_selector} {}`;                                     // note: it looks like at the moment there isn't another way to create an empty CSSStyleRule and populate it
+            const rules_length      = styleSheet.cssRules.length                                // get size of css rules
+            const insert_position   = styleSheet.insertRule(css_init, rules_length);            // so that we can create a new one at the end
+            const cssRule           = styleSheet.cssRules[insert_position];                     // get a reference to the one we added
+            this.populate_rule(cssRule, css_properties);                                        // populate new css rule with provided css properties
+        });
+        return styleSheet
     }
 
     populate_rule(css_rule, css_properties) {
