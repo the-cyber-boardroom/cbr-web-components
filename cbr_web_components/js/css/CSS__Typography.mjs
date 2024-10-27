@@ -68,6 +68,39 @@ export default class CSS__Typography {
             ".color-muted"             : { color: "#5f6368" },
             ".color-white"             : { color: "#ffffff" },
 
+            // other colors
+            ".color-blue"         : { "color"           : "#4A90E2" },
+            ".bg-blue"            : { "background-color": "#4A90E2" },
+
+            // Light colors and background
+            ".color-light-blue"   : { "color"           : "rgba(13, 110, 253, 0.1)" },
+            ".bg-light-blue"      : { "background-color": "rgba(13, 110, 253, 0.1)" },
+
+            ".color-light-gray"   : { "color"           : "rgba(108, 117, 125, 0.1)" },
+            ".bg-light-gray"      : { "background-color": "rgba(108, 117, 125, 0.1)" },
+
+            ".color-light-green"  : { "color"           : "#E6FFE6" },
+            ".bg-light-green"     : { "background-color": "#E6FFE6" },
+
+            ".color-light-cyan"   : { "color"           : "rgba(13, 202, 240, 0.1)" },
+            ".bg-light-cyan"      : { "background-color": "rgba(13, 202, 240, 0.1)" },
+
+            ".color-light-yellow" : { "color"           : "rgba(255, 193, 7, 0.1)" },
+            ".bg-light-yellow"    : { "background-color": "rgba(255, 193, 7, 0.1)" },
+
+            ".color-light-red"    : { "color"           : "rgba(220, 53, 69, 0.1)" },
+            ".bg-light-red"       : { "background-color": "rgba(220, 53, 69, 0.1)" },
+
+            ".color-light-white"  : { "color"           : "#f8f9fa"                },
+            ".bg-light-white"     : { "background-color": "#f8f9fa"                },
+
+            ".color-light-black"  : { "color"           : "#2D3436"                },
+            ".bg-light-black"     : { "background-color": "#2D3436"                },
+
+
+
+
+
             // Background colors
             ".bg-primary"              : { backgroundColor: "#1a73e8" },
             ".bg-secondary"            : { backgroundColor: "#5f6368" },

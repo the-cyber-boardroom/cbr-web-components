@@ -19,7 +19,7 @@ export default class CSS__Grid {
                 "--breakpoint-lg": "992px",
                 "--breakpoint-xl": "1200px",
                 "--breakpoint-xxl": "1400px",
-                "--grid-gutter": "1.5rem",
+                "--grid-gutter": "0",
                 "--grid-columns": "12"
             },
 
@@ -62,21 +62,17 @@ export default class CSS__Grid {
             ".row": {
                 display: "flex",
                 flexWrap: "wrap",
-                marginLeft: "calc(var(--grid-gutter) / -2)",
-                marginRight: "calc(var(--grid-gutter) / -2)",
-                boxSizing: "border-box"
-            },
+                boxSizing: "border-box",
+                gap: "var(--grid-gutter)"  // Default gap, can be overridden by gap utilities
+            } ,
 
             // Basic columns
             ".col": {
-                position: "relative",
-                width: "100%",
-                paddingRight: "calc(var(--grid-gutter) / 2)",
-                paddingLeft: "calc(var(--grid-gutter) / 2)",
-                flexGrow: "1",
-                flexShrink: "0",
-                maxWidth: "100%",
-                boxSizing: "border-box"
+                boxSizing   : "border-box" ,
+                position    : "relative"   ,
+                flex        : "1 1 auto"   ,
+                maxWidth    : "100%"       ,
+                minWidth    : 0          ,
             },
 
             // Generate column widths
@@ -154,6 +150,16 @@ export default class CSS__Grid {
                 }
             }), {}),
 
+            // height(px) utilities
+
+            ...[50, 75, 100, 150, 200, 300, 400, 500].reduce((acc, height) => ({
+                ...acc,
+                [`.h-${height}px`]: {
+                    maxHeight: `${height}px`,
+                    minHeight: `${height}px`
+                }
+            }), {}),
+
             // Display utilities
             ".d-none": { display: "none" },
             ".d-flex": { display: "flex" },
@@ -173,7 +179,69 @@ export default class CSS__Grid {
                     [`.d-${breakpoint}-flex`]: { display: "flex" },
                     [`.d-${breakpoint}-block`]: { display: "block" }
                 }
-            }), {})
+            }), {}) ,
+
+            // extra css rules (todo: see which ones can be extended with the same utilities patterns used above, and where they should be placed better)
+
+            // Padding utilities
+            ".p-0": { padding: "0" },
+            ".p-3": { padding: "1rem" },
+
+            // Flex container behaviors
+            ".flex-column": { flexDirection: "column" },
+            ".flex-row": { flexDirection: "row" },
+            ".flex-wrap": { flexWrap: "wrap" },
+            ".flex-nowrap": { flexWrap: "nowrap" },
+
+            // Flex child behaviors
+            ".flex-grow-0": { flexGrow: "0" },
+            ".flex-grow-1": { flexGrow: "1" },
+            ".flex-shrink-0": { flexShrink: "0" },
+            ".flex-shrink-1": { flexShrink: "1" },
+
+            // Common flex shorthand combinations
+            ".flex-fill": { flex: "1 1 auto" },
+            ".flex-fixed": { flex: "0 0 auto" },
+
+            // Height utilities for flex containers
+            ".h-100pc"  : { height: "100%" },
+            ".min-h-100pc": { minHeight: "100%" },
+
+            // Flex alignment utilities (if not already present)
+            ".align-items-start": { alignItems: "flex-start" },
+            ".align-items-center": { alignItems: "center" },
+            ".align-items-end": { alignItems: "flex-end" },
+            ".align-items-stretch": { alignItems: "stretch" },
+
+            ".justify-content-start": { justifyContent: "flex-start" },
+            ".justify-content-center": { justifyContent: "center" },
+            ".justify-content-end": { justifyContent: "flex-end" },
+            ".justify-content-between": { justifyContent: "space-between" },
+            ".justify-content-around": { justifyContent: "space-around" },
+
+            //Layout
+            ".layout": {
+                display       : "flex"                      ,
+                flexDirection : "column"
+            },
+            ".layout-vertical": {
+                display: "flex",
+                flexDirection: "column"
+            },
+
+            ".layout-horizontal": {
+                display: "flex",
+                flexDirection: "row"
+            },
+
+            ".layout-panel": {
+                flex: "1 1 1px",
+                minWidth: 0
+            },
+
+            ".layout-fixed": {
+                flexShrink: 0
+            }
         }
     }
 }
