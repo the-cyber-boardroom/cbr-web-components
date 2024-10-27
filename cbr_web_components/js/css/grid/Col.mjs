@@ -12,6 +12,12 @@ export default class Col extends Div {
         super({...kwargs})
     }
 
+    add_col({size, ...kwargs}={}) {
+        const col = new Col({size, ...kwargs})
+        this.add_element(col)
+        return col
+    }
+
     add_row({...kwargs}={}) {
         const row = new Row({...kwargs})
         this.add_element(row)

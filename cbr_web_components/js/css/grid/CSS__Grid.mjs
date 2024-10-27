@@ -1,11 +1,18 @@
 export default class CSS__Grid {
+    debug_mode = new URLSearchParams(window.location.search).has('debug__webc')
+
     constructor(target_element) {
         this.target_element = target_element
+
+        console.log(this.debug_mode)
     }
 
-    apply_framework() {
+    apply_framework({debug=false}={}) {
         if (this.target_element) {
             this.target_element.add_css_rules(this.css_rules__standard())
+            if (this.debug_mode) {
+                this.target_element.add_css_rules(this.css_rules_debug())
+            }
         }
     }
 
@@ -246,6 +253,81 @@ export default class CSS__Grid {
 
             ".layout-fixed": {
                 flexShrink: 0
+            }
+        }
+    }
+
+    css_rules_debug() {
+        return {
+            ":host": {
+                // Debug colors
+                "--debug-layout-color": "#4A90E2",       // blue
+                "--debug-row-color"   : "#198754",       // green
+                "--debug-col-color"   : "#6200ee",       // purple
+
+                // Common debug styles
+                "--debug-label-padding"      : "4px 8px"    ,
+                "--debug-label-font-size"    : "8px"        ,
+                "--debug-label-border-radius": "4px"        ,
+                "--debug-element-padding"    : "15px 5px"   ,
+                "--debug-element-margin"     : "10px 5px"   ,
+                "--debug-border-width"       : "2px"        ,
+                "--debug-label-top"          : "-20px"      ,
+                "--debug-margin"             : "20px"
+            },
+
+            ".layout": {
+                position: "relative",
+                border  : "var(--debug-border-width) solid var(--debug-layout-color)",
+                padding : "var(--debug-element-padding)"    ,
+                margin  : "var(--debug-margin)"             ,
+            },
+            ".layout::before": {
+                content     : "'Layout'",
+                position    : "absolute",
+                top         : "var(--debug-label-top)",
+                left        : "0",
+                background  : "var(--debug-layout-color)",
+                color       : "white",
+                padding     : "var(--debug-label-padding)",
+                fontSize    : "var(--debug-label-font-size)",
+                borderRadius: "var(--debug-label-border-radius)"
+            },
+
+            ".row": {
+                position: "relative",
+                border: "var(--debug-border-width) solid var(--debug-row-color)",
+                padding: "var(--debug-element-padding)",
+                margin: "var(--debug-element-margin)"
+            },
+            ".row::before": {
+                content: "'Row'",
+                position: "absolute",
+                top: "var(--debug-label-top)",
+                left: "0",
+                background: "var(--debug-row-color)",
+                color: "white",
+                padding: "var(--debug-label-padding)",
+                fontSize: "var(--debug-label-font-size)",
+                borderRadius: "var(--debug-label-border-radius)"
+            },
+
+            ".col, [class*='col-']": {
+                position: "relative",
+                border: "var(--debug-border-width) solid var(--debug-col-color)",
+                padding: "var(--debug-element-padding)",
+                margin: "var(--debug-element-margin)"
+            },
+            ".col::before, [class*='col-']::before": {
+                content: "'Column'",
+                position: "absolute",
+                top: "var(--debug-label-top)",
+                left: "0",
+                background: "var(--debug-col-color)",
+                color: "white",
+                padding: "var(--debug-label-padding)",
+                fontSize: "var(--debug-label-font-size)",
+                borderRadius: "var(--debug-label-border-radius)"
             }
         }
     }
