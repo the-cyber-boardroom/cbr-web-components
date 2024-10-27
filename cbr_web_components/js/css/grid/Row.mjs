@@ -8,9 +8,28 @@ export default class Row extends Div {
     }
 
     add_col({size, ...kwargs}={}) {
-        kwargs.class = `col${size ? `-${size}` : ''} ${kwargs.class || ''}`
-        const col = new Col({...kwargs})
+        const col = new Col({size, ...kwargs})
         this.add_element(col)
         return col
+    }
+
+    add_row({...kwargs}={}) {
+        const row = new Row({...kwargs})
+        this.add_element(row)
+        return row
+    }
+
+    // Add multiple columns at once
+    add_cols(colConfigs=[]) {
+        colConfigs.forEach(config => this.add_col(config))
+        return this
+    }
+
+    // Add a nested row within a column
+    add_nested_row({col_config={}, row_config={}}={}) {
+        const col = this.add_col(col_config)
+        const row = new Row(row_config)
+        col.add_element(row)
+        return row
     }
 }

@@ -31,6 +31,7 @@ export default class Tag {
 
     add_elements(...elements) {
         for(let element of elements){
+            element.element_parent = this
             this.add_element(element)
         }
         return this
