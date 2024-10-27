@@ -22,6 +22,14 @@ export default class Tag {
         return this;
     }
 
+    add_class(class_name) {
+        if (this.class) {
+            this.class += ` ${class_name}`
+        } else {
+            this.class = class_name
+        }
+        return this
+    }
 
     add_element(element) {
         element.element_parent = this
@@ -284,6 +292,18 @@ export default class Tag {
             this.set_style(key,value)
         }
         return this
+    }
+
+    with_id(id) {
+        if (this.id === id) return this
+
+        // Search through child elements
+        for (const child of this.elements || []) {
+            const found = child.with_id(id)
+            if (found) return found
+        }
+
+        return null
     }
 }
 

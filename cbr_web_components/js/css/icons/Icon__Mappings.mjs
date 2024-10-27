@@ -102,7 +102,7 @@ export default class Icon__Mappings {
     }
 
     static MENU = {
-        'home'          : '⌂',       // You already have this in MISC
+        'home'          : '🏠',       // You already have this in MISC
         'robot'         : '🤖',      // For Athena
         'person'        : '👤',      // For Personas
         'history'       : '↻',       // For Past Chats (or could use '⏱')

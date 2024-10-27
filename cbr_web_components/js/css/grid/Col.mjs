@@ -5,8 +5,8 @@ export default class Col extends Div {
     constructor({size, width, ...kwargs}={}) {
         // Support both size (1-12) and fixed widths
         let className = 'col'
-        if (size) className = `col-${size}`
-        if (width) className = `w-${width}px`
+        if (size) className   = `col-${size}`
+        if (width) className += ` w-${width}px`
 
         kwargs.class = `${className} ${kwargs.class || ''}`
         super({...kwargs})

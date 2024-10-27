@@ -7,8 +7,8 @@ export default class Row extends Div {
         super({...kwargs})
     }
 
-    add_col({size, ...kwargs}={}) {
-        const col = new Col({size, ...kwargs})
+    add_col({...kwargs}={}) {
+        const col = new Col({...kwargs})
         this.add_element(col)
         return col
     }

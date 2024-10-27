@@ -3,8 +3,6 @@ export default class CSS__Grid {
 
     constructor(target_element) {
         this.target_element = target_element
-
-        console.log(this.debug_mode)
     }
 
     apply_framework({debug=false}={}) {
@@ -216,8 +214,9 @@ export default class CSS__Grid {
             ".flex-fixed": { flex: "0 0 auto" },
 
             // Height utilities for flex containers
-            ".h-100pc"  : { height: "100%" },
-            ".min-h-100pc": { minHeight: "100%" },
+
+            ".h-100vh": { height: "100vh" },          // Viewport height
+            ".h-100pc"  : { height: "100%" },         // Parent-relative height
 
             // Flex alignment utilities (if not already present)
             ".align-items-start": { alignItems: "flex-start" },
@@ -260,20 +259,20 @@ export default class CSS__Grid {
     css_rules_debug() {
         return {
             ":host": {
-                // Debug colors
-                "--debug-layout-color": "#4A90E2",       // blue
-                "--debug-row-color"   : "#198754",       // green
-                "--debug-col-color"   : "#6200ee",       // purple
+                    // Debug colors
+                    "--debug-layout-color": "#4A90E2",       // blue
+                    "--debug-row-color"   : "#198754",       // green
+                    "--debug-col-color"   : "#6200ee",       // purple
 
-                // Common debug styles
-                "--debug-label-padding"      : "4px 8px"    ,
-                "--debug-label-font-size"    : "8px"        ,
-                "--debug-label-border-radius": "4px"        ,
-                "--debug-element-padding"    : "15px 5px"   ,
-                "--debug-element-margin"     : "10px 5px"   ,
-                "--debug-border-width"       : "2px"        ,
-                "--debug-label-top"          : "-20px"      ,
-                "--debug-margin"             : "20px"
+                    // Common debug styles
+                    "--debug-label-padding"      : "4px 8px"    ,
+                    "--debug-label-font-size"    : "8px"        ,
+                    "--debug-label-border-radius": "4px"        ,
+                    "--debug-element-padding"    : "15px 5px"   ,
+                    "--debug-element-margin"     : "10px 5px"   ,
+                    "--debug-border-width"       : "2px"        ,
+                    "--debug-label-top"          : "-20px"      ,
+                    "--debug-margin"             : "20px"
             },
 
             ".layout": {
@@ -283,7 +282,7 @@ export default class CSS__Grid {
                 margin  : "var(--debug-margin)"             ,
             },
             ".layout::before": {
-                content     : "'Layout'",
+                content     : "'Layout 'attr(id)",
                 position    : "absolute",
                 top         : "var(--debug-label-top)",
                 left        : "0",
@@ -293,7 +292,6 @@ export default class CSS__Grid {
                 fontSize    : "var(--debug-label-font-size)",
                 borderRadius: "var(--debug-label-border-radius)"
             },
-
             ".row": {
                 position: "relative",
                 border: "var(--debug-border-width) solid var(--debug-row-color)",
@@ -301,7 +299,7 @@ export default class CSS__Grid {
                 margin: "var(--debug-element-margin)"
             },
             ".row::before": {
-                content: "'Row'",
+                content: "'Row 'attr(id)",
                 position: "absolute",
                 top: "var(--debug-label-top)",
                 left: "0",
@@ -319,7 +317,7 @@ export default class CSS__Grid {
                 margin: "var(--debug-element-margin)"
             },
             ".col::before, [class*='col-']::before": {
-                content: "'Column'",
+                content: "'Column 'attr(id)",
                 position: "absolute",
                 top: "var(--debug-label-top)",
                 left: "0",
