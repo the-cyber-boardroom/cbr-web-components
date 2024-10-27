@@ -150,15 +150,20 @@ export default class CSS__Grid {
                 }
             }), {}),
 
-            // height(px) utilities
+            // Height and Width (px) Utilities
 
-            ...[50, 75, 100, 150, 200, 300, 400, 500].reduce((acc, height) => ({
+            ...[25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500].reduce((acc, size) => ({
                 ...acc,
-                [`.h-${height}px`]: {
-                    maxHeight: `${height}px`,
-                    minHeight: `${height}px`
+                [`.h-${size}px`]: {
+                    maxHeight: `${size}px`,
+                    minHeight: `${size}px`
+                },
+                [`.w-${size}px`]: {
+                    maxWidth: `${size}px`,
+                    minWidth: `${size}px`
                 }
             }), {}),
+
 
             // Display utilities
             ".d-none": { display: "none" },
@@ -184,14 +189,14 @@ export default class CSS__Grid {
             // extra css rules (todo: see which ones can be extended with the same utilities patterns used above, and where they should be placed better)
 
             // Padding utilities
-            ".p-0": { padding: "0" },
+            ".p-0": { padding: "0"    },
             ".p-3": { padding: "1rem" },
 
             // Flex container behaviors
             ".flex-column": { flexDirection: "column" },
-            ".flex-row": { flexDirection: "row" },
-            ".flex-wrap": { flexWrap: "wrap" },
-            ".flex-nowrap": { flexWrap: "nowrap" },
+            ".flex-row"   : { flexDirection: "row"    },
+            ".flex-wrap"  : { flexWrap     : "wrap"   },
+            ".flex-nowrap": { flexWrap     : "nowrap" },
 
             // Flex child behaviors
             ".flex-grow-0": { flexGrow: "0" },
