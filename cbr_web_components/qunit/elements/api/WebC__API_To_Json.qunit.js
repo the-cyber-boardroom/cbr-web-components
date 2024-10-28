@@ -30,7 +30,7 @@ QUnit.module('WebC__API_To_Json', function(hooks) {
         target_div.remove()
     })
 
-    QUnit.test('.constructor', (assert) => {
+    QUnit.test('.constructor', (assert) => { 
         assert.deepEqual(WebC__API_To_Json.name           , 'WebC__API_To_Json'     )
         assert.ok       (WebC__API_To_Json.prototype      instanceof Web_Component  )
         assert.ok       (webc__api_to_json                instanceof Web_Component  )

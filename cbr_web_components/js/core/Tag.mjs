@@ -34,7 +34,7 @@ export default class Tag {
     add_element(element) {
         element.element_parent = this
         this.elements.push(element)
-        return true
+        return this
     }
 
     add_elements(...elements) {
