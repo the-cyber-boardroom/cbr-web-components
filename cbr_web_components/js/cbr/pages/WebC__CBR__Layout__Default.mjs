@@ -1,26 +1,28 @@
-import Web_Component        from '../../core/Web_Component.mjs'
-import Layout               from '../../css/grid/Layout.mjs'
-import CSS__Alerts          from "../../css/CSS__Alerts.mjs"
-import CSS__Grid            from '../../css/grid/CSS__Grid.mjs'
-import CSS__Typography      from '../../css/CSS__Typography.mjs'
-import CSS__Side_Menu       from "../../css/menus/CSS__Side_Menu.mjs"
-import Left_Menu            from "../../css/menus/Left_Menu.mjs";
-import CBR__Left_Footer     from "../elements/CBR__Left_Footer.mjs";
-import CBR__Top_Banner      from "../elements/CBR__Top_Banner.mjs";
-import CBR__Left_Logo       from "../elements/CBR__Left_Logo.mjs";
-import CBR__Important_Alert from "../elements/CBR__Important_Alert.mjs";
+import Web_Component             from '../../core/Web_Component.mjs'
+import Layout                    from '../../css/grid/Layout.mjs'
+import CSS__Alerts               from "../../css/CSS__Alerts.mjs"
+import CSS__Grid                 from '../../css/grid/CSS__Grid.mjs'
+import CSS__Typography           from '../../css/CSS__Typography.mjs'
+import CSS__Side_Menu            from "../../css/menus/CSS__Side_Menu.mjs"
+import Left_Menu                 from "../../css/menus/Left_Menu.mjs";
+import CBR__Left_Footer          from "../elements/CBR__Left_Footer.mjs";
+import CBR__Top_Banner           from "../elements/CBR__Top_Banner.mjs";
+import CBR__Left_Logo            from "../elements/CBR__Left_Logo.mjs";
+import CBR__Important_Alert      from "../elements/CBR__Important_Alert.mjs";
+import CBR__Content__Placeholder from "../elements/CBR__Content__Placeholder.mjs";
 
 export default class WebC__CBR__Layout__Default extends Web_Component {
     load_attributes() {
-        new CSS__Alerts    (this).apply_framework()
-        new CSS__Grid      (this).apply_framework()
-        new CSS__Typography(this).apply_framework()
-        new CSS__Side_Menu (this).apply_framework()
+        new CSS__Alerts              (this).apply_framework()
+        new CSS__Grid                (this).apply_framework()
+        new CSS__Typography          (this).apply_framework()
+        new CSS__Side_Menu           (this).apply_framework()
 
-        this.add_css_rules(CBR__Top_Banner     .css_rules())
-        this.add_css_rules(CBR__Left_Footer    .css_rules())
-        this.add_css_rules(CBR__Left_Logo      .css_rules())
-        this.add_css_rules(CBR__Important_Alert.css_rules())
+        this.add_css_rules(CBR__Top_Banner          .css_rules())
+        this.add_css_rules(CBR__Left_Footer         .css_rules())
+        this.add_css_rules(CBR__Left_Logo           .css_rules())
+        this.add_css_rules(CBR__Important_Alert     .css_rules())
+        this.add_css_rules(CBR__Content__Placeholder.css_rules())
     }
 
     render() {
@@ -30,11 +32,11 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         row_banner  = layout.add_row()
         row_content = layout.add_row({class: 'flex-fill flex-nowrap'                           })
 
-        row_banner .add_col({ id: 'top-banner' , class: 'p-3 h-50px bg-blue'                   })
+        row_banner .add_col({ id: 'top-banner' , class: 'h-50px'                               })
         row_content.add_col({                    class: 'w-250px flex-column d-flex'           })
                    .add_col({ id: 'left-menu'  , class: 'flex-fill bg-white'                   }).parent()
                    .add_col({ id: 'left-footer', class: 'h-75px bg-light-gray'                 })
-        row_content.add_col({ id: 'content'    , class: 'p-3 flex-fill bg-light-gray'          })
+        row_content.add_col({ id: 'content'    , class: 'flex-fill bg-light-gray'          })
 
         layout.with_id('left-menu').add_tag({ tag: 'webc-api-side-menu' })
 
@@ -53,6 +55,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         layout     .with_id('left-menu'  ).add_element(new CBR__Important_Alert()                       )
         layout     .with_id('top-banner' ).add_element(new CBR__Top_Banner ({ username  : username    }))
         layout     .with_id('left-footer').add_element(new CBR__Left_Footer()                           )
+        layout     .with_id('content'    ).add_element(new CBR__Content__Placeholder()                  )
 
         this.set_inner_html(layout.html())
     }

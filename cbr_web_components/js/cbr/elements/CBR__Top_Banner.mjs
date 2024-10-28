@@ -7,7 +7,6 @@ export default class Top_Banner extends Div {
         kwargs.class = `top-banner ${kwargs.class || ''}`
         super({id, ...kwargs})
 
-
         const menuIcon         = new Icon({ class: 'menu-icon icon-lg'  , icon: 'menu'                                       })    // Hamburger menu
         const userContainer    = new Div ({ class: 'user-container'                                                          })    // User container (right side)
         const userImgContainer = new Div ({ class: 'user-img-container'                                                      })    // User profile image
@@ -26,9 +25,8 @@ export default class Top_Banner extends Div {
                 alignItems: "center",
                 padding: "0 1rem",
                 height: "100%",
-                backgroundColor: "#4A90E2",
+                backgroundColor: "#1e88e5",
                 color: "#ffffff",
-                fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif"
             },
 
             ".menu-icon": {
