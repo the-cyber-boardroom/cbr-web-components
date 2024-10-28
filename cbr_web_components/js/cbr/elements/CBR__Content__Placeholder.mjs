@@ -6,7 +6,7 @@ export default class CBR__Content__Placeholder extends Div {
         kwargs.class = `content-placeholder ${kwargs.class || ''}`
         super({id, ...kwargs})
 
-        const div_container = new Div({ class: 'placeholder-container'                                    })
+        const div_container = new Div({ id: 'placeholder-container', class: 'placeholder-container'                                    })
 
         this.add_element(div_container)
 

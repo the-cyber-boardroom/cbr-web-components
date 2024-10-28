@@ -176,6 +176,9 @@ export default class WebC__Chat_Bot extends Web_Component {
         if (!event_data) {
             return
         }
+        if (event_data?.cbr_chat_id === '') {
+            return
+        }
 
         const cbr_chat_id        = event_data?.cbr_chat_id          || ''
         //const cbr_chat_thread_id = event_data?.cbr_chat_thread_id   || ''

@@ -19,7 +19,7 @@ export default class WebC__Athena__Banner extends Web_Component {
     async render() {
         const content = await this.load_content()
 
-        const content_card = new Div     ({ class: 'card'      })
+        const content_card = new Div     ({ class: 'card h-100pc'      })
         const content_body = new Div     ({ class: 'card-body' })
         const card_title   = new H       ({ level: 1,  class: 'card-title',  value: content?.metadata?.title})
         const card_text    = new Raw_Html({ class: 'card-text',  value: content?.html })

@@ -155,6 +155,14 @@ export default class CSS__Grid {
                 }
             }), {}),
 
+            // Margin utilities
+            ...[0, 1, 2, 3, 4, 5].reduce((acc, i) => ({
+                ...acc,
+                [`.m-${i}`]: {
+                    margin: `${i}rem` // Adjust units as needed
+                }
+            }), {}),
+
             // Height and Width (px) Utilities
 
             ...[25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500].reduce((acc, size) => ({

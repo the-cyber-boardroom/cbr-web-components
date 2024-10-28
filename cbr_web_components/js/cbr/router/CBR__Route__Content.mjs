@@ -7,9 +7,7 @@ export default class CBR__Route__Content {
         this.error_boundary = new CBR__Error__Boundary();
     }
 
-    async load_content(route_path) {
-        const content_div = document.createElement('div');
-        content_div.className = 'route-content';
+    async fetch_content(route_path) {
 
         try {
             // Map routes to content sections
@@ -17,16 +15,15 @@ export default class CBR__Route__Content {
             const content = await this.content_loader.load_content(page);
 
             if (content && content.html) {
-                content_div.innerHTML = content.html;
+                return content.html
             } else {
                 throw new Error('Invalid content format received');
             }
         } catch (error) {
             console.error('Route content error:', error);
-            return this.error_boundary.render_error(error);
+            return "... failed to load content ..."
+            //return this.error_boundary.render_error(error);
         }
-
-        return content_div;
     }
 
     map_route_to_page(route_path) {     // in case we need to map routes to content sections

@@ -1,4 +1,7 @@
 export default class CBR__Route__Handler {
+
+    base_path = '/webc/cbr-webc-dev'
+
     constructor(component) {
         this.component = component
         this.setupEventListeners()
@@ -32,19 +35,13 @@ export default class CBR__Route__Handler {
         const contentEl = this.component.shadowRoot.querySelector('#content')
         if (!contentEl) return
 
-        const placeholder = contentEl.querySelector('.placeholder-container')
-        if (!placeholder) return
+        const placeholder = contentEl
 
-        const basePath = '/webc/cbr-webc-dev'                                       // Extract the relevant part of the path after cbr-webc
-        const routePath = path.replace(basePath, '').replace(/^\/+/, '') || 'home'
-
-        // Show loading state
-        placeholder.innerHTML = '<div class="content-loader">Loading...</div>'
+        const routePath = path.replace(this.base_path, '').replace(/^\/+/, '') || 'home'
 
         try {
-            const content = await this.component.routeContent.load_content(routePath)
-            placeholder.innerHTML = ''
-            placeholder.appendChild(content)
+            const content = await this.component.routeContent.fetch_content(routePath)
+            placeholder.innerHTML = content
         } catch (error) {
             console.error('Error loading content:', error)
             placeholder.innerHTML = '<div class="content-error">Error loading content. Please try again.</div>'

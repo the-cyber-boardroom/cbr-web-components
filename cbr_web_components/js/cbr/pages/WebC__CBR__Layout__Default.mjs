@@ -69,7 +69,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         row_content.add_col({                    class: 'w-250px flex-column d-flex'           })
                    .add_col({ id: 'left-menu'  , class: 'flex-fill bg-white'                   }).parent()
                    .add_col({ id: 'left-footer', class: 'h-75px bg-light-gray'                 })
-        row_content.add_col({ id: 'content'    , class: 'flex-fill bg-light-gray'          })
+        row_content.add_col({ id: 'content'    , class: 'd-flex bg-light-gray m-1'             })
 
         layout.with_id('left-menu').add_tag({ tag: 'webc-api-side-menu' })
 
@@ -94,6 +94,8 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
 
         // Handle initial route
         this.routeHandler.handleRoute(window.location.pathname)
+
+
     }
 }
 
