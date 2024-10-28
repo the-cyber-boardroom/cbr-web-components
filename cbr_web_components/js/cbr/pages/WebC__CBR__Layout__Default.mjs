@@ -10,97 +10,14 @@ import CBR__Top_Banner          from "../elements/CBR__Top_Banner.mjs"
 import CBR__Left_Logo           from "../elements/CBR__Left_Logo.mjs"
 import CBR__Important_Alert     from "../elements/CBR__Important_Alert.mjs"
 import CBR__Content__Placeholder from "../elements/CBR__Content__Placeholder.mjs"
+import CBR__Route__Handler      from "../router/CBR__Route__Handler.mjs"
+import CBR__Route__Content      from "../router/CBR__Route__Content.mjs"
 
 export default class WebC__CBR__Layout__Default extends Web_Component {
     constructor() {
         super()
-        this.setupRouteHandler()
-    }
-
-    setupRouteHandler() {
-        // Listen for popstate events (browser back/forward)
-        window.addEventListener('popstate', (event) => {
-            this.handleRoute(window.location.pathname)
-        })
-
-        // Intercept navigation clicks
-        document.addEventListener('click', (event) => {
-            const path = event.composedPath();
-            const link = path.find(el => el.tagName === 'A');
-
-            if (link && link.href.startsWith(window.location.origin)) {
-                event.preventDefault()
-                const path = link.href.replace(window.location.origin, '')
-                this.navigate(path)
-            }
-        })
-    }
-
-    navigate(path) {
-        window.history.pushState({}, '', path)
-        this.handleRoute(path)
-    }
-
-    async handleRoute(path) {
-        console.log('Handling route:', path)
-        const contentEl = this.shadowRoot.querySelector('#content')
-        window._this = this
-        console.log(contentEl)
-        if (!contentEl) return
-
-        const placeholder = contentEl.querySelector('.placeholder-container')
-        if (!placeholder) return
-
-        // Extract the relevant part of the path after cbr-webc-dev
-        const basePath = '/webc/cbr-webc'
-        const routePath = path.replace(basePath, '').replace(/^\/+/, '') || 'home'
-
-        // Show loading state
-        placeholder.innerHTML = '<div class="content-loader">Loading...</div>'
-
-        try {
-            const content = await this.loadRouteContent(routePath)
-            placeholder.innerHTML = ''
-            placeholder.appendChild(content)
-        } catch (error) {
-            console.error('Error loading content:', error)
-            placeholder.innerHTML = '<div class="content-error">Error loading content. Please try again.</div>'
-        }
-    }
-
-    async loadRouteContent(routePath) {
-        // This would be where you implement the actual content loading logic
-        // For now, returning placeholder content
-        const contentDiv = document.createElement('div')
-        contentDiv.className = 'route-content'
-
-        switch(routePath.toLowerCase()) {
-            case 'home':
-                contentDiv.innerHTML = '<h1>Welcome to The Cyber Boardroom</h1>'
-                break
-            case 'athena':
-                contentDiv.innerHTML = '<h1>Athena Interface</h1>'
-                break
-            case 'personas':
-                contentDiv.innerHTML = '<h1>Personas Management</h1>'
-                break
-            case 'past-chats':
-            case 'pastchats':
-                contentDiv.innerHTML = '<h1>Past Conversations</h1>'
-                break
-            case 'profile':
-                contentDiv.innerHTML = '<h1>User Profile</h1>'
-                break
-            case 'chat':
-                contentDiv.innerHTML = '<h1>Chat with LLMs</h1>'
-                break
-            case 'docs':
-                contentDiv.innerHTML = '<h1>Documentation</h1>'
-                break
-            default:
-                contentDiv.innerHTML = `<h1>Content for path: ${routePath}</h1>`
-        }
-        return contentDiv
+        this.routeContent = new CBR__Route__Content()
+        this.routeHandler = new CBR__Route__Handler(this)
     }
 
     load_attributes() {
@@ -155,13 +72,13 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         layout.with_id('left-menu').add_tag({ tag: 'webc-api-side-menu' })
 
         // Define menu structure
-        let menu_items = [{ icon: 'home'    , label: 'Home'           , href: '/webc/cbr-webc'                },
-                         { icon: 'robot'    , label: 'Athena'         , href: '/webc/cbr-webc/athena' },
-                         { icon: 'person'   , label: 'Personas'       , href: '/webc/cbr-webc/personas'     },
-                         { icon: 'history'  , label: 'Past Chats'     , href: '/webc/cbr-webc/past-chats'   },
-                         { icon: 'profile'  , label: 'Profile'        , href: '/webc/cbr-webc/profile'      },
-                         { icon: 'chat'     , label: 'Chat with LLMs' , href: '/webc/cbr-webc/chat'         },
-                         { icon: 'docs'     , label: 'Docs'           , href: '/webc/cbr-webc/docs'         }]
+        let menu_items = [{ icon: 'home'    , label: 'Home'           , href: '/webc/cbr-webc-dev'              },
+                         { icon: 'robot'    , label: 'Athena'         , href: '/webc/cbr-webc-dev/athena'       },
+                         { icon: 'person'   , label: 'Personas'       , href: '/webc/cbr-webc-dev/personas'     },
+                         { icon: 'history'  , label: 'Past Chats'     , href: '/webc/cbr-webc-dev/past-chats'   },
+                         { icon: 'profile'  , label: 'Profile'        , href: '/webc/cbr-webc-dev/profile'      },
+                         { icon: 'chat'     , label: 'Chat with LLMs' , href: '/webc/cbr-webc-dev/chat'         },
+                         { icon: 'docs'     , label: 'Docs'           , href: '/webc/cbr-webc-dev/docs'         }]
         let username = 'guest'
 
         layout     .with_id('left-menu'  ).add_element(new CBR__Left_Logo  ()                           )
@@ -174,7 +91,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         this.set_inner_html(layout.html())
 
         // Handle initial route
-        this.handleRoute(window.location.pathname)
+        this.routeHandler.handleRoute(window.location.pathname)
     }
 }
 
