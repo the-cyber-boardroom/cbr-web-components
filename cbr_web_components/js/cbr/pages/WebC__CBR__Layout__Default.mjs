@@ -1,17 +1,18 @@
 import Web_Component             from '../../core/Web_Component.mjs'
 import Layout                    from '../../css/grid/Layout.mjs'
-import CSS__Alerts              from "../../css/CSS__Alerts.mjs"
-import CSS__Grid                from '../../css/grid/CSS__Grid.mjs'
-import CSS__Typography          from '../../css/CSS__Typography.mjs'
-import CSS__Side_Menu           from "../../css/menus/CSS__Side_Menu.mjs"
-import Left_Menu                from "../../css/menus/Left_Menu.mjs"
-import CBR__Left_Footer         from "../elements/CBR__Left_Footer.mjs"
-import CBR__Top_Banner          from "../elements/CBR__Top_Banner.mjs"
-import CBR__Left_Logo           from "../elements/CBR__Left_Logo.mjs"
-import CBR__Important_Alert     from "../elements/CBR__Important_Alert.mjs"
+import CSS__Alerts               from "../../css/CSS__Alerts.mjs"
+import CSS__Grid                 from '../../css/grid/CSS__Grid.mjs'
+import CSS__Typography           from '../../css/CSS__Typography.mjs'
+import CSS__Side_Menu            from "../../css/menus/CSS__Side_Menu.mjs"
+import Left_Menu                 from "../../css/menus/Left_Menu.mjs"
+import CBR__Left_Footer          from "../elements/CBR__Left_Footer.mjs"
+import CBR__Top_Banner           from "../elements/CBR__Top_Banner.mjs"
+import CBR__Left_Logo            from "../elements/CBR__Left_Logo.mjs"
+import CBR__Important_Alert      from "../elements/CBR__Important_Alert.mjs"
 import CBR__Content__Placeholder from "../elements/CBR__Content__Placeholder.mjs"
-import CBR__Route__Handler      from "../router/CBR__Route__Handler.mjs"
-import CBR__Route__Content      from "../router/CBR__Route__Content.mjs"
+import CBR__Route__Handler       from "../router/CBR__Route__Handler.mjs"
+import CBR__Route__Content       from "../router/CBR__Route__Content.mjs"
+import CBR__Error__Boundary      from "../router/CBR__Error__Boundary.mjs";
 
 export default class WebC__CBR__Layout__Default extends Web_Component {
     constructor() {
@@ -31,6 +32,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         this.add_css_rules(CBR__Left_Logo           .css_rules())
         this.add_css_rules(CBR__Important_Alert     .css_rules())
         this.add_css_rules(CBR__Content__Placeholder.css_rules())
+        this.add_css_rules(CBR__Error__Boundary     .css_rules())
 
         // Add new CSS rules for routing functionality
         this.add_css_rules({

@@ -29,22 +29,20 @@ export default class CBR__Route__Handler {
     }
 
     async handleRoute(path) {
-        console.log('Handling route:', path)
         const contentEl = this.component.shadowRoot.querySelector('#content')
         if (!contentEl) return
 
         const placeholder = contentEl.querySelector('.placeholder-container')
         if (!placeholder) return
 
-        // Extract the relevant part of the path after cbr-webc
-        const basePath = '/webc/cbr-webc-dev'
+        const basePath = '/webc/cbr-webc-dev'                                       // Extract the relevant part of the path after cbr-webc
         const routePath = path.replace(basePath, '').replace(/^\/+/, '') || 'home'
 
         // Show loading state
         placeholder.innerHTML = '<div class="content-loader">Loading...</div>'
 
         try {
-            const content = await this.component.routeContent.loadContent(routePath)
+            const content = await this.component.routeContent.load_content(routePath)
             placeholder.innerHTML = ''
             placeholder.appendChild(content)
         } catch (error) {
