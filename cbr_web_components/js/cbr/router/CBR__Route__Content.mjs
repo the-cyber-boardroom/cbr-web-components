@@ -13,8 +13,8 @@ export default class CBR__Route__Content {
 
         try {
             // Map routes to content sections
-            const section = this._map_route_to_section(route_path);
-            const content = await this.content_loader.load_content(section);
+            const page    = this.map_route_to_page(route_path);
+            const content = await this.content_loader.load_content(page);
 
             if (content && content.html) {
                 content_div.innerHTML = content.html;
@@ -29,25 +29,8 @@ export default class CBR__Route__Content {
         return content_div;
     }
 
-    _map_route_to_section(route_path) {
-        // Map application routes to content sections
-        const route_map = {
-            'home': 'home-page',
-            'athena': 'athena',
-            'personas': 'personas',
-            'past-chats': 'past-chats',
-            'pastchats': 'past-chats',
-            'profile': 'profile',
-            'chat': 'chat',
-            'docs': 'documentation'
-        };
-
-        const section = route_map[route_path.toLowerCase()];
-        if (!section) {
-            throw new Error(`No content mapping for route: ${route_path}`);
-        }
-
-        return section;
+    map_route_to_page(route_path) {     // in case we need to map routes to content sections
+        return route_path;
     }
 
     set_language(language) {
