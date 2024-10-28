@@ -13,7 +13,8 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         new CSS__Typography(this).apply_framework()
         new CSS__Side_Menu (this).apply_framework()
 
-        this.add_css_rules(CBR__Top_Banner.css_rules())
+        this.add_css_rules(CBR__Top_Banner .css_rules())
+        this.add_css_rules(CBR__Left_Footer.css_rules())
     }
 
     render() {
@@ -26,25 +27,24 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         row_banner .add_col({ id: 'top-banner' , class: 'p-3 h-50px bg-blue'                   })
         row_content.add_col({                    class: 'w-250px flex-column d-flex'           })
                    .add_col({ id: 'left-menu'  , class: 'flex-fill bg-white'                   }).parent()
-                   .add_col({ id: 'left-footer', class: 'h-50px p-3 bg-light-black color-white'})
+                   .add_col({ id: 'left-footer', class: 'h-75px bg-light-gray'                 })
         row_content.add_col({ id: 'content'    , class: 'p-3 flex-fill bg-light-gray'          })
 
         layout.with_id('left-menu').add_tag({ tag: 'webc-api-side-menu' })
 
-            // Define menu structure
-        let menu_items = [{ icon: 'home'    , label: 'Home'            , href: '/'             },
-                            { icon: 'robot'  , label: 'Athena'          , href: '/web_components/html/webc-dev.html' },
-                            { icon: 'person' , label: 'Personas'        , href: '/personas'     },
-                            { icon: 'history', label: 'Past Chats'      , href: '/past-chats'   },
-                            { icon: 'profile', label: 'Profile'         , href: '/profile'      },
-                            { icon: 'chat'   , label: 'Chat with LLMs'  , href: '/chat'         },
-                            { icon: 'docs'   , label: 'Docs'            , href: '/docs'         }]
+        // Define menu structure (todo: move this to a separate file or an API call)
+        let menu_items = [{ icon: 'home'    , label: 'Home'            , href: '/'                },
+                          { icon: 'robot'  , label: 'Athena'          , href: '/web_components/html/webc-dev.html' },       // todo: change to '/web/athena'
+                          { icon: 'person' , label: 'Personas'        , href: '/web/personas'     },
+                          { icon: 'history', label: 'Past Chats'      , href: '/web/past-chats'   },
+                          { icon: 'profile', label: 'Profile'         , href: '/web/profile'      },
+                          { icon: 'chat'   , label: 'Chat with LLMs'  , href: '/web/chat'         },
+                          { icon: 'docs'   , label: 'Docs'            , href: '/web/docs'         }]
+        let username = 'guest' // todo: retrieve from API or event
 
-        // Add side menu
-        layout.with_id('left-menu' ).add_element(new Left_Menu({ menu_items: menu_items }))
-        layout.with_id('top-banner').add_element(new CBR__Top_Banner({ username: 'guest'}))
-
-
+        layout     .with_id('left-menu'  ).add_element(new Left_Menu       ({ menu_items: menu_items  }))
+        layout     .with_id('top-banner' ).add_element(new CBR__Top_Banner ({ username  : username    }))
+        layout     .with_id('left-footer').add_element(new CBR__Left_Footer()                           )
 
         this.set_inner_html(layout.html())
     }

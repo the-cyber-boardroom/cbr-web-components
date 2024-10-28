@@ -30,8 +30,6 @@ export default class Left_Menu extends Div {
                 class: 'side-menu-text',
                 value: item.label
             })
-            console.log(window.location.pathname )
-            console.log(item.href)
             if (window.location.pathname === item.href) {
                 menuItem.add_class('active')
             }

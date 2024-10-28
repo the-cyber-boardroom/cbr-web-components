@@ -92,23 +92,20 @@ export default class Icon__Mappings {
     }
 
     static MISC = {
-        'home'          : '⌂',
         'link'          : '🔗',
         'infinity'      : '∞',
         'wifi'          : '📶',
         'bluetooth'     : '⌘',
         'battery'       : '🔋',
-        'location'      : '📍'
-    }
-
-    static MENU = {
-        'home'          : '🏠',       // You already have this in MISC
-        'robot'         : '🤖',      // For Athena
-        'person'        : '👤',      // For Personas
-        'history'       : '↻',       // For Past Chats (or could use '⏱')
-        'profile'       : '👤',      // For Profile (same as person)
-        'chat'          : '💬',      // For Chat with LLMs
-        'docs'          : '📄'       // For Docs (you already have this in FILES)
+        'location'      : '📍',
+        'logout'        : '⏏️',
+        'home'          : '🏠',
+        'robot'         : '🤖',
+        'person'        : '👤',
+        'history'       : '↻',
+        'profile'       : '👤',
+        'chat'          : '💬',
+        'docs'          : '📄'
     }
 
     // Combine all categories into a single map
@@ -124,7 +121,6 @@ export default class Icon__Mappings {
             ...this.FILES,
             ...this.TIME,
             ...this.MISC,
-            ...this.MENU
         }
     }
 
@@ -149,7 +145,6 @@ export default class Icon__Mappings {
                 'COMMUNICATION' ,
                 'FILES'         ,
                 'TIME'          ,
-                'MISC'          ,
-                'MENU'          ]
+                'MISC'          ]
     }
 }

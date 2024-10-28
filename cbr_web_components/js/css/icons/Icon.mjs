@@ -1,65 +1,18 @@
 import Icon__Mappings from './Icon__Mappings.mjs'
+import Span           from '../../core/Span.mjs'
 
-export default class Icon {
-    constructor(options = {}) {
-        this.element = document.createElement(options.element || 'span')
-        this.setup(options)
-    }
+export default class Icon extends Span {
+    constructor({icon,  size,  color,  rotate, spin = false,  pulse = false, spacing, ...kwargs} = {}) {
 
-    setup(options) {
-        // Always add base icon class
-        this.element.classList.add('icon')
+        kwargs.class = `icon ${kwargs.class || ''}`                     // Set up base class name
+        super(kwargs)                                                   // Initialize Span with our kwargs
 
-        // Add icon content if provided
-        if (options.icon) {
-            const iconContent = Icon__Mappings.getIcon(options.icon)
-            this.element.textContent = iconContent
-        }
-
-        // Add any additional classes
-        if (options.class) {
-            const classes = options.class.split(' ')
-            this.element.classList.add(...classes)
-        }
-
-        // Add any additional attributes
-        if (options.attributes) {
-            Object.entries(options.attributes).forEach(([key, value]) => {
-                this.element.setAttribute(key, value)
-            })
-        }
-
-        // Handle size
-        if (options.size) {
-            this.element.classList.add(`icon-${options.size}`)
-        }
-
-        // Handle color
-        if (options.color) {
-            this.element.classList.add(`icon-${options.color}`)
-        }
-
-        // Handle rotation
-        if (options.rotate) {
-            this.element.classList.add(`icon-rotate-${options.rotate}`)
-        }
-
-        // Handle animation
-        if (options.spin) {
-            this.element.classList.add('icon-spin')
-        }
-
-        if (options.pulse) {
-            this.element.classList.add('icon-pulse')
-        }
-
-        // Handle spacing
-        if (options.spacing) {
-            this.element.classList.add(`icon-spacing-${options.spacing}`)
-        }
-    }
-
-    html() {
-        return this.element.outerHTML
+        if (icon    ) { this.value = Icon__Mappings.getIcon(icon) }     // Add icon from Icon__Mappings
+        if (size    ) { this.add_class(`icon-${size}`           ) }     // Handle size
+        if (color   ) { this.add_class(`icon-${color}`          ) }     // Handle color
+        if (rotate  ) { this.add_class(`icon-rotate-${rotate}`  ) }     // Handle rotation
+        if (spin    ) { this.add_class('icon-spin'              ) }     // Handle spin
+        if (pulse   ) { this.add_class('icon-pulse'             ) }     // Handle pulse
+        if (spacing ) { this.add_class(`icon-spacing-${spacing}`) }     // Handle spacing
     }
 }
