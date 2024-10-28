@@ -52,7 +52,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         if (!placeholder) return
 
         // Extract the relevant part of the path after cbr-webc-dev
-        const basePath = '/webc/cbr-webc-dev'
+        const basePath = '/webc/cbr-webc'
         const routePath = path.replace(basePath, '').replace(/^\/+/, '') || 'home'
 
         // Show loading state
@@ -155,13 +155,13 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         layout.with_id('left-menu').add_tag({ tag: 'webc-api-side-menu' })
 
         // Define menu structure
-        let menu_items = [{ icon: 'home'    , label: 'Home'           , href: '/webc/cbr-webc-dev'                },
-                         { icon: 'robot'    , label: 'Athena'         , href: '/webc/cbr-webc-dev/athena' },
-                         { icon: 'person'   , label: 'Personas'       , href: '/webc/cbr-webc-dev/personas'     },
-                         { icon: 'history'  , label: 'Past Chats'     , href: '/webc/cbr-webc-dev/past-chats'   },
-                         { icon: 'profile'  , label: 'Profile'        , href: '/webc/cbr-webc-dev/profile'      },
-                         { icon: 'chat'     , label: 'Chat with LLMs' , href: '/webc/cbr-webc-dev/chat'         },
-                         { icon: 'docs'     , label: 'Docs'           , href: '/webc/cbr-webc-dev/docs'         }]
+        let menu_items = [{ icon: 'home'    , label: 'Home'           , href: '/webc/cbr-webc'                },
+                         { icon: 'robot'    , label: 'Athena'         , href: '/webc/cbr-webc/athena' },
+                         { icon: 'person'   , label: 'Personas'       , href: '/webc/cbr-webc/personas'     },
+                         { icon: 'history'  , label: 'Past Chats'     , href: '/webc/cbr-webc/past-chats'   },
+                         { icon: 'profile'  , label: 'Profile'        , href: '/webc/cbr-webc/profile'      },
+                         { icon: 'chat'     , label: 'Chat with LLMs' , href: '/webc/cbr-webc/chat'         },
+                         { icon: 'docs'     , label: 'Docs'           , href: '/webc/cbr-webc/docs'         }]
         let username = 'guest'
 
         layout     .with_id('left-menu'  ).add_element(new CBR__Left_Logo  ()                           )
