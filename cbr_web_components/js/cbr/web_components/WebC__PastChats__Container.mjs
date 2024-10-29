@@ -69,6 +69,7 @@ export default class WebC__PastChats__Container extends Web_Component {
     }
 
     format_size(bytes) {
+        return bytes
         if (!bytes) return '0.0 KB'
         const kb = bytes / 1024
         return `${kb.toFixed(1)} KB`
@@ -121,10 +122,10 @@ export default class WebC__PastChats__Container extends Web_Component {
         const thead = new THead().add_element(
             new TR().add_elements(
                 new TH({ value: 'Date/Time' }),
-                new TH({ value: 'Messages' }),
+                new TH({ value: 'Last Prompt' }),
+                new TH({ value: 'History' }),
                 new TH({ value: 'Prompts' }),
                 new TH({ value: 'Responses' }),
-                new TH({ value: 'Summary' }),
                 new TH({ value: 'Actions' })
             )
         )
@@ -136,10 +137,10 @@ export default class WebC__PastChats__Container extends Web_Component {
             this.chats.forEach(chat => {
                 const row = new TR().add_elements(
                     new TD({ value: this.format_date_time(chat.date, chat.time) }),
-                    new TD({ value: chat.messages_count || '1' }),
+                    new TD({ value: chat.last_user_prompt || '-' }),
+                    new TD({ value: chat.history_size || '1' }),
                     new TD({ value: this.format_size(chat.prompts_size) }),
                     new TD({ value: this.format_size(chat.responses_size) }),
-                    new TD({ value: chat.summary || 'an LLM chat' }),
                     new TD().add_element(this.create_action_links(chat))
                 )
                 tbody.add_element(row)
