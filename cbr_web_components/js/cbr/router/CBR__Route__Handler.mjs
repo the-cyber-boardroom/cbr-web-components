@@ -19,6 +19,9 @@ export default class CBR__Route__Handler {
             const link = path.find(el => el.tagName === 'A');
 
             if (link && link.href.startsWith(window.location.origin)) {
+                if (link.href.includes('/web/') || link.href.includes('/athena/index#' )) {           // don't intercept links to other pages
+                    return
+                }
                 event.preventDefault()
                 const path = link.href.replace(window.location.origin, '')
                 this.navigate(path)

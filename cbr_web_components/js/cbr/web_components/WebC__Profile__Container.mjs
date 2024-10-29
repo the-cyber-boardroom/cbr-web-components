@@ -124,7 +124,7 @@ export default class WebC__Profile__Container extends Web_Component {
                                       type       : field.type,
                                       id         : field.name,
                                       name       : field.name,
-                                      value      : this.current_profile?.[field.name] || 'aaa',
+                                      value      : this.current_profile?.[field.name] || '',
                                       placeholder: field.placeholder || ''})
 
             group.add_elements(label, input)
