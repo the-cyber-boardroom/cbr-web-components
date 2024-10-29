@@ -18,6 +18,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         this.bot_name           = this.getAttribute('name'              ) || 'OpenAI ChatBot'
         this.target             = this.getAttribute('target'            ) || null
         this.system_prompt      = this.getAttribute('system_prompt'     )
+        this.show_system_prompt = this.getAttribute('show_system_prompt') !== 'false'  // default to true
         this.stream             = this.getAttribute('stream'            ) !== 'false'  // default to true
         this.fetch              = this.getAttribute('fetch'             ) !== 'false'  // default to true
         this.chat_thread_id     = this.random_uuid()
@@ -62,7 +63,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
             this.messages.add_message_initial(this.initial_message)
         }
 
-        if (this.system_prompt !== null) {
+        if (this.system_prompt !== null && this.show_system_prompt) {
             this.messages.add_message_system(this.system_prompt)
         }
         if (this.channel?.startsWith('shared-llm')) {

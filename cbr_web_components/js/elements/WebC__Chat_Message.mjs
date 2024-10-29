@@ -47,7 +47,6 @@ export default class WebC__Chat_Message extends Web_Component {
                                                     "border-radius"   : "10px 10px 10px 0px"},
                                 ".system"      : { "background-color" : "black"             ,
                                                     "align-self"      : "flex-start"        ,
-                                                    //"margin"          : "1px"               ,
                                                     "padding"         : "5px"               ,
                                                     "color"           : "white"             ,
                                                     "font-size"       : "12px"               ,
