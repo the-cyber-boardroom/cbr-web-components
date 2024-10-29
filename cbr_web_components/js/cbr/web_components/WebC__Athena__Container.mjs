@@ -93,9 +93,15 @@ export default class WebC__Athena__Container extends Web_Component {
         })
 
         // Banner row
-        const row_banner = layout.add_row({ id: 'athena-row',  class: 'm-1' })
-        row_banner.add_col({id: 'athena-banner',  class: 'col-12' })
+        const row_banner = layout.add_row({ id: 'athena-row', class: 'm-1' })
+
+        // Banner column (left side)
+        row_banner.add_col({id: 'athena-banner', class: 'col-6' })
                   .add_tag({ tag: 'webc-athena-banner'})
+
+        // Welcome message column (right side)
+        row_banner.add_col({id: 'athena-welcome', class: 'col-6' })
+                  .add_tag({ tag: 'webc-athena-welcome'})
 
         // Content row
         const row_content = layout.add_row({ class: 'flex-fill m-1' })
