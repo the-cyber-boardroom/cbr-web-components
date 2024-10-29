@@ -48,7 +48,7 @@ export default class WebC__Personas__Container extends Web_Component {
                     `/api/user-session/guest/login-as-guest?guest_id=${guest_id}`,
                     'GET'
                 )
-                window.location.href = '/webc/cbr-webc-dev/profile/index'
+                window.location.href = '/webc/cbr-webc-dev/athena/index'
             } catch (error) {
                 console.error('Error logging in as guest:', error)
             }

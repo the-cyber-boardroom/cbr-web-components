@@ -30,9 +30,9 @@ export default class Left_Menu extends Div {
                 class: 'side-menu-text',
                 value: item.label
             })
-            if (window.location.pathname === item.href) {
-                menuItem.add_class('active')
-            }
+            // if (window.location.pathname === item.href) {
+            //     menuItem.add_class('active')
+            // }
 
             link.add_elements(icon, text)
             menuItem.add_element(link)

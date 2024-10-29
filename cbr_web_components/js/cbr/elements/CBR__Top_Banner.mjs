@@ -3,7 +3,7 @@ import Icon from "../../css/icons/Icon.mjs"
 import Img  from "../../core/Img.mjs"
 
 export default class Top_Banner extends Div {
-    constructor({username = 'guest', id, ...kwargs}={}) {
+    constructor({display_name = 'guest', id, ...kwargs}={}) {
         kwargs.class = `top-banner ${kwargs.class || ''}`
         super({id, ...kwargs})
 
@@ -11,7 +11,7 @@ export default class Top_Banner extends Div {
         const userContainer    = new Div ({ class: 'user-container'                                                          })    // User container (right side)
         const userImgContainer = new Div ({ class: 'user-img-container'                                                      })    // User profile image
         const userImg          = new Img ({ class: 'user-img img-circle', src: '/assets/cbr/account-circle.svg',  alt: 'User'})
-        const userText         = new Div({ class: 'user-text'           ,  value: username                                   }) // Username
+        const userText         = new Div({ class: 'user-text'          ,  value: display_name                                })    // display_name
         userImgContainer.add_element(userImg)
         userContainer   .add_elements(userImgContainer, userText)
         this.add_elements(menuIcon, userContainer)

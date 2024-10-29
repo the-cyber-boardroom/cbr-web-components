@@ -13,12 +13,14 @@ import CBR__Content__Placeholder from "../elements/CBR__Content__Placeholder.mjs
 import CBR__Route__Handler       from "../router/CBR__Route__Handler.mjs"
 import CBR__Route__Content       from "../router/CBR__Route__Content.mjs"
 import CBR__Error__Boundary      from "../router/CBR__Error__Boundary.mjs";
+import API__Invoke from "../../data/API__Invoke.mjs";
 
 export default class WebC__CBR__Layout__Default extends Web_Component {
     constructor() {
         super()
         this.routeContent = new CBR__Route__Content()
         this.routeHandler = new CBR__Route__Handler(this)
+        this.api_invoke   = new API__Invoke()
     }
 
     load_attributes() {
@@ -58,7 +60,19 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         })
     }
 
-    render() {
+    async fetch_user_data() {
+        try {
+            return await this.api_invoke.invoke_api('/api/user-data/user/user-profile', 'GET')
+        } catch (error) {
+            console.error('Error fetching user data:', error)
+            return null
+        }
+    }
+
+    async render() {
+        const user_data     = await this.fetch_user_data()
+        const display_name  = `${user_data?.first_name} ${user_data?.last_name}`
+
         let layout, row_banner, row_content
 
         layout      = new Layout({ id:'main-page', class: 'h-100vh p-0' })
@@ -74,21 +88,21 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         layout.with_id('left-menu').add_tag({ tag: 'webc-api-side-menu' })
 
         // Define menu structure
-        let menu_items = [{ icon: 'home'    , label: 'Home'           , href: '/webc/cbr-webc-dev/home/index'         },
-                         { icon: 'robot'    , label: 'Athena'         , href: '/webc/cbr-webc-dev/athena/index'       },
-                         { icon: 'person'   , label: 'Personas'       , href: '/webc/cbr-webc-dev/personas/index'     },
-                         { icon: 'history'  , label: 'Past Chats'     , href: '/webc/cbr-webc-dev/past-chats/index'   },
-                         { icon: 'profile'  , label: 'Profile'        , href: '/webc/cbr-webc-dev/profile/index'      },
-                         { icon: 'chat'     , label: 'Chat with LLMs' , href: '/webc/cbr-webc-dev/chat/index'         },
-                         { icon: 'docs'     , label: 'Docs'           , href: '/webc/cbr-webc-dev/docs/index'         }]
+        let menu_items = [{ icon: 'home'     , label: 'Home'           , href: '/webc/cbr-webc-dev/home/index'         },
+                          { icon: 'robot'    , label: 'Athena'         , href: '/webc/cbr-webc-dev/athena/index'       },
+                          { icon: 'profile'  , label: 'Profile'        , href: '/webc/cbr-webc-dev/profile/index'      },
+                          { icon: 'history'  , label: 'Past Chats'     , href: '/webc/cbr-webc-dev/past-chats/index'   },
+                          { icon: 'person'   , label: 'Personas'       , href: '/webc/cbr-webc-dev/personas/index'     },
+                          { icon: 'chat'     , label: 'Chat with LLMs' , href: '/webc/cbr-webc-dev/chat/index'         },
+                          { icon: 'docs'     , label: 'Docs'           , href: '/webc/cbr-webc-dev/docs/index'         }]
         let username = 'guest'
 
-        layout     .with_id('left-menu'  ).add_element(new CBR__Left_Logo  ()                           )
-        layout     .with_id('left-menu'  ).add_element(new Left_Menu       ({ menu_items: menu_items  }))
-        layout     .with_id('left-menu'  ).add_element(new CBR__Important_Alert()                       )
-        layout     .with_id('top-banner' ).add_element(new CBR__Top_Banner ({ username  : username    }))
-        layout     .with_id('left-footer').add_element(new CBR__Left_Footer()                           )
-        layout     .with_id('content'    ).add_element(new CBR__Content__Placeholder()                  )
+        layout     .with_id('left-menu'  ).add_element(new CBR__Left_Logo  ()                                )
+        layout     .with_id('left-menu'  ).add_element(new Left_Menu       ({ menu_items: menu_items       }))
+        layout     .with_id('left-menu'  ).add_element(new CBR__Important_Alert()                            )
+        layout     .with_id('top-banner' ).add_element(new CBR__Top_Banner ({ display_name  : display_name }))
+        layout     .with_id('left-footer').add_element(new CBR__Left_Footer()                                )
+        layout     .with_id('content'    ).add_element(new CBR__Content__Placeholder()                       )
 
         this.set_inner_html(layout.html())
 
