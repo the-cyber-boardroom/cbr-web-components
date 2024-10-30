@@ -27,9 +27,10 @@ export default class CBR_User_Data {
     async login_as_guest_three()  {
         this.login_as_a_guest('7a43a0e0-499f-4110-8923-441a7f5028db')
     }
+
     async login_as_a_guest(guest_id) {
         const api_path = `/api/user-session/guest/login-as-guest?guest_id=${guest_id}`
-        await this.api_invoke.invoke_api(api_path)
+        await this.api_invoke.invoke_api(api_path, 'POST')
         location.reload()
     }
 

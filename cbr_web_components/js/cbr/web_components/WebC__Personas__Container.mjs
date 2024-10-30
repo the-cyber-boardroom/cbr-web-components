@@ -40,14 +40,11 @@ export default class WebC__Personas__Container extends Web_Component {
     }
 
     async handle_login_click(event) {
-        console.log(event.target)
         if (event.target.matches('.login-button')) {
-            const guest_id = event.target.dataset.guestId
+            const guest_id = event.target.dataset.guestId                           // todo refactor this into a separate class and make it event driven
+            const path = `/api/user-session/guest/login-as-persona?persona_id=${guest_id}`
             try {
-                await this.api_invoke.invoke_api(
-                    `/api/user-session/guest/login-as-guest?guest_id=${guest_id}`,
-                    'GET'
-                )
+                await this.api_invoke.invoke_api(path, 'POST')
                 window.location.href = '/webc/cbr-webc-dev/personas/index'
             } catch (error) {
                 console.error('Error logging in as guest:', error)

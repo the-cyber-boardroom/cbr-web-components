@@ -105,7 +105,9 @@ export default class Icon__Mappings {
         'history'       : '↻',
         'profile'       : '👤',
         'chat'          : '💬',
-        'docs'          : '📄'
+        'docs'          : '📄',
+        'undo'          : '↩️',
+        'user'          : '👤',
     }
 
     // Combine all categories into a single map

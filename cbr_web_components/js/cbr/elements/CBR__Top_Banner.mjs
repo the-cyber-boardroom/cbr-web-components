@@ -1,20 +1,26 @@
-import Div  from "../../core/Div.mjs"
-import Icon from "../../css/icons/Icon.mjs"
-import Img  from "../../core/Img.mjs"
+import Icon                 from "../../css/icons/Icon.mjs"
+import Div                  from "../../core/Div.mjs"
+import Tag                  from "../../core/Tag.mjs"
 
-export default class Top_Banner extends Div {
-    constructor({display_name = 'guest', id, ...kwargs}={}) {
-        kwargs.class = `top-banner ${kwargs.class || ''}`
-        super({id, ...kwargs})
 
-        const menuIcon         = new Icon({ class: 'menu-icon icon-lg'  , icon: 'menu'                                       })    // Hamburger menu
-        const userContainer    = new Div ({ class: 'user-container'                                                          })    // User container (right side)
-        const userImgContainer = new Div ({ class: 'user-img-container'                                                      })    // User profile image
-        const userImg          = new Img ({ class: 'user-img img-circle', src: '/assets/cbr/account-circle.svg',  alt: 'User'})
-        const userText         = new Div({ class: 'user-text'          ,  value: display_name                                })    // display_name
-        userImgContainer.add_element(userImg)
-        userContainer   .add_elements(userImgContainer, userText)
-        this.add_elements(menuIcon, userContainer)
+export default class CBR__Top_Banner extends Div {
+    constructor({...kwargs}={}) {
+        super({...kwargs})
+        this.setup()
+    }
+
+    async setup() {
+        // const userImg = new Img({
+        //     class: 'user-img img-circle',
+        //     src: '/assets/cbr/account-circle.svg',
+        //     alt: 'User'
+        // })
+        this.add_class('top-banner')
+
+        const menu_icon    = new Icon({ class: 'menu-icon icon-lg'  , icon: 'menu'                                       })    // Hamburger menu
+        const user_session = new Tag({tag: 'webc-cbr-user-session' })
+
+        this.add_elements(menu_icon, user_session)
     }
 
     static css_rules() {
@@ -27,6 +33,7 @@ export default class Top_Banner extends Div {
                 height: "100%",
                 backgroundColor: "#1e88e5",
                 color: "#ffffff",
+                position: "relative"
             },
 
             ".menu-icon": {
@@ -37,33 +44,6 @@ export default class Top_Banner extends Div {
                 marginLeft: "-0.5rem"
             },
 
-            ".user-container": {
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem"
-            },
-
-            ".user-img-container": {
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                overflow: "hidden",
-                backgroundColor: "#ffffff"
-            },
-
-            ".user-img": {
-                width: "100%",
-                height: "100%",
-                objectFit: "cover"
-            },
-
-            ".user-text": {
-                fontSize: "1.2rem",
-                fontWeight: "400",
-                letterSpacing: "0.25px"
-            },
-
-            // Hover states
             ".menu-icon:hover": {
                 backgroundColor: "rgba(255, 255, 255, 0.1)",
                 borderRadius: "4px"

@@ -5,7 +5,8 @@ import Icon from "../../css/icons/Icon.mjs"
 export default class CBR__Left_Footer extends Div {
 
     href__settings = '/web/user/profile'
-    href__logout   = '/web/logout'
+    //href__logout   = '/web/logout'
+    href__logout = '/web/sign-out'
 
     constructor({id, ...kwargs}={}) {
         kwargs.class = `left-footer ${kwargs.class || ''}`
