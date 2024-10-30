@@ -3,49 +3,58 @@ export default class CBR__Session__State__Manager {
         this.state = {
             user_session    : null ,
             persona_session : null ,
+            active_session  : null ,
             is_initialized  : false,
             error          : null
         }
     }
 
-    updateState(newState) {
-        this.state = { ...this.state, ...newState }
+    update_state(new_state) {
+        this.state = { ...this.state, ...new_state }
         return this.state
     }
 
     set_user_session(session) {
-        return this.updateState({ user_session: session })
+        return this.update_state({ user_session: session })
     }
 
     set_persona_session(session) {
-        return this.updateState({ persona_session: session })
+        return this.update_state({ persona_session: session })
+    }
+
+    set_active_session(session) {
+        return this.update_state({ active_session: session })
     }
 
     clear_persona_session() {
-        return this.updateState({ persona_session: null })
+        return this.update_state({ persona_session: null })
     }
 
-    setError(error) {
-        return this.updateState({ error })
+    set_error(error) {
+        return this.update_state({ error })
     }
 
-    setInitialized(is_initialized = true) {
-        return this.updateState({ is_initialized })
+    set_initialized(is_initialized = true) {
+        return this.update_state({ is_initialized })
     }
 
     get_state() {
         return { ...this.state }
     }
 
-    hasActivePersona() {
+    has_active_persona() {
         return !!this.state.persona_session
     }
 
-    isInitialized() {
+    is_initialized() {
         return this.state.is_initialized
     }
 
-    getCurrentSession() {
-        return this.state.persona_session || this.state.user_session
+    is_active_session(session) {
+        return this.state.active_session?.user_name === session?.user_name
+    }
+
+    get_active_session() {
+        return this.state.active_session
     }
 }

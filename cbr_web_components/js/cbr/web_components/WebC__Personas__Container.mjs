@@ -8,25 +8,66 @@ import API__Invoke     from '../../data/API__Invoke.mjs';
 import Div             from '../../core/Div.mjs';
 import H               from '../../core/H.mjs';
 import Button          from '../../core/Button.mjs';
+import CBR__Session__Event__Handler from "../session/CBR__Session__Event__Handler.mjs";
 
 export default class WebC__Personas__Container extends Web_Component {
-    load_attributes() {
+
+    async connectedCallback() {
+        this.api_invoke    = new API__Invoke()
+        this.event_handler = new CBR__Session__Event__Handler()
         new CSS__Grid      (this).apply_framework()
         new CSS__Typography(this).apply_framework()
         new CSS__Cards     (this).apply_framework()
         new CSS__Buttons   (this).apply_framework()
-        //this.add_css_rules(this.css_rules())
-    }
 
-    async connectedCallback() {
-        this.api_invoke = new API__Invoke()
         await this.load_personas()
         super.connectedCallback()
-        this.add_event_listeners()
+        this.setup_event_listeners()
     }
 
-    add_event_listeners() {
-        this.shadowRoot.addEventListener('click', this.handle_login_click.bind(this))
+    setup_event_listeners() {
+        // Handle login button clicks
+        this.shadowRoot.addEventListener('click', async (event) => {
+            if (event.target.matches('.login-button')) {
+                const persona_id = event.target.dataset.guestId
+                this.event_handler.dispatch(
+                    this.event_handler.events.LOGIN_AS_PERSONA,
+                    { persona_id }
+                )
+            }
+        })
+
+        // Listen for session changes
+        this.event_handler.subscribe(
+            this.event_handler.events.PERSONA_SESSION_CHANGED,
+            (event) => {
+                const state = event.detail.state
+                if (state.persona_session) {
+                    this.update_persona_buttons(state.persona_session.user_name)
+                }
+            }
+        )
+    }
+
+    update_persona_buttons(active_persona) {
+        const buttons = this.shadowRoot.querySelectorAll('.login-button')
+        buttons.forEach(button => {
+            const persona_id = button.dataset.guestId
+            const card = button.closest('.card')
+            const persona_name = card.querySelector('.persona-name').textContent
+
+            if (persona_name === active_persona) {
+                button.textContent = 'Current Persona'
+                button.classList.remove('btn-outline-primary')
+                button.classList.add('btn-success')
+                button.disabled = true
+            } else {
+                button.textContent = 'Login as this persona'
+                button.classList.remove('btn-success')
+                button.classList.add('btn-outline-primary')
+                button.disabled = false
+            }
+        })
     }
 
     async load_personas() {

@@ -1,22 +1,25 @@
 export default class CBR__Session__Event__Handler {
     constructor() {
         this.callbacks = {}
-        this.setupEvents()
+        this.setup_events()
     }
 
-    setupEvents() {
+    setup_events() {
         this.events = {
-            USER_SESSION_CHANGED    : 'user_session_changed'    ,
-            PERSONA_SESSION_CHANGED : 'persona_session_changed' ,
-            SESSION_ERROR          : 'session_error'           ,
-            LOGIN_AS_PERSONA       : 'login_as_persona'        ,
-            LOGOUT_PERSONA         : 'logout_persona'          ,
-            SESSION_INITIALIZED    : 'session_initialized'
+            USER_SESSION_CHANGED     : 'user_session_changed'    ,
+            PERSONA_SESSION_CHANGED  : 'persona_session_changed' ,
+            ACTIVE_SESSION_CHANGED   : 'active_session_changed'  ,
+            SESSION_ERROR            : 'session_error'           ,
+            LOGIN_AS_PERSONA         : 'login_as_persona'        ,
+            LOGOUT_PERSONA           : 'logout_persona'          ,
+            SESSION_INITIALIZED      : 'session_initialized'     ,
+            SWITCH_SESSION           : 'switch_session'          ,
+            RELOAD_PAGE              : 'reload_page'
         }
     }
 
-    dispatch(eventName, detail = {}) {
-        const event = new CustomEvent(eventName, {
+    dispatch(event_name, detail = {}) {
+        const event = new CustomEvent(event_name, {
             bubbles   : true    ,
             composed  : true    ,
             detail    : detail
@@ -24,25 +27,25 @@ export default class CBR__Session__Event__Handler {
         document.dispatchEvent(event)
     }
 
-    subscribe(eventName, callback) {
-        if (!this.callbacks[eventName]) {
-            this.callbacks[eventName] = []
+    subscribe(event_name, callback) {
+        if (!this.callbacks[event_name]) {
+            this.callbacks[event_name] = []
         }
-        this.callbacks[eventName].push(callback)
-        document.addEventListener(eventName, callback)
+        this.callbacks[event_name].push(callback)
+        document.addEventListener(event_name, callback)
     }
 
-    unsubscribe(eventName, callback) {
-        if (this.callbacks[eventName]) {
-            this.callbacks[eventName] = this.callbacks[eventName].filter(cb => cb !== callback)
-            document.removeEventListener(eventName, callback)
+    unsubscribe(event_name, callback) {
+        if (this.callbacks[event_name]) {
+            this.callbacks[event_name] = this.callbacks[event_name].filter(cb => cb !== callback)
+            document.removeEventListener(event_name, callback)
         }
     }
 
-    unsubscribeAll() {
-        Object.keys(this.callbacks).forEach(eventName => {
-            this.callbacks[eventName].forEach(callback => {
-                document.removeEventListener(eventName, callback)
+    unsubscribe_all() {
+        Object.keys(this.callbacks).forEach(event_name => {
+            this.callbacks[event_name].forEach(callback => {
+                document.removeEventListener(event_name, callback)
             })
         })
         this.callbacks = {}

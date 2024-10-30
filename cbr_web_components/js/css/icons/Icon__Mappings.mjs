@@ -108,6 +108,8 @@ export default class Icon__Mappings {
         'docs'          : '📄',
         'undo'          : '↩️',
         'user'          : '👤',
+        'red-x'         : '❌',
+
     }
 
     // Combine all categories into a single map

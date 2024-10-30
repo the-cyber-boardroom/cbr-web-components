@@ -6,13 +6,15 @@ import Div             from '../../core/Div.mjs';
 import Raw_Html        from '../../core/Raw_Html.mjs';
 import H               from '../../core/H.mjs';
 import CSS__Grid       from "../../css/grid/CSS__Grid.mjs";
+import CBR__Session__Event__Handler from "../session/CBR__Session__Event__Handler.mjs";
 
 export default class WebC__Athena__Welcome extends Web_Component {
     load_attributes() {
         new CSS__Grid      (this).apply_framework()
         new CSS__Cards     (this).apply_framework()
         new CSS__Typography(this).apply_framework()
-        this.api_invoke = new API__Invoke()
+        this.event_handler = new CBR__Session__Event__Handler()
+        this.api_invoke    = new API__Invoke()
         this.welcome_message = ''
     }
 
@@ -20,6 +22,7 @@ export default class WebC__Athena__Welcome extends Web_Component {
         super.connectedCallback()
         await this.generate_welcome()
         this.render()
+        this.setup_event_listeners()
     }
 
     async fetch_user_data() {
@@ -84,6 +87,12 @@ export default class WebC__Athena__Welcome extends Web_Component {
         }
     }
 
+    handle__active_session_changed = async () => {
+        await this.generate_welcome()
+    }
+    setup_event_listeners() {
+        this.event_handler.subscribe(this.event_handler.events.ACTIVE_SESSION_CHANGED, this.handle__active_session_changed)
+    }
     show_message(message) {
         const marked_message = marked.marked(message)
         this.welcome_message = marked_message

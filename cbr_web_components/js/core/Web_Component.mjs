@@ -160,6 +160,10 @@ export default class Web_Component extends HTMLElement {
         return this.shadow_root().querySelector(selector)
     }
 
+    query_selector_all(selector) {
+        return this.shadow_root().querySelectorAll(selector)
+    }
+
     parent_element() {
         return this.parentElement
     }

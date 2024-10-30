@@ -6,7 +6,7 @@ export default class CBR__Session__API__Handler {
         this.base_path = '/api/user-session'
     }
 
-    async getCurrentSession() {
+    async get_current_session() {
         try {
             return await this.api_invoke.invoke_api(
                 `${this.base_path}/session/current-session`,
@@ -30,7 +30,7 @@ export default class CBR__Session__API__Handler {
         }
     }
 
-    async loginAsPersona(persona_id) {
+    async login_as_persona(persona_id) {
         try {
             return await this.api_invoke.invoke_api(
                 `${this.base_path}/guest/login-as-persona?persona_id=${persona_id}`,
@@ -42,7 +42,7 @@ export default class CBR__Session__API__Handler {
         }
     }
 
-    async logoutPersona() {
+    async logout_persona() {
         try {
             return await this.api_invoke.invoke_api(
                 `${this.base_path}/guest/logout-persona`,
@@ -54,7 +54,7 @@ export default class CBR__Session__API__Handler {
         }
     }
 
-    async logoutAll() {
+    async logout_all() {
         try {
             return await this.api_invoke.invoke_api(
                 `${this.base_path}/guest/logout-all`,
@@ -66,7 +66,11 @@ export default class CBR__Session__API__Handler {
         }
     }
 
-    getCookie(name) {
+    async set_active_session(session_id) {
+        document.cookie = `CBR__SESSION_ID__ACTIVE=${session_id};path=/`
+    }
+
+    get_cookie(name) {
         const value = `; ${document.cookie}`
         const parts = value.split(`; ${name}=`)
         if (parts.length === 2) {
@@ -76,10 +80,19 @@ export default class CBR__Session__API__Handler {
     }
 
     get_user_session_id() {
-        return this.getCookie('CBR__SESSION_ID__USER')
+        return this.get_cookie('CBR__SESSION_ID__USER')
     }
 
     get_persona_session_id() {
-        return this.getCookie('CBR__SESSION_ID__PERSONA')
+        return this.get_cookie('CBR__SESSION_ID__PERSONA')
+    }
+
+    get_active_session_id() {
+        return this.get_cookie('CBR__SESSION_ID__ACTIVE')
+    }
+
+    async switch_to_session(session_id) {
+        await this.set_active_session(session_id)
+        return await this.get_session_details(session_id)
     }
 }
