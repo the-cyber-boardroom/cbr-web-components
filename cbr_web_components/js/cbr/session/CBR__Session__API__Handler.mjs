@@ -70,6 +70,10 @@ export default class CBR__Session__API__Handler {
         document.cookie = `CBR__SESSION_ID__ACTIVE=${session_id};path=/`
     }
 
+    async set_active_persona(session_id) {
+        document.cookie = `CBR__SESSION_ID__PERSONA=${session_id};path=/`
+    }
+
     get_cookie(name) {
         const value = `; ${document.cookie}`
         const parts = value.split(`; ${name}=`)

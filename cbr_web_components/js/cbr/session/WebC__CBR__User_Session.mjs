@@ -97,7 +97,15 @@ export default class WebC__CBR__User_Session extends Web_Component {
 
     handle__login_as_persona = async (event) => {
         try {
-            await this.api_handler.login_as_persona(event.detail.persona_id)
+            const response_json = await this.api_handler.login_as_persona(event.detail.persona_id)
+            const session_id__active = response_json.data?.CBR__SESSION_ID__ACTIVE
+            const session_id__persona = response_json.data?.CBR__SESSION_ID__PERSONA
+            console.log('session_id__active:', session_id__active)
+            console.log('session_id__persona:', session_id__persona)
+            await this.api_handler.set_active_session(session_id__active )
+            await this.api_handler.set_active_persona(session_id__persona)
+
+
             await this.load_initial_state()
             this.event_handler.dispatch(
                 this.event_handler.events.PERSONA_SESSION_CHANGED,
