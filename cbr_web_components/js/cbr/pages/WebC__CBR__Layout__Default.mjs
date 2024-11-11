@@ -95,6 +95,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
                  { icon: 'robot'    , label: 'Athena'         , href: '/webc/cbr-webc-dev/athena/index'       },
                  { icon: 'profile'  , label: 'Profile'        , href: '/webc/cbr-webc-dev/profile/index'      },
                  { icon: 'history'  , label: 'Past Chats'     , href: '/webc/cbr-webc-dev/past-chats/index'   },
+                 { icon: 'file'     , label: 'Files'          , href: '/webc/cbr-webc-dev/files/index'        },
                  { icon: 'person'   , label: 'Personas'       , href: '/webc/cbr-webc-dev/personas/index'     },
                  { icon: 'chat'     , label: 'Chat with LLMs' , href: '/webc/cbr-webc-dev/chat/index'         },
                  { icon: 'docs'     , label: 'Docs'           , href: '/webc/cbr-webc-dev/docs/index'         }]

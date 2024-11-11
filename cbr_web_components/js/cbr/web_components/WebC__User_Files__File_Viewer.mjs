@@ -8,9 +8,11 @@ import Div            from '../../core/Div.mjs'
 import Img            from '../../core/Img.mjs'
 import Button         from '../../core/Button.mjs'
 import Raw_Html       from "../../core/Raw_Html.mjs";
+import CSS__Buttons   from "../../css/CSS__Buttons.mjs";
 
 export default class WebC__User_Files__File_Viewer extends Web_Component {
     load_attributes() {
+        new CSS__Buttons  (this).apply_framework()
         new CSS__Cards    (this).apply_framework()
         new CSS__Forms    (this).apply_framework()
         new CSS__Icons    (this).apply_framework()
