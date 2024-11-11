@@ -88,12 +88,10 @@ export default class WebC__User_Files__Upload extends Web_Component {
 
             reader.onload = async () => {
                 const base64_content = reader.result.split(',')[1]
-
-                await this.api_invoke.invoke_api('/api/user-data/files/add-file', 'POST', {
-                    file_name  : file.name,
-                    file_bytes : base64_content,
-                    folder_id  : this.current_folder.node_id || ''
-                })
+                const post_data = { file_name          : file.name                        ,
+                                    file_bytes__base64 : base64_content                   ,
+                                    folder_id          : this.current_folder.node_id || ''}
+                await this.api_invoke.invoke_api('/api/user-data/files/add-file', 'POST', post_data)
 
                 this.raise_refresh_event()
                 this.show_success_message(`File ${file.name} uploaded successfully`)

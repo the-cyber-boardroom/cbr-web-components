@@ -134,6 +134,16 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
             item.addEventListener('click', this.handle__on_click__folder.bind(this, item));
         })
 
+        // In WebC__User_Files__Tree_View.mjs add_event_listeners()
+        this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {
+            item.addEventListener('click', () => {
+                const event = new CustomEvent('file-selected', { detail: { node_id: item.dataset.id,
+                                                                           name: item.querySelector('.tree-item-text').textContent },
+                                                                           bubbles: true    ,
+                                                                           composed: true   })
+                this.dispatchEvent(event)
+            })
+        })
         // this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {                  // File click handlers
         //     item.addEventListener('click', async () => {
         //         const fileId = item.dataset.id

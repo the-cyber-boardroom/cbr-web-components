@@ -25,9 +25,11 @@ export default class WebC__User_Files extends Web_Component {
     build() {
         const container = new Div({ class: 'files-container' })
 
-        container.add_tag({ tag: 'webc-user-files-tree-view' })
-        container.add_tag({ tag: 'webc-user-files-actions'   })
-        container.add_tag({ tag: 'webc-user-files-upload'    })
+        container.add_tag({ tag: 'webc-user-files-tree-view'  })
+        container.add_tag({ tag: 'webc-user-files-file-viewer'})
+        container.add_tag({ tag: 'webc-user-files-actions'    })
+        container.add_tag({ tag: 'webc-user-files-upload'     })
+
 
         this.set_inner_html(container.html())
     }
