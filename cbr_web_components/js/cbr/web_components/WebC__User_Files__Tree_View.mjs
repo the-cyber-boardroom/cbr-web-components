@@ -7,7 +7,6 @@ import Icon             from '../../css/icons/Icon.mjs'
 import API__Invoke      from '../../data/API__Invoke.mjs'
 import Div              from '../../core/Div.mjs'
 import Button           from '../../core/Button.mjs'
-import Modal            from '../../core/layout/Modal.mjs'
 import Input            from '../../core/Input.mjs'
 
 export default class WebC__User_Files__Tree_View extends Web_Component {
@@ -47,82 +46,21 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         }
     }
 
-    async add_file(parentId, file) {
-        try {
-            const file_content = await this.file_to_base64(file)
-            await this.api_invoke.invoke_api('/api/user-data/files/add-file', 'POST', {
-                file_name  : file.name,
-                file_bytes : file_content,
-                folder_id  : parentId
-            })
-            await this.refresh()
-        } catch (error) {
-            console.error('Error adding file:', error)
-        }
-    }
-
-    async delete_node(node_id, node_type) {
-        try {
-            const endpoint = node_type === 'folder' ? 'delete-folder'        : 'delete-file'
-            const param    = node_type === 'folder' ? `folder_id=${node_id}` : `file_id=${node_id}`
-            await this.api_invoke.invoke_api(`/api/user-data/files/${endpoint}?${param}`, 'DELETE')
-            await this.refresh()
-        } catch (error) {
-            console.error('Error deleting node:', error)
-        }
-    }
-
     async refresh() {
         await this.load_data()
         this.render()
         this.add_event_listeners()
     }
 
-    file_to_base64(file) {
-        return new Promise((resolve, reject) => {
-            const reader    = new FileReader()
-            reader.onload  = () => resolve(reader.result.split(',')[1])
-            reader.onerror = error => reject(error)
-            reader.readAsDataURL(file)
-        })
-    }
+    // file_to_base64(file) {
+    //     return new Promise((resolve, reject) => {
+    //         const reader    = new FileReader()
+    //         reader.onload  = () => resolve(reader.result.split(',')[1])
+    //         reader.onerror = error => reject(error)
+    //         reader.readAsDataURL(file)
+    //     })
+    // }
 
-    create_add_menu(parentId) {
-        const menu    = new Div({ class: 'tree-add-menu' })
-
-        const add_folder = new Button({class: 'tree-menu-button', value: 'New Folder'})
-        // add_folder.addEventListener('click', async (e) => {
-        //     e.stopPropagation()
-        //     const input = new Input({ type        : 'text',  class       : 'input',  placeholder : 'Folder name' })
-        //
-        //     try {
-        //         const folder_name = await this.show_modal('New Folder', input)
-        //         if (folder_name) {
-        //             await this.add_folder(parentId, folder_name)
-        //         }
-        //     } catch (error) {
-        //         console.log('Modal cancelled')
-        //     }
-        // })
-
-        const add_file   = new Button({class: 'tree-menu-button', value: 'Upload File'})
-        const file_input = new Input({
-            type  : 'file',
-            class : 'input-file hidden',
-            id    : `file-input-${parentId}`
-        })
-
-        // file_input.addEventListener('change', (e) => {
-        //     if (e.target.files.length) {
-        //         this.add_file(parentId, e.target.files[0])
-        //     }
-        // })
-        //
-        // add_file.addEventListener('click', () => file_input.click())
-        menu.add_elements(add_folder, add_file, file_input)
-
-        return menu
-    }
 
     create_tree_item(node, level = 0) {
         if (node === null) { return new Div() }
@@ -153,66 +91,17 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         const text    = new Div({ class: 'tree-item-text', value: node.name })
         const actions = new Div({ class: 'tree-item-actions' })
 
-        if (node.node_type === 'folder') {
-            const add_button = new Button({class: 'tree-item-button add-button'})
-            const plus_icon  = new Icon  ({icon: 'plus'})
-            add_button.add_element(plus_icon)
-            actions   .add_element(add_button)
-        }
-
-        if (!is_root) {
-            const delete_button = new Button({class: 'tree-item-button delete-button'})
-            const trash_icon    = new Icon  ({icon : 'trash'})
-            delete_button.add_element(trash_icon)
-            actions.add_element(delete_button)
-        }
-
         content.add_elements(text, actions)
         return item_div
     }
 
     handle__on_click__chevron(item, chevron, event) {
-        console.log('in handle__on_click__chevron')
         event.stopPropagation();
         const children = item.querySelector('.tree-children');
         children.classList.toggle('tree-folder-closed');
         chevron.classList.toggle('tree-item-expanded');
     }
 
-    handle__on_click__add_button = (button, event) => {
-        console.log('in handle__on_click__add_button')
-        event.stopPropagation()
-        const actions  = button.closest('.tree-item')
-        const node_id = actions.dataset.id
-        const menu    = this.create_add_menu(node_id)
-        // Remove any existing menus
-        this.shadowRoot.querySelectorAll('.tree-add-menu').forEach(m => m.remove())
-
-        console.log(actions)
-        console.log(menu.html())
-        // actions.appendChild(menu)
-        //
-        // const close_menu = (e) => {
-        //     if (!menu.contains(e.target)) {
-        //         menu.remove()
-        //         document.removeEventListener('click', close_menu)
-        //     }
-        // }
-        // document.addEventListener('click', close_menu)
-    }
-
-    handle__on_click__delete_button = async (button, event) => {
-        event.stopPropagation()
-        const item     = button.closest('.tree-item')
-
-        const node_id = item.dataset.id
-        const type    = item.dataset.type
-        const name    = item.querySelector('.tree-item-text').textContent
-        console.log(node_id)
-        if (confirm(`Are you sure you want to delete ${name}?`)) {
-            await this.delete_node(node_id, type)
-        }
-    }
 
     handle__on_click__folder = (item, event) =>{
 
@@ -241,53 +130,21 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
             }
         });
 
-        // this.shadowRoot.querySelectorAll('.tree-item-actions .add-button').forEach(button => {      // Add button handlers
-        //     button.addEventListener('click', this.handle__on_click__add_button.bind(this, button));
-        // })
-        //
-        // this.shadowRoot.querySelectorAll('.tree-item-actions .delete-button').forEach(button => {           // Delete button handlers
-        //     button.addEventListener('click', this.handle__on_click__delete_button.bind(this, button));
-        // })
-
         this.shadowRoot.querySelectorAll('.tree-item[data-type="folder"]').forEach(item => {
             item.addEventListener('click', this.handle__on_click__folder.bind(this, item));
         })
 
-        this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {                  // File click handlers
-            item.addEventListener('click', async () => {
-                const fileId = item.dataset.id
-                try {
-                    const response = await this.api_invoke.invoke_api(`/api/user-data/files/file-contents?file_id=${fileId}`)
-                    console.log('File contents:', response)
-                } catch (error) {
-                    console.error('Error fetching file contents:', error)
-                }
-            })
-        })
-    }
-
-    show_modal(title, content) {
-        const modal = new Modal({
-            title   : title,
-            content : content,
-            class   : 'tree-view-modal'
-        })
-
-        return new Promise((resolve, reject) => {
-            modal.on_confirm = () => {
-                if (content instanceof Input) {
-                    resolve(content.value)
-                } else {
-                    resolve(true)
-                }
-            }
-
-            modal.on_close = () => {
-                reject(new Error('Modal closed'))
-            }
-
-            this.shadowRoot.appendChild(modal)
-        })
+        // this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {                  // File click handlers
+        //     item.addEventListener('click', async () => {
+        //         const fileId = item.dataset.id
+        //         try {
+        //             const response = await this.api_invoke.invoke_api(`/api/user-data/files/file-contents?file_id=${fileId}`)
+        //             console.log('File contents:', response)
+        //         } catch (error) {
+        //             console.error('Error fetching file contents:', error)
+        //         }
+        //     })
+        // })
     }
 
     css_rules() {

@@ -26,7 +26,6 @@ export default class WebC__User_Files__Actions extends Web_Component {
     add_event_listeners() {
         document.addEventListener('folder-selected', (e) => {
             this.current_folder = e.detail
-            console.log(this.current_folder)
             this.render()
         })
     }
