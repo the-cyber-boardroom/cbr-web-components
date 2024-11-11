@@ -27,6 +27,7 @@ export default class WebC__User_Files extends Web_Component {
 
         container.add_tag({ tag: 'webc-user-files-tree-view' })
         container.add_tag({ tag: 'webc-user-files-actions'   })
+        container.add_tag({ tag: 'webc-user-files-upload'    })
 
         this.set_inner_html(container.html())
     }
