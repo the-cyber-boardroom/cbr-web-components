@@ -48,7 +48,23 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         }
     }
 
-    async delete_current_file() {
+    async create_summary__current_file(button) {
+        if (!this.current_file?.node_id) {
+            return
+        }
+        button.innerHTML = '...creating'                                // todo: find a better way to show progress
+        const file_id      = this.current_file.node_id
+        const path         = `/api/user-data/file-to-llms/file-summary?re_create=true&file_id=${file_id}`
+
+        await this.api_invoke.invoke_api(path, 'POST')
+
+        button.innerHTML = '...reloading data'
+        await this.load_file_data()
+        await this.render_file_viewer()
+        button.innerHTML = '...all done'
+
+    }
+    async delete__current_file() {
         if (!this.current_file?.node_id) {
             return
         }
@@ -175,9 +191,8 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
     async render__using_google_viewer() {                           // todo: a) see if this is the best way to handle these docs, and b) debug the multiple file formats supported
         try {
-            const response = await this.api_invoke.invoke_api(`/api/user-data/files/file-temp-signed-url?file_id=${this.current_file.node_id}`, 'GET')
+            const response      = await this.api_invoke.invoke_api(`/api/user-data/files/file-temp-signed-url?file_id=${this.current_file.node_id}`, 'GET')
             const presigned_url = response.data
-            console.log(presigned_url)
             return new Raw_Html({
                 class: 'content-document-viewer',
                 value: `<iframe
@@ -201,22 +216,20 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             return new Div()
         }
 
-        // More robust unescaping using JSON.parse
+
         let processed_summary
         try {
-            processed_summary = JSON.parse(this.file_summary)  // Wrap in quotes to make valid JSON string
-            window.processed_summary = processed_summary
-            console.log(processed_summary)
+            processed_summary = JSON.parse(this.file_summary)
         } catch (error) {
             console.error('Error processing summary:', error)
-            processed_summary = this.file_summary  // Fallback to original if parsing fails
+            processed_summary = this.file_summary                        // Fallback to original if parsing fails
         }
 
-        const summary_container = new Div({ class: 'summary-container' })
-        const summary_header   = new Div({ class: 'summary-header'   })
-        const summary_title    = new Div({ class: 'summary-title'    ,
-                                         value: 'File Summary'        })
-        const summary_content  = new Raw_Html({
+
+        const summary_container = new Div({ class: 'summary-container'                                })
+        const summary_header    = new Div({ class: 'summary-header'                                   })
+        const summary_title     = new Div({ class: 'summary-title'    ,  value: 'File Summary'        })
+        const summary_content   = new Raw_Html({
             class: 'summary-content',
             value: marked.marked(processed_summary)
         })
@@ -410,9 +423,10 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
                 new Div({ class: 'file-meta', value: `File id: ${this.current_file.node_id}` })
             )
 
-            const delete_btn = new Button({ class: 'btn btn-danger', value: 'Delete File' })
+            const create_summary_btn = new Button({ class: 'btn btn-primary create-summary', value: 'Create Summary' })
+            const delete_btn         = new Button({ class: 'btn btn-danger  delete-file'   , value: 'Delete File' })
 
-            header.add_elements(info, delete_btn)
+            header.add_elements(info, create_summary_btn, delete_btn)
 
             // Add summary section before the main content
             const summary_section = this.render_summary_section()
@@ -429,9 +443,11 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         this.add_css_rules(this.css_rules())
 
         // Add event listeners after DOM is ready
-        const delete_btn = this.shadowRoot.querySelector('.btn-danger')
-        if (delete_btn) {
-            delete_btn.addEventListener('click', () => this.delete_current_file())
+        if (this.current_file) {
+            const btn__delete         = this.query_selector('.delete-file'   )
+            const btn__create_summary = this.query_selector('.create-summary')
+            btn__delete        .addEventListener('click', () => this.delete__current_file        ())
+            btn__create_summary.addEventListener('click', () => this.create_summary__current_file(btn__create_summary))
         }
     }
 

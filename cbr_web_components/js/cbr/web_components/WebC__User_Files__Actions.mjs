@@ -111,9 +111,9 @@ export default class WebC__User_Files__Actions extends Web_Component {
     render() {
         const container            = new Div({ class: 'actions-container' })
         const folder_info          = new Div({ class: 'folder-info' })
-        const text__current_folder = new Text({ class: 'current-folder' , value: 'Current Folder: '       })
-        const text__folder_name    = new Text({ class: 'folder-name'    , value: this.current_folder.name })
-
+        const text__current_folder = new Text({ class: 'current-folder' , value: 'Current Folder: '          })
+        const text__folder_name    = new Text({ class: 'folder-name'    , value: this.current_folder.name    })
+        const text__folder_id      = new Text({ class: 'folder-id'      , value: this.current_folder.node_id})
 
         const form__new_folder     = new Div   ({ class       : 'actions-form'          })
         const input                = new Input ({ class       : 'input folder-input'    ,
@@ -125,7 +125,7 @@ export default class WebC__User_Files__Actions extends Web_Component {
 
         const delete_btn  = new Button({ class : 'action-button delete',    value : 'Delete Current Folder' })
         folder_info.add_elements(text__current_folder, text__folder_name, delete_btn)
-        container  .add_elements(form__new_folder, folder_info)
+        container  .add_elements(form__new_folder, folder_info, text__folder_id)
 
         this.set_inner_html(container.html())
         this.add_css_rules(this.css_rules())
