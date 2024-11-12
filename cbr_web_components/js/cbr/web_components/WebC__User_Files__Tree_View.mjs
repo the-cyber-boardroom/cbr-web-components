@@ -65,13 +65,15 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
     create_tree_item(node, level = 0) {
         if (node === null) { return new Div() }
 
-        const item_div = new Div({ class: 'tree-item', attributes: {'data-id': node.node_id, 'data-type': node.node_type} })
-        const content  = new Div({ class: 'tree-item-content' })
+        const item_div = new Div({ class: 'tree-item', attributes: {
+            'data-id': node.node_id,
+            'data-type': node.node_type,
+            'data-level': level
+        }})
+        const content  = new Div({ class: `tree-item-content level-${level}` })  // Add level class
 
         let is_root  = node.parent_id === null
-        let expand = is_root
-
-        expand = true                                   // (for now expand all folders) due to bug in treeview where files are now shown when there is no sub-folder
+        let expand = is_root || true                                            // expand by default
 
         if (node.node_type === 'folder') {
 
@@ -79,7 +81,7 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
             const folder   = new Icon({ icon: 'folder'       , class: 'tree-item-icon folder-icon'})
             content.add_elements(chevron, folder)
 
-            const children = new Div({class: `tree-children ${is_root ? '' : 'tree-folder-closed'}`, id: `folder-${node.node_id}`})
+            const children = new Div({class: `tree-children ${expand ? '' : 'tree-folder-closed'}`, id: `folder-${node.node_id}`})
 
             node.children?.forEach(child => children.add_element(this.create_tree_item(child, level + 1)))
             node.files   ?.forEach(file  => children.add_element(this.create_tree_item(file, level + 1)))

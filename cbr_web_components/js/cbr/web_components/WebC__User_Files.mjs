@@ -73,13 +73,12 @@ export default class WebC__User_Files extends Web_Component {
                                      gap              : "1rem"                      ,            // Gap between panels
                                      padding          : "1rem"                      ,            // Padding around container
                                      backgroundColor  : "#f8f9fa"                   ,            // Light background
-
                                      position         : "absolute"                  ,            // Position absolute
                                      top              : "0"                         ,            // Align to top
                                      left             : "0"                         ,            // Align to left
                                      right            : "0"                         ,            // Stretch to right
                                      bottom           : "0"                         ,            // Stretch to bottom
-                                      overflow         : "hidden"      // Prevent overflow
+                                     overflow         : "auto"                                  // Prevent overflow
                                     },
 
             ".files-panel"         : { //borderRadius     : "0.5rem"                   ,            // Rounded corners
@@ -89,17 +88,18 @@ export default class WebC__User_Files extends Web_Component {
                                        display          : "flex"                      ,            // Make panels flex containers
                                        flexDirection    : "column"                    },           // Stack children vertically
 
-            ".left-panel"          : { width            : "300px"                     ,            // Fixed width for left panel
-                                     minWidth         : "300px"                     ,            // Prevent shrinking below 300px
-                                     display          : "flex"                      ,            // Flex for child elements
-                                     flexDirection    : "column"                    ,            // Stack children vertically
-                                     gap              : "1rem"                      ,            // Gap between components
-                                     flexShrink       : "0"                         },           // Prevent shrinking
+            ".left-panel"          : { width            : "350px"                     ,            // Fixed width for left panel
+                                       minWidth         : "350px"                     ,            // Prevent shrinking below 350px
+                                       display          : "flex"                      ,            // Flex for child elements
+                                       flexDirection    : "column"                    ,            // Stack children vertically
+                                       gap              : "1rem"                      ,            // Gap between components
+                                       flexShrink       : "0"                         },           // Prevent shrinking
 
             ".right-panel"         : { flex             : "1 1 auto"                  ,            // Take remaining space
-                                     minWidth         : "0"                         ,            // Allow shrinking
-                                     display          : "flex"                      ,            // Make it flex container
-                                     flexDirection    : "column"                    },           // Stack children vertically
+                                      minWidth         : "0"                         ,            // Allow shrinking
+                                      display          : "flex"                      ,            // Make it flex container
+                                      flexDirection    : "column"                    ,           // Stack children vertically
+                                      overflow         : "auto"                      },
 
             // Component-specific styles
             "webc-user-files-tree-view": {  //flex             : "1"                         ,            // Take available space

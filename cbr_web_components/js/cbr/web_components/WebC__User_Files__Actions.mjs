@@ -87,85 +87,102 @@ export default class WebC__User_Files__Actions extends Web_Component {
 
     css_rules() {
         return {
-            ".actions-container"    : { padding           : "1rem",
-                                        backgroundColor   : "#fff",
-                                        borderRadius      : "0.375rem",
-                                        boxShadow         : "2px 2px 4px rgba(0,0,0,0.2)"      },
-            ".current-folder"       : { fontSize          : "0.875rem"  ,
-                                        color             : "#6c757d"                        },
-            ".folder-info"          : { paddingBottom     : "0.5rem"    ,
-                                        display          : "flex"       ,
-                                        alignItems       : "center"     ,
-                                        gap              : "0.5rem"                         },
-            ".folder-info .delete"  : { marginLeft       : "auto"                           },
-            ".folder-name"          : { fontWeight        : "600",
-                                        color             : "#212529"                        },
+            ".actions-container"    : { padding           : "1rem"                      ,
+                                      backgroundColor   : "#fff"                      ,
+                                      borderRadius      : "0.375rem"                  ,
+                                      boxShadow         : "2px 2px 4px rgba(0,0,0,0.2)",
+                                      display          : "flex"                      ,
+                                      flexDirection    : "column"                    ,
+                                      gap              : "1rem"                      },
 
-            ".actions-form"         : { display          : "flex",
-                                        gap              : "0.5rem",
-                                        marginBottom     : "1rem"                             },
+            ".folder-info"          : { paddingBottom     : "0.5rem"                   ,
+                                      display           : "flex"                      ,
+                                      alignItems        : "center"                    ,
+                                      gap               : "0.5rem"                    ,
+                                      borderBottom      : "1px solid #dee2e6"         },
 
-            ".folder-input"         : { flex             : "1"                              },
+            ".current-folder"       : { fontSize          : "0.875rem"                 ,
+                                      color             : "#6c757d"                   },
 
+            ".folder-name"          : { fontWeight        : "600"                      ,
+                                      color             : "#212529"                   },
 
-            ".action-button"        : { padding          : "0.375rem 0.75rem",
-                                      fontSize         : "0.875rem",
-                                      fontWeight       : "500",
-                                      color            : "#fff",
-                                      backgroundColor  : "#0d6efd",
-                                      border           : "none",
-                                      borderRadius     : "0.375rem",
-                                      cursor           : "pointer"                          },
+            ".actions-form"         : { display          : "flex"                      ,
+                                      gap              : "0.5rem"                     },
 
-            ".action-button:hover"  : { backgroundColor  : "#0b5ed7"                        },
+            ".rename-form"          : { display          : "flex"                      ,
+                                      gap              : "0.5rem"                     },
 
-            ".action-button.delete"         : { backgroundColor  : "#dc3545"                },
+            ".folder-input"         : { flex             : "1"                         },
 
-            ".action-button.delete:hover"   : { backgroundColor : "#bb2d3b"                 } ,
-            ".rename-form"                  : { display          : "flex",
-                                                gap              : "0.5rem",
-                                                marginTop        : "0.5rem",
-                                                padding          : "0.5rem 0",
-                                                borderTop        : "1px solid #dee2e6"      },
-              ".rename-input"              : { flex             : "1"                       },
-              ".action-button.rename"      : { backgroundColor  : "#198754"                 },
-              ".action-button.rename:hover": { backgroundColor : "#146c43"                  }
+            ".rename-input"         : { flex             : "1"                         },
+
+            ".action-button"        : { padding          : "0.375rem 0.75rem"         ,
+                                      fontSize         : "0.875rem"                  ,
+                                      fontWeight       : "500"                       ,
+                                      color            : "#fff"                      ,
+                                      backgroundColor  : "#0d6efd"                   ,
+                                      border           : "none"                      ,
+                                      borderRadius     : "0.375rem"                  ,
+                                      cursor           : "pointer"                   },
+
+            ".action-button:hover"  : { backgroundColor  : "#0b5ed7"                   },
+
+            ".action-button.rename" : { backgroundColor  : "#198754"                   },
+
+            ".action-button.rename:hover": { backgroundColor : "#146c43"               },
+
+            ".action-button.delete" : { backgroundColor  : "#dc3545"                  ,
+                                        marginTop        : "auto"                      },  // Push to bottom
+
+            ".action-button.delete:hover": { backgroundColor : "#bb2d3b"              }
         }
     }
 
     render() {
         const container            = new Div({ class: 'actions-container' })
+
+        // Current folder info at top
         const folder_info          = new Div({ class: 'folder-info' })
         const text__current_folder = new Text({ class: 'current-folder' , value: 'Current Folder: '       })
         const text__folder_name    = new Text({ class: 'folder-name'    , value: this.current_folder.name })
+        folder_info.add_elements(text__current_folder, text__folder_name)
 
-
-        const form__new_folder     = new Div   ({ class       : 'actions-form'          })                              // Add folder form
+        // Add folder form
+        const form__new_folder     = new Div   ({ class       : 'actions-form'          })
         const input                = new Input ({ class       : 'input folder-input'    ,
-                                                  placeholder : 'New folder name'       ,
-                                                  value       : 'new-folder'            })
-        const add_button           = new Button({ class       : 'action-button',  value : 'Add Folder' })
+                                                placeholder : 'New folder name'       ,
+                                                value       : 'new-folder'            })
+        const add_button           = new Button({ class       : 'action-button',  value : 'Add' })
 
-        // Rename folder form
-        const form__rename_folder  = new Div   ({ class       : 'rename-form'           })
-        const rename_input         = new Input ({ class       : 'input rename-input'    ,
-                                                placeholder   : 'New name'              ,
-                                                value         : this.current_folder.name })
-        const rename_button        = new Button({ class       : 'action-button rename'  ,
-                                                value         : 'Rename Folder'         })
+        form__new_folder.add_elements(input, add_button)
 
-        form__new_folder   .add_elements(input, add_button)
-        form__rename_folder.add_elements(rename_input, rename_button)
+        const show_rename_delete = this.current_folder.node_id && this.current_folder.name !== 'root'
+        // Only show rename and delete for non-root folders
+        if (show_rename_delete) {
+            // Rename folder form
+            const form__rename_folder  = new Div   ({ class       : 'rename-form'           })
+            const rename_input         = new Input ({ class       : 'input rename-input'    ,
+                                                    placeholder : 'New name'              ,
+                                                    value       : this.current_folder.name })
+            const rename_button        = new Button({ class       : 'action-button rename'  ,
+                                                    value        : 'Rename'                })
 
-        const delete_btn = new Button({ class : 'action-button delete', value : 'Delete Current Folder' })
-        folder_info.add_elements(text__current_folder, text__folder_name, delete_btn)
-        container  .add_elements(form__new_folder, form__rename_folder, folder_info)
+            form__rename_folder.add_elements(rename_input, rename_button)
+
+            // Delete button at bottom
+            const delete_btn = new Button({ class : 'action-button delete', value : 'Delete' })
+
+            container.add_elements(folder_info, form__new_folder, form__rename_folder, delete_btn)
+        } else {
+            container.add_elements(folder_info, form__new_folder)
+        }
 
         this.set_inner_html(container.html())
         this.add_css_rules(this.css_rules())
 
-
-        this.query_selector('.action-button').addEventListener('click', async () => {                       // Add folder event listener
+        // Add folder event listener
+        this.query_selector('.action-button').addEventListener('click', async () => {
             const input = this.query_selector('.folder-input')
             const name = input.value.trim()
             if (name) {
@@ -173,19 +190,22 @@ export default class WebC__User_Files__Actions extends Web_Component {
             }
         })
 
+        // Only add these listeners if not root folder
+        if (show_rename_delete) {
+            // Rename folder event listener
+            this.query_selector('.action-button.rename').addEventListener('click', async () => {
+                const input = this.query_selector('.rename-input')
+                const new_name = input.value.trim()
+                if (new_name && new_name !== this.current_folder.name) {
+                    await this.rename_current_folder(new_name)
+                }
+            })
 
-        this.query_selector('.action-button.rename').addEventListener('click', async () => {                // Rename folder event listener
-            const input = this.query_selector('.rename-input')
-            const new_name = input.value.trim()
-            if (new_name && new_name !== this.current_folder.name) {
-                await this.rename_current_folder(new_name)
-            }
-        })
-
-
-        this.query_selector('.action-button.delete').addEventListener('click', async () => {                // Delete folder event listener
-            await this.delete_current_folder()
-        })
+            // Delete folder event listener
+            this.query_selector('.action-button.delete').addEventListener('click', async () => {
+                await this.delete_current_folder()
+            })
+        }
     }
 }
 
