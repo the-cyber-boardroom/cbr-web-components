@@ -133,10 +133,10 @@ export default class WebC__User_Files__Upload extends Web_Component {
 
     css_rules() {
         return {
-            ".upload-container"    : { padding          : "1.5rem"                    ,
-                                     backgroundColor   : "#fff"                      ,
-                                     borderRadius      : "0.5rem"                    ,
-                                     boxShadow         : "0 2px 4px rgba(0,0,0,0.1)" },
+            ".upload-container"    : { padding          : "1.5rem"                     ,
+                                     backgroundColor   : "#fff"                        ,
+                                     borderRadius      : "0.5rem"                      ,
+                                     boxShadow         : "2px 2px 4px rgba(0,0,0,0.2)" },
 
             ".current-folder"      : { fontSize         : "0.875rem"                  ,
                                      color            : "#6c757d"                    ,

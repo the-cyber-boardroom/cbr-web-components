@@ -60,6 +60,7 @@ export default class WebC__User_Files extends Web_Component {
     }
 
     css_rules() {
+
         return {
             ":host"                : { display          : "block"                     ,            // Make component block level
                                      width             : "100%"                      ,            // Take full width
@@ -67,17 +68,19 @@ export default class WebC__User_Files extends Web_Component {
                                      minHeight         : "0"                         },           // Allow content to shrink
 
             ".files-container"     : { display          : "flex"                      ,            // Main container as flex
-                                     //width             : "100%"                      ,            // Full width
+                                     width             : "100%"                      ,            // Full width
                                      height            : "100%"                      ,            // Full height
                                      gap              : "1rem"                      ,            // Gap between panels
                                      padding          : "1rem"                      ,            // Padding around container
                                      backgroundColor  : "#f8f9fa"                   ,            // Light background
+
                                      position         : "absolute"                  ,            // Position absolute
                                      top              : "0"                         ,            // Align to top
                                      left             : "0"                         ,            // Align to left
                                      right            : "0"                         ,            // Stretch to right
                                      bottom           : "0"                         ,            // Stretch to bottom
-                                     overflow         : "hidden"                    },           // Prevent overflow
+                                      overflow         : "hidden"      // Prevent overflow
+                                    },
 
             ".files-panel"         : { //borderRadius     : "0.5rem"                   ,            // Rounded corners
                                        backgroundColor  : "#ffffff"                   ,            // White background
@@ -99,18 +102,12 @@ export default class WebC__User_Files extends Web_Component {
                                      flexDirection    : "column"                    },           // Stack children vertically
 
             // Component-specific styles
-            "webc-user-files-tree-view": {
-                                     flex             : "1"                         ,            // Take available space
-                                     overflowY        : "auto"                      ,            // Scroll if needed
-                                     minHeight        : "0"                         },           // Allow content to scroll
+            "webc-user-files-tree-view": {  //flex             : "1"                         ,            // Take available space
+                                            overflowY        : "auto"                      ,            // Scroll if needed
+                                            minHeight        : "0"                         },           // Allow content to scroll
 
-            "webc-user-files-actions" : {
-                                     padding          : "1rem"                      ,            // Padding around actions
-                                     borderTop       : "1px solid #dee2e6"         },           // Top border
-
-            "webc-user-files-upload"  : {
-                                     padding          : "1rem"                      ,            // Padding around upload
-                                     borderTop       : "1px solid #dee2e6"         }            // Top border
+            "webc-user-files-actions" : { padding          : "1rem"                 },            // Padding around actions
+            "webc-user-files-upload"  : { padding          : "1rem"                 }            // Padding around upload
         }
     }
 }

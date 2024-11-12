@@ -15,6 +15,7 @@ css_rules__standard() {
             ".tree-view"                         : { display        : "flex"                                    ,
                                                      flexDirection  : "column"                                  ,
                                                      padding        : "1rem"                                    ,
+                                                     margin         : '1rem'                                    ,
                                                      borderRadius   : "0.375rem"                                ,
                                                      boxShadow      : "2px 2px 4px rgba(0,0,0,0.2)"             },
             ".tree-item"                         : { alignItems     : "center"                                  ,

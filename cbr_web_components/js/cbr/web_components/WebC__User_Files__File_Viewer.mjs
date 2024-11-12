@@ -41,6 +41,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             )
             this.file_data          = response.data.file_data
             this.file_bytes__base64 = response.data.file_bytes__base64
+            this.file_summary       = response.data.file_summary          // Store summary
         } catch (error) {
             console.error('Error loading file:', error)
             this.show_error_message('Failed to load file data')
@@ -194,6 +195,39 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             })
         }
     }
+
+    render_summary_section() {
+        if (!this.file_summary) {
+            return new Div()
+        }
+
+        // More robust unescaping using JSON.parse
+        let processed_summary
+        try {
+            processed_summary = JSON.parse(this.file_summary)  // Wrap in quotes to make valid JSON string
+            window.processed_summary = processed_summary
+            console.log(processed_summary)
+        } catch (error) {
+            console.error('Error processing summary:', error)
+            processed_summary = this.file_summary  // Fallback to original if parsing fails
+        }
+
+        const summary_container = new Div({ class: 'summary-container' })
+        const summary_header   = new Div({ class: 'summary-header'   })
+        const summary_title    = new Div({ class: 'summary-title'    ,
+                                         value: 'File Summary'        })
+        const summary_content  = new Raw_Html({
+            class: 'summary-content',
+            value: marked.marked(processed_summary)
+        })
+
+        summary_header.add_element(summary_title)
+        summary_container.add_elements(summary_header, summary_content)
+
+        return summary_container
+    }
+
+
     show_error_message(message) {
         const status = this.shadowRoot.querySelector('.viewer-status')
         if (status) {
@@ -330,7 +364,28 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
             ".content-document-viewer iframe" : { border           : "none"                 ,
                                                   width            : "100%"                 ,
-                                                  height           : "100%"                 }
+                                                  height           : "100%"                 },
+            // Add to css_rules()
+            ".summary-container"   : { marginTop        : "1rem"                      ,            // Space above summary
+                                      padding          : "1rem"                      ,            // Inner spacing
+                                      backgroundColor  : "#fff"                      ,            // White background
+                                      borderRadius     : "0.375rem"                  ,            // Rounded corners
+                                      border          : "1px solid #e9ecef"         ,            // Subtle border
+                                      marginBottom     : "1rem"                      },           // Space below
+
+            ".summary-header"      : { display          : "flex"                      ,            // Flex container
+                                      alignItems       : "center"                    ,            // Center items vertically
+                                      marginBottom     : "0.75rem"                   ,            // Space below header
+                                      paddingBottom    : "0.5rem"                    ,            // Padding below
+                                      borderBottom     : "1px solid #e9ecef"         },           // Bottom border
+
+            ".summary-title"       : { fontSize         : "1rem"                      ,            // Title size
+                                      fontWeight       : "600"                       ,            // Bold weight
+                                      color           : "#495057"                    },           // Dark gray color
+
+            ".summary-content"     : { fontSize         : "0.875rem"                  ,            // Smaller text
+                                      lineHeight       : "1.6"                       ,            // Line spacing
+                                      color           : "#495057"                    },           // Text color
             }
     }
 
@@ -351,19 +406,23 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             info.add_elements(
                 new Div({ class: 'file-name', value: this.file_data.file_name }),
                 new Div({ class: 'file-meta', value: `Last updated: ${this.format_date(this.file_data.updated__date, this.file_data.updated__time)}` }),
-                new Div({ class: 'file-meta', value: `Size: ${this.format_size(this.file_data.file_size)}` })
+                new Div({ class: 'file-meta', value: `Size: ${this.format_size(this.file_data.file_size)}` }),
+                new Div({ class: 'file-meta', value: `File id: ${this.current_file.node_id}` })
             )
 
-            const delete_btn = new Button({ class: 'btn btn-danger',  value: 'Delete File' })
+            const delete_btn = new Button({ class: 'btn btn-danger', value: 'Delete File' })
 
             header.add_elements(info, delete_btn)
+
+            // Add summary section before the main content
+            const summary_section = this.render_summary_section()
 
             const content = new Div({ class: 'content-container' })
             content.add_element(await this.render_content_by_type())
 
             const status = new Div({ class: 'viewer-status' })
 
-            container.add_elements(header, content, status)
+            container.add_elements(header, summary_section, content, status)
         }
 
         this.set_inner_html(container.html())
