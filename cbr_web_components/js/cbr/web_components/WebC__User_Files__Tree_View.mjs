@@ -68,7 +68,10 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         const item_div = new Div({ class: 'tree-item', attributes: {'data-id': node.node_id, 'data-type': node.node_type} })
         const content  = new Div({ class: 'tree-item-content' })
 
-        const is_root  = node.parent_id === null
+        let is_root  = node.parent_id === null
+        let expand = is_root
+
+        expand = true                                   // (for now expand all folders) due to bug in treeview where files are now shown when there is no sub-folder
 
         if (node.node_type === 'folder') {
 

@@ -39,6 +39,7 @@ export default class WebC__User_Files__Upload extends Web_Component {
         drop_zone.addEventListener('dragover',  this.handle_dragover)
         drop_zone.addEventListener('drop',      this.handle_drop)
         drop_zone.addEventListener('dragenter', () => drop_zone.classList.add('drag-active'))
+        drop_zone.addEventListener('dragover' , () => drop_zone.classList.add('drag-active'))
         drop_zone.addEventListener('dragleave', () => drop_zone.classList.remove('drag-active'))
 
         // Set up file input handler

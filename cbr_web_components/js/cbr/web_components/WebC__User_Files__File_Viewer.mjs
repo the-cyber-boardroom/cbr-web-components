@@ -48,7 +48,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         }
     }
 
-    async create_summary__current_file(button) {
+    async on_current_file__create_summary(button) {
         if (!this.current_file?.node_id) {
             return
         }
@@ -64,7 +64,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         button.innerHTML = '...all done'
 
     }
-    async delete__current_file() {
+    async on_current_file__delete() {
         if (!this.current_file?.node_id) {
             return
         }
@@ -80,6 +80,17 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
                 this.show_error_message('Failed to delete file')
             }
         }
+    }
+
+    async on_current_file__create_download(button) {
+        if (!this.current_file?.node_id) {
+            return
+        }
+        const file_id        = this.current_file.node_id
+        const path           = `/api/user-data/files/file-download?file_id=${file_id}`
+        window.location.href = path;
+        // const file_contents = await this.api_invoke.invoke_api(path, 'POST')
+        // console.log(file_contents)
     }
 
     raise_refresh_event() {
@@ -424,9 +435,10 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             )
 
             const create_summary_btn = new Button({ class: 'btn btn-primary create-summary', value: 'Create Summary' })
-            const delete_btn         = new Button({ class: 'btn btn-danger  delete-file'   , value: 'Delete File' })
+            const delete_btn         = new Button({ class: 'btn btn-danger  delete-file'   , value: 'Delete File'    })
+            const download_btn       = new Button({ class: 'btn btn-success download-file' , value: 'Download'       })
 
-            header.add_elements(info, create_summary_btn, delete_btn)
+            header.add_elements(info, create_summary_btn, download_btn, delete_btn)
 
             // Add summary section before the main content
             const summary_section = this.render_summary_section()
@@ -446,8 +458,11 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         if (this.current_file) {
             const btn__delete         = this.query_selector('.delete-file'   )
             const btn__create_summary = this.query_selector('.create-summary')
-            btn__delete        .addEventListener('click', () => this.delete__current_file        ())
-            btn__create_summary.addEventListener('click', () => this.create_summary__current_file(btn__create_summary))
+            const btn__download       = this.query_selector('.download-file')
+
+            btn__create_summary.addEventListener('click', () => this.on_current_file__create_summary (btn__create_summary))
+            btn__delete        .addEventListener('click', () => this.on_current_file__delete         ())
+            btn__download      .addEventListener('click', () => this.on_current_file__create_download())
         }
     }
 

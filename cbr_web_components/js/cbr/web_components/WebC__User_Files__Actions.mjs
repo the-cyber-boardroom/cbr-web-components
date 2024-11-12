@@ -34,7 +34,7 @@ export default class WebC__User_Files__Actions extends Web_Component {
         try {
             await this.api_invoke.invoke_api('/api/user-data/files/add-folder', 'POST', {
                 folder_name      : folder_name,
-                parent_folder_id : this.current_folder.node_id
+                parent_folder_id : this.current_folder.node_id || ''
             })
             //this.input.value = ''
             this.raise_refresh_event()
@@ -57,6 +57,23 @@ export default class WebC__User_Files__Actions extends Web_Component {
             } catch (error) {
                 console.error('Error deleting folder:', error)
             }
+        }
+    }
+
+    async rename_current_folder(new_name) {
+        if (!this.current_folder.node_id) {
+            alert('Cannot rename root folder')
+            return
+        }
+
+        try {
+            await this.api_invoke.invoke_api('/api/user-data/files/folder-rename', 'POST', {
+                folder_id       : this.current_folder.node_id,
+                new_folder_name : new_name
+            })
+            this.raise_refresh_event()
+        } catch (error) {
+            console.error('Error renaming folder:', error)
         }
     }
 
@@ -102,35 +119,53 @@ export default class WebC__User_Files__Actions extends Web_Component {
 
             ".action-button:hover"  : { backgroundColor  : "#0b5ed7"                        },
 
-            ".action-button.delete" : { backgroundColor  : "#dc3545"                        },
+            ".action-button.delete"         : { backgroundColor  : "#dc3545"                },
 
-            ".action-button.delete:hover": { backgroundColor : "#bb2d3b"                    }
+            ".action-button.delete:hover"   : { backgroundColor : "#bb2d3b"                 } ,
+            ".rename-form"                  : { display          : "flex",
+                                                gap              : "0.5rem",
+                                                marginTop        : "0.5rem",
+                                                padding          : "0.5rem 0",
+                                                borderTop        : "1px solid #dee2e6"      },
+              ".rename-input"              : { flex             : "1"                       },
+              ".action-button.rename"      : { backgroundColor  : "#198754"                 },
+              ".action-button.rename:hover": { backgroundColor : "#146c43"                  }
         }
     }
 
     render() {
         const container            = new Div({ class: 'actions-container' })
         const folder_info          = new Div({ class: 'folder-info' })
-        const text__current_folder = new Text({ class: 'current-folder' , value: 'Current Folder: '          })
-        const text__folder_name    = new Text({ class: 'folder-name'    , value: this.current_folder.name    })
-        const text__folder_id      = new Text({ class: 'folder-id'      , value: this.current_folder.node_id})
+        const text__current_folder = new Text({ class: 'current-folder' , value: 'Current Folder: '       })
+        const text__folder_name    = new Text({ class: 'folder-name'    , value: this.current_folder.name })
 
-        const form__new_folder     = new Div   ({ class       : 'actions-form'          })
+
+        const form__new_folder     = new Div   ({ class       : 'actions-form'          })                              // Add folder form
         const input                = new Input ({ class       : 'input folder-input'    ,
                                                   placeholder : 'New folder name'       ,
                                                   value       : 'new-folder'            })
         const add_button           = new Button({ class       : 'action-button',  value : 'Add Folder' })
 
-        form__new_folder.add_elements(input, add_button)
+        // Rename folder form
+        const form__rename_folder  = new Div   ({ class       : 'rename-form'           })
+        const rename_input         = new Input ({ class       : 'input rename-input'    ,
+                                                placeholder   : 'New name'              ,
+                                                value         : this.current_folder.name })
+        const rename_button        = new Button({ class       : 'action-button rename'  ,
+                                                value         : 'Rename Folder'         })
 
-        const delete_btn  = new Button({ class : 'action-button delete',    value : 'Delete Current Folder' })
+        form__new_folder   .add_elements(input, add_button)
+        form__rename_folder.add_elements(rename_input, rename_button)
+
+        const delete_btn = new Button({ class : 'action-button delete', value : 'Delete Current Folder' })
         folder_info.add_elements(text__current_folder, text__folder_name, delete_btn)
-        container  .add_elements(form__new_folder, folder_info, text__folder_id)
+        container  .add_elements(form__new_folder, form__rename_folder, folder_info)
 
         this.set_inner_html(container.html())
         this.add_css_rules(this.css_rules())
 
-        this.query_selector('.action-button').addEventListener('click', async () => {                   // Add event listeners after elements are in DOM
+
+        this.query_selector('.action-button').addEventListener('click', async () => {                       // Add folder event listener
             const input = this.query_selector('.folder-input')
             const name = input.value.trim()
             if (name) {
@@ -138,7 +173,17 @@ export default class WebC__User_Files__Actions extends Web_Component {
             }
         })
 
-        this.query_selector('.action-button.delete').addEventListener('click', async () => {
+
+        this.query_selector('.action-button.rename').addEventListener('click', async () => {                // Rename folder event listener
+            const input = this.query_selector('.rename-input')
+            const new_name = input.value.trim()
+            if (new_name && new_name !== this.current_folder.name) {
+                await this.rename_current_folder(new_name)
+            }
+        })
+
+
+        this.query_selector('.action-button.delete').addEventListener('click', async () => {                // Delete folder event listener
             await this.delete_current_folder()
         })
     }
