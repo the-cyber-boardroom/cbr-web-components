@@ -1,4 +1,4 @@
-import Chatbot_OpenAI   from '../../js/chat-bots/Chatbot_OpenAI.mjs'
+import Chatbot_OpenAI   from '../../js/chat-bot/Chatbot_OpenAI.mjs'
 import Web_Component    from '../../js/core/Web_Component.mjs'
 import WebC__Target_Div from "../../js/utils/WebC__Target_Div.mjs";
 

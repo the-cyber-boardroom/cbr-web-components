@@ -1,5 +1,5 @@
-import Web_Component from "../../core/Web_Component.mjs";
-import Tag           from "../../core/Tag.mjs";
+import Web_Component from "../core/Web_Component.mjs";
+import Tag           from "../core/Tag.mjs";
 
 export default class WebC__Form_Input extends Web_Component {
 
@@ -7,7 +7,6 @@ export default class WebC__Form_Input extends Web_Component {
         super();
         this.channels.push('WebC__Form_Input'     )
     }
-
     // properties
     get text_area() {
         return this.query_selector('#text_area')

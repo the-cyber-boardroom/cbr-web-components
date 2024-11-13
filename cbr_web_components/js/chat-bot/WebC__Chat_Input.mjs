@@ -1,7 +1,7 @@
 import Events__Utils      from "../events/Events__Utils.mjs";
 import Web_Component      from "../core/Web_Component.mjs";
 import Tag                from "../core/Tag.mjs";
-import WebC__Form_Input   from "../elements/form_input/WebC__Form_Input.mjs";       // used in .build()
+import WebC__Form_Input   from "./WebC__Form_Input.mjs";       // used in .build()
 
 export default class WebC__Chat_Input extends Web_Component {
 

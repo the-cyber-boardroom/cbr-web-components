@@ -1,4 +1,4 @@
-import WebC__Chat_Messages  from '../../js/elements/WebC__Chat_Messages.mjs'
+import WebC__Chat_Messages  from '../../js/chat-bot/WebC__Chat_Messages.mjs'
 import WebC__Target_Div     from '../../js/utils/WebC__Target_Div.mjs'
 import Web_Component        from "../../js/core/Web_Component.mjs";
 

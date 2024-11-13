@@ -1,7 +1,7 @@
 import Events__Utils            from "../../js/events/Events__Utils.mjs";
 import WebC__Target_Div         from "../../js/utils/WebC__Target_Div.mjs";
 import Web_Component            from '../../js/core/Web_Component.mjs'
-import WebC__Form_Input         from "../../js/elements/form_input/WebC__Form_Input.mjs";
+import WebC__Form_Input         from "../../js/chat-bot/WebC__Form_Input.mjs";
 
 QUnit.module('WebC__Form_Input', function(hooks) {
 
@@ -19,7 +19,6 @@ QUnit.module('WebC__Form_Input', function(hooks) {
         target_div_setup        = { right:"50px", top:"250px", width: "500px", height:"200px"}
         target_div              = WebC__Target_Div.add_to_body().build(target_div_setup)
         webc_form_input         = target_div.append_child(WebC__Form_Input, {channel:channel})
-        //webc_form_input_events  = new WebC__Form_Input__Events()
         events_utils            = webc_form_input.events_utils
         text_area               = webc_form_input.text_area
         //target_div.shadow_root().querySelector('.target_div').style.border = '0px'
@@ -148,11 +147,6 @@ QUnit.module('WebC__Form_Input', function(hooks) {
         }, 0);
 
     });
-
-    // QUnit.test('check WebC__Form_Input__Events', (assert) => {
-    //     webc_form_input_events.raise_event()
-    //     assert.ok(1)
-    // })
 
 
 })

@@ -3,7 +3,6 @@ import Data__Chat_Bot      from "../data/Data__Chat_Bot.mjs" ;
 import WebC__Chat_Input    from "./WebC__Chat_Input.mjs"     ;
 import WebC__Chat_Messages from "./WebC__Chat_Messages.mjs"  ;
 import A                   from "../core/A.mjs"              ;
-import B                   from "../core/B.mjs"              ;
 import Div                 from "../core/Div.mjs"            ;
 import Text                from "../core/Text.mjs"           ;
 import Tag                 from "../core/Tag.mjs"            ;
