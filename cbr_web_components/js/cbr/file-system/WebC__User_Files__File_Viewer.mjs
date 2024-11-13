@@ -1,4 +1,3 @@
-// WebC__User_Files__File_Viewer.mjs
 import Web_Component  from '../../core/Web_Component.mjs'
 import CSS__Cards     from '../../css/CSS__Cards.mjs'
 import CSS__Forms     from '../../css/CSS__Forms.mjs'
@@ -18,6 +17,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         new CSS__Icons    (this).apply_framework()
         this.api_invoke   = new API__Invoke()
         this.current_file = null
+        this.current_view = 'content'
     }
 
     connectedCallback() {
@@ -32,6 +32,39 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             await this.load_file_data()
             await this.render_file_viewer()
         })
+    }
+
+    add_event_handlers() {
+        if (this.current_file) {
+            // File action buttons
+            const btn__delete         = this.query_selector('.delete-file')
+            const btn__create_summary = this.query_selector('.create-summary')
+            const btn__download       = this.query_selector('.download-file')
+            const btn__rename         = this.query_selector('.rename-file')
+
+            if (btn__create_summary) { btn__create_summary.addEventListener('click', () => this.on_current_file__create_summary(btn__create_summary)) }
+            if (btn__delete)         { btn__delete.addEventListener('click', () => this.on_current_file__delete()) }
+            if (btn__download)       { btn__download.addEventListener('click', () => this.on_current_file__create_download()) }
+            if (btn__rename)         { btn__rename.addEventListener('click', () => this.on_current_file__rename()) }
+
+            // View tabs
+            const content_tab = this.query_selector('#content-tab')
+            const chat_tab = this.query_selector('#chat-tab')
+
+            if (content_tab) {
+                content_tab.addEventListener('click', () => {
+                    this.current_view = 'content'
+                    this.render_file_viewer()
+                })
+            }
+
+            if (chat_tab) {
+                chat_tab.addEventListener('click', () => {
+                    this.current_view = 'chat'
+                    this.render_file_viewer()
+                })
+            }
+        }
     }
 
     async load_file_data() {
@@ -152,6 +185,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         this.file_bytes__base64 = null
         this.render_file_viewer()
     }
+
 
     async render_content_by_type() {
         if (!this.file_bytes__base64) return new Div()
@@ -290,6 +324,22 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         return summary_container
     }
 
+    render_view_tabs() {
+        const tabs = new Div({ class: 'view-tabs' })
+        const content_tab = new Button({
+            class : `btn ${this.current_view === 'content' ? 'btn-primary' : 'btn-outline-primary'}`,
+            value : 'Content View',
+            id    : 'content-tab'
+        })
+        const chat_tab = new Button({
+            class : `btn ${this.current_view === 'chat' ? 'btn-primary' : 'btn-outline-primary'}`,
+            value : 'Chat View',
+            id    : 'chat-tab'
+        })
+        tabs.add_elements(content_tab, chat_tab)
+        return tabs
+    }
+
     async render_file_viewer() {
         const container = new Div({ class: 'viewer-container' })
 
@@ -301,50 +351,52 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
                 })
             )
         } else {
+            // Header section with file info and actions
             const header = new Div({ class: 'file-header' })
             const info = new Div({ class: 'file-info' })
 
-            info.add_elements(new Div({ class: 'file-name' , value: this.file_data.file_name                                                                         }),
-                              new Div({ class: 'file-meta' , value: `Last updated: ${this.format_date(this.file_data.updated__date, this.file_data.updated__time)}` }),
-                              new Div({ class: 'file-meta' , value: `Size: ${this.format_size(this.file_data.file_size)}`                                           }),
-                              new Div({ class: 'file-meta' , value: `File id: ${this.current_file.node_id}`                                                         }))
-
-            // const create_summary_btn = new Button({ class: 'btn btn-primary create-summary', value: 'Create Summary' })
-            // const delete_btn         = new Button({ class: 'btn btn-danger  delete-file'   , value: 'Delete File'    })
-            // const download_btn       = new Button({ class: 'btn btn-success download-file' , value: 'Download'       })
-            //header.add_elements(info, create_summary_btn, download_btn, delete_btn)
+            info.add_elements(
+                new Div({ class: 'file-name', value: this.file_data.file_name }),
+                new Div({ class: 'file-meta', value: `Last updated: ${this.format_date(this.file_data.updated__date, this.file_data.updated__time)}` }),
+                new Div({ class: 'file-meta', value: `Size: ${this.format_size(this.file_data.file_size)}` }),
+                new Div({ class: 'file-meta', value: `File id: ${this.current_file.node_id}` })
+            )
 
             const actions = this.render_file_actions()
             header.add_elements(info, actions)
 
-            // Add summary section before the main content
-            const summary_section = this.render_summary_section()
+            // Add view tabs
+            const tabs = this.render_view_tabs()
 
+            // Content View
+            const content_view = new Div({
+                class : 'content-view',
+                style : this.current_view === 'content' ? '' : 'display: none;'
+            })
+
+            const summary_section = this.render_summary_section()
             const content = new Div({ class: 'content-container' })
             content.add_element(await this.render_content_by_type())
+            content_view.add_elements(summary_section, content)
+
+            // Chat View
+            const chat_view = new Div({
+                class : 'chat-view',
+                style : this.current_view === 'chat' ? '' : 'display: none;'
+            })
+            chat_view.add_tag({
+                tag: 'webc-user-files-content-chat',
+                attributes: { 'file_id': this.current_file.node_id }
+            })
 
             const status = new Div({ class: 'viewer-status' })
 
-            container.add_elements(header, summary_section, content, status)
+            container.add_elements(header, tabs, content_view, chat_view, status)
         }
 
         this.set_inner_html(container.html())
         this.add_css_rules(this.css_rules())
-
-        // Add event listeners after DOM is ready
-        if (this.current_file) {
-            const btn__delete         = this.query_selector('.delete-file'   )
-            const btn__create_summary = this.query_selector('.create-summary')
-            const btn__download       = this.query_selector('.download-file')
-            const btn__rename         = this.query_selector('.rename-file')
-
-            btn__create_summary.addEventListener('click', () => this.on_current_file__create_summary (btn__create_summary))
-            btn__delete        .addEventListener('click', () => this.on_current_file__delete         ())
-            btn__download      .addEventListener('click', () => this.on_current_file__create_download())
-            btn__rename        .addEventListener('click', () => this.on_current_file__rename         ())
-
-            console.log(btn__rename)
-        }
+        this.add_event_handlers()
     }
 
     render_file_actions() {
@@ -517,7 +569,23 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
             ".error-message"       : { color            : "#dc3545"                   ,
                                        fontSize         : "0.875rem"                  ,
-                                       marginTop        : "0.5rem"                    }
+                                       marginTop        : "0.5rem"                    },
+                        ".view-tabs"             : { display          : "flex"                      ,
+                                       gap              : "0.5rem"                     ,
+                                       marginBottom      : "1rem"                      ,
+                                       padding          : "0.5rem 0"                   ,
+                                       borderBottom      : "1px solid #dee2e6"         },
+
+            ".content-view"          : { flex             : "1"                         ,
+                                       display           : "flex"                      ,
+                                       flexDirection     : "column"                    ,
+                                       gap              : "1rem"                      },
+
+            ".chat-view"             : { flex             : "1"                         ,
+                                       display           : "flex"                      ,
+                                       flexDirection     : "column"                    ,
+                                       minHeight         : "400px"                     },
+
             }
     }
 }
