@@ -1,10 +1,12 @@
 // WebC__User_Files.mjs
 import Web_Component from '../../core/Web_Component.mjs'
 import Div           from '../../core/Div.mjs'
+import API__Invoke   from "../../data/API__Invoke.mjs";
 
 export default class WebC__User_Files extends Web_Component {
     load_attributes() {
         this.add_css_rules(this.css_rules())
+        this.api_invoke = new API__Invoke()
     }
 
     connectedCallback() {
@@ -21,25 +23,86 @@ export default class WebC__User_Files extends Web_Component {
         })
 
         // Folder selection handler - show folder viewer, hide file viewer
-        document.addEventListener('folder-selected', () => {
-            const file_viewer   = this.shadowRoot.querySelector('webc-user-files-file-viewer')
-            const folder_viewer = this.shadowRoot.querySelector('webc-user-files-folder-viewer')
-
-            if (file_viewer  ) { file_viewer.style.display   = 'none'  }
-            if (folder_viewer) { folder_viewer.style.display = 'block' }
-        })
-
-        // File selection handler - show file viewer, hide folder viewer
-        document.addEventListener('file-selected', () => {
-            const file_viewer   = this.shadowRoot.querySelector('webc-user-files-file-viewer')
-            const folder_viewer = this.shadowRoot.querySelector('webc-user-files-folder-viewer')
-
-            if (file_viewer  ) { file_viewer.style.display   = 'block' }
-            if (folder_viewer) { folder_viewer.style.display = 'none'  }
-        })
+        // document.addEventListener('folder-selected', () => {
+        //     const file_viewer   = this.shadowRoot.querySelector('webc-user-files-file-viewer')
+        //     const folder_viewer = this.shadowRoot.querySelector('webc-user-files-folder-viewer')
+        //
+        //     if (file_viewer  ) { file_viewer.style.display   = 'none'  }
+        //     if (folder_viewer) { folder_viewer.style.display = 'block' }
+        // })
+        //
+        // // File selection handler - show file viewer, hide folder viewer
+        // document.addEventListener('file-selected', () => {
+        //     const file_viewer   = this.shadowRoot.querySelector('webc-user-files-file-viewer')
+        //     const folder_viewer = this.shadowRoot.querySelector('webc-user-files-folder-viewer')
+        //
+        //     if (file_viewer  ) { file_viewer.style.display   = 'block' }
+        //     if (folder_viewer) { folder_viewer.style.display = 'none'  }
+        // })
 
         // Session change handler - reload all components
         document.addEventListener('active_session_changed', () => this.reload_all_components())
+
+        document.addEventListener('file-selected', async (e) => {
+            const file_viewer = this.shadowRoot.querySelector('webc-user-files-file-viewer')
+            const folder_viewer = this.shadowRoot.querySelector('webc-user-files-folder-viewer')
+            const chatbot = this.shadowRoot.querySelector('chatbot-openai')
+
+            if (file_viewer) { file_viewer.style.display = 'block' }
+            if (folder_viewer) { folder_viewer.style.display = 'none' }
+
+            // Get file summary and update chat context
+            const file_id = e.detail.node_id
+            try {
+                const response = await this.api_invoke.invoke_api(
+                    `/api/user-data/files/file-contents?file_id=${file_id}`
+                )
+                console.log('File summary:', response?.data?.file_summary)
+                if (response?.data?.file_summary) {
+                    const system_prompt = `You are a helpful assistant discussing a file. Here is the file summary:
+                        ${response.data.file_summary}
+                        
+                        Please help answer questions about this file and its contents.`
+
+                    chatbot.system_prompt = system_prompt
+                    chatbot.show_system_prompt = true
+                    chatbot.initial_message = `I'm ready to discuss the file: ${e.detail.name}`
+                    window.chatbot = chatbot
+                }
+            } catch (error) {
+                console.error('Error loading file summary:', error)
+            }
+        })
+
+        // Folder selection handler
+        document.addEventListener('folder-selected', async (e) => {
+            const file_viewer = this.shadowRoot.querySelector('webc-user-files-file-viewer')
+            const folder_viewer = this.shadowRoot.querySelector('webc-user-files-folder-viewer')
+            const chatbot = this.shadowRoot.querySelector('chatbot-openai')
+
+            if (file_viewer) { file_viewer.style.display = 'none' }
+            if (folder_viewer) { folder_viewer.style.display = 'block' }
+
+            // Get folder summary and update chat context
+            const folder_id = e.detail.node_id
+            try {
+                const path = `/api/user-data/file-to-llms/folder-summary?folder_id=${folder_id}&re_create=false`
+                const response = await this.api_invoke.invoke_api(path, 'POST')
+
+                if (response?.data) {
+                    const system_prompt = `You are a helpful assistant discussing a folder and its contents. Here is the folder summary:
+                        ${response.data}
+                        
+                        Please help answer questions about this folder and its contents.`
+
+                    chatbot.system_prompt = system_prompt
+                    chatbot.show_system_prompt = true
+                    chatbot.initial_message = `I'm ready to discuss the folder: ${e.detail.name}`
+                }
+            } catch (error) {
+                console.error('Error loading folder summary:', error)
+            }
+        })
     }
     reload_all_components() {
         // Refresh tree view
@@ -68,13 +131,29 @@ export default class WebC__User_Files extends Web_Component {
         left_panel.add_tag({ tag: 'webc-user-files-actions'   })
         left_panel.add_tag({ tag: 'webc-user-files-upload'    })
 
-        // Right panel for file preview
+        // Right panel for file preview and chat
         const right_panel = new Div({ class: 'files-panel right-panel' })
-        right_panel.add_tag({ tag: 'webc-user-files-file-viewer' })
-        right_panel.add_tag({ tag: 'webc-user-files-folder-viewer' })
+        const preview_section = new Div({ class: 'preview-section' })
+        preview_section.add_tag({ tag: 'webc-user-files-file-viewer'   })
+        preview_section.add_tag({ tag: 'webc-user-files-folder-viewer' })
 
+        const chat_section = new Div({ class: 'chat-section' })
+        chat_section.add_tag({
+            tag: 'chatbot-openai',
+            attributes: {
+                channel: 'files-chat',
+                name: 'Files Assistant',
+                edit_mode: 'false',
+                url: '/api/llms/chat/completion',
+                initial_message: 'Select a file or folder to discuss its contents.'
+            }
+        })
+
+        right_panel.add_elements(preview_section, chat_section)
         container.add_elements(left_panel, right_panel)
+
         this.set_inner_html(container.html())
+        this.add_event_listeners()
     }
 
     css_rules() {
@@ -125,7 +204,16 @@ export default class WebC__User_Files extends Web_Component {
                                             minHeight        : "0"                         },           // Allow content to scroll
 
             "webc-user-files-actions" : { padding          : "1rem"                 },            // Padding around actions
-            "webc-user-files-upload"  : { padding          : "1rem"                 }            // Padding around upload
+            "webc-user-files-upload"  : { padding          : "1rem"                 } ,           // Padding around upload
+
+            ".preview-section"     : { flex              : "1"                         ,            // Take available space
+                                      minHeight         : "0"                         ,            // Allow content to scroll
+                                      overflowY         : "auto"                      },           // Enable scrolling
+
+                ".chat-section"        : { height            : "400px"                     ,            // Fixed height
+                                          marginTop         : "1rem"                      ,            // Space above chat
+                                          flexShrink        : "0"                         }            // Prevent shrinking
+
         }
     }
 }
