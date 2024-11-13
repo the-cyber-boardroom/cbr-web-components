@@ -93,6 +93,25 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         // console.log(file_contents)
     }
 
+    async on_current_file__rename() {
+        const new_file_name = prompt('Enter new name:', this.file_data.file_name)
+        if (new_file_name && new_file_name !== this.file_data.file_name) {
+            try {
+                const path      = '/api/user-data/files/rename-file'
+                const post_data = { file_id: this.current_file.node_id,  new_file_name: new_file_name}
+                await this.api_invoke.invoke_api(path, 'PUT', post_data)
+
+                this.raise_refresh_event()
+
+                await this.load_file_data    ()
+                await this.render_file_viewer()
+            } catch (error) {
+                console.error('Error renaming file:', error)
+                this.show_error_message('Failed to rename file')
+            }
+        }
+    }
+
     raise_refresh_event() {
         const event = new CustomEvent('files-refresh', {
             bubbles : true,
@@ -116,6 +135,22 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         }
 
         return `${size_num.toFixed(1)} ${units[unit_index]}`
+    }
+
+    show_error_message(message) {
+        const status = this.shadowRoot.querySelector('.viewer-status')
+        if (status) {
+            status.textContent = message
+            status.className = 'viewer-status error'
+            setTimeout(() => { status.textContent = '' }, 3000)
+        }
+    }
+
+    clear_viewer() {
+        this.current_file       = null
+        this.file_data          = null
+        this.file_bytes__base64 = null
+        this.render_file_viewer()
     }
 
     async render_content_by_type() {
@@ -255,22 +290,83 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         return summary_container
     }
 
+    async render_file_viewer() {
+        const container = new Div({ class: 'viewer-container' })
 
-    show_error_message(message) {
-        const status = this.shadowRoot.querySelector('.viewer-status')
-        if (status) {
-            status.textContent = message
-            status.className = 'viewer-status error'
-            setTimeout(() => { status.textContent = '' }, 3000)
+        if (!this.current_file || !this.file_data) {
+            container.add_element(
+                new Div({
+                    class: 'viewer-empty',
+                    value: 'Select a file to view its contents'
+                })
+            )
+        } else {
+            const header = new Div({ class: 'file-header' })
+            const info = new Div({ class: 'file-info' })
+
+            info.add_elements(new Div({ class: 'file-name' , value: this.file_data.file_name                                                                         }),
+                              new Div({ class: 'file-meta' , value: `Last updated: ${this.format_date(this.file_data.updated__date, this.file_data.updated__time)}` }),
+                              new Div({ class: 'file-meta' , value: `Size: ${this.format_size(this.file_data.file_size)}`                                           }),
+                              new Div({ class: 'file-meta' , value: `File id: ${this.current_file.node_id}`                                                         }))
+
+            // const create_summary_btn = new Button({ class: 'btn btn-primary create-summary', value: 'Create Summary' })
+            // const delete_btn         = new Button({ class: 'btn btn-danger  delete-file'   , value: 'Delete File'    })
+            // const download_btn       = new Button({ class: 'btn btn-success download-file' , value: 'Download'       })
+            //header.add_elements(info, create_summary_btn, download_btn, delete_btn)
+
+            const actions = this.render_file_actions()
+            header.add_elements(info, actions)
+
+            // Add summary section before the main content
+            const summary_section = this.render_summary_section()
+
+            const content = new Div({ class: 'content-container' })
+            content.add_element(await this.render_content_by_type())
+
+            const status = new Div({ class: 'viewer-status' })
+
+            container.add_elements(header, summary_section, content, status)
+        }
+
+        this.set_inner_html(container.html())
+        this.add_css_rules(this.css_rules())
+
+        // Add event listeners after DOM is ready
+        if (this.current_file) {
+            const btn__delete         = this.query_selector('.delete-file'   )
+            const btn__create_summary = this.query_selector('.create-summary')
+            const btn__download       = this.query_selector('.download-file')
+            const btn__rename         = this.query_selector('.rename-file')
+
+            btn__create_summary.addEventListener('click', () => this.on_current_file__create_summary (btn__create_summary))
+            btn__delete        .addEventListener('click', () => this.on_current_file__delete         ())
+            btn__download      .addEventListener('click', () => this.on_current_file__create_download())
+            btn__rename        .addEventListener('click', () => this.on_current_file__rename         ())
+
+            console.log(btn__rename)
         }
     }
 
-    clear_viewer() {
-        this.current_file       = null
-        this.file_data          = null
-        this.file_bytes__base64 = null
+    render_file_actions() {
+        const actions = new Div({ class: 'file-actions' })
+
+        // const create_summary_btn = new Button({ class: 'btn btn-primary create-summary', value: 'Create Summary' })
+        // const delete_btn         = new Button({ class: 'btn btn-danger  delete-file'   , value: 'Delete File'    })
+        // const download_btn       = new Button({ class: 'btn btn-success download-file' , value: 'Download'       })
+
+        const rename_btn   = new Button({ class: 'btn btn-outline-primary rename-file'    , value: 'Rename'         })
+        const summary_btn  = new Button({ class: 'btn btn-primary         create-summary' , value: 'Create Summary' })
+        const download_btn = new Button({ class: 'btn btn-success         download-file'  , value: 'Download'       })
+        const delete_btn   = new Button({ class: 'btn btn-danger          delete-file'    , value: 'Delete File'    })
+
+        actions.add_elements(rename_btn, summary_btn, download_btn, delete_btn)
+        return actions
+    }
+
+    build() {
         this.render_file_viewer()
     }
+
 
     css_rules() {
         return {
@@ -414,64 +510,15 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             ".summary-content"     : { fontSize         : "0.875rem"                  ,            // Smaller text
                                       lineHeight       : "1.6"                       ,            // Line spacing
                                       color           : "#495057"                    },           // Text color
+
+            ".file-actions"        : { display          : "flex"                      ,
+                                       gap              : "0.5rem"                    ,
+                                       marginLeft       : "auto"                      },
+
+            ".error-message"       : { color            : "#dc3545"                   ,
+                                       fontSize         : "0.875rem"                  ,
+                                       marginTop        : "0.5rem"                    }
             }
-    }
-
-    async render_file_viewer() {
-        const container = new Div({ class: 'viewer-container' })
-
-        if (!this.current_file || !this.file_data) {
-            container.add_element(
-                new Div({
-                    class: 'viewer-empty',
-                    value: 'Select a file to view its contents'
-                })
-            )
-        } else {
-            const header = new Div({ class: 'file-header' })
-            const info = new Div({ class: 'file-info' })
-
-            info.add_elements(
-                new Div({ class: 'file-name', value: this.file_data.file_name }),
-                new Div({ class: 'file-meta', value: `Last updated: ${this.format_date(this.file_data.updated__date, this.file_data.updated__time)}` }),
-                new Div({ class: 'file-meta', value: `Size: ${this.format_size(this.file_data.file_size)}` }),
-                new Div({ class: 'file-meta', value: `File id: ${this.current_file.node_id}` })
-            )
-
-            const create_summary_btn = new Button({ class: 'btn btn-primary create-summary', value: 'Create Summary' })
-            const delete_btn         = new Button({ class: 'btn btn-danger  delete-file'   , value: 'Delete File'    })
-            const download_btn       = new Button({ class: 'btn btn-success download-file' , value: 'Download'       })
-
-            header.add_elements(info, create_summary_btn, download_btn, delete_btn)
-
-            // Add summary section before the main content
-            const summary_section = this.render_summary_section()
-
-            const content = new Div({ class: 'content-container' })
-            content.add_element(await this.render_content_by_type())
-
-            const status = new Div({ class: 'viewer-status' })
-
-            container.add_elements(header, summary_section, content, status)
-        }
-
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
-
-        // Add event listeners after DOM is ready
-        if (this.current_file) {
-            const btn__delete         = this.query_selector('.delete-file'   )
-            const btn__create_summary = this.query_selector('.create-summary')
-            const btn__download       = this.query_selector('.download-file')
-
-            btn__create_summary.addEventListener('click', () => this.on_current_file__create_summary (btn__create_summary))
-            btn__delete        .addEventListener('click', () => this.on_current_file__delete         ())
-            btn__download      .addEventListener('click', () => this.on_current_file__create_download())
-        }
-    }
-
-    build() {
-        this.render_file_viewer()
     }
 }
 
