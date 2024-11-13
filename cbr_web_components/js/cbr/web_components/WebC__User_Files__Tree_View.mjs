@@ -107,9 +107,16 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         chevron.classList.toggle('tree-item-expanded');
     }
 
+    handle__on_click__file(item, event) {
+        event.stopPropagation();
+        const custom_event = new CustomEvent('file-selected', { detail: { node_id: item.dataset.id,
+                                                                          name: item.querySelector('.tree-item-text').textContent },
+                                                                          bubbles: true    ,
+                                                                          composed: true   })
+        this.dispatchEvent(custom_event)
+    }
 
     handle__on_click__folder = (item, event) =>{
-
         event.stopPropagation()
 
         this.shadowRoot.querySelectorAll('.tree-item-content.selected').forEach(i => {          // Remove previous selections
@@ -126,6 +133,7 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         this.dispatchEvent(custom_event)
     }
 
+
     add_event_listeners() {
         window.shadow__root = this.shadowRoot
         this.shadowRoot.querySelectorAll('.tree-item').forEach(item => {
@@ -139,27 +147,10 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
             item.addEventListener('click', this.handle__on_click__folder.bind(this, item));
         })
 
-        // In WebC__User_Files__Tree_View.mjs add_event_listeners()
         this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {
-            item.addEventListener('click', () => {
-                const event = new CustomEvent('file-selected', { detail: { node_id: item.dataset.id,
-                                                                           name: item.querySelector('.tree-item-text').textContent },
-                                                                           bubbles: true    ,
-                                                                           composed: true   })
-                this.dispatchEvent(event)
-            })
+            item.addEventListener('click', this.handle__on_click__file.bind(this, item))
         })
-        // this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {                  // File click handlers
-        //     item.addEventListener('click', async () => {
-        //         const fileId = item.dataset.id
-        //         try {
-        //             const response = await this.api_invoke.invoke_api(`/api/user-data/files/file-contents?file_id=${fileId}`)
-        //             console.log('File contents:', response)
-        //         } catch (error) {
-        //             console.error('Error fetching file contents:', error)
-        //         }
-        //     })
-        // })
+
     }
 
     css_rules() {

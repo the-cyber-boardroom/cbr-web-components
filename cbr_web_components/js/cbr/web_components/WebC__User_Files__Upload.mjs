@@ -8,9 +8,11 @@ import Icon           from '../../css/icons/Icon.mjs'
 import Div            from '../../core/Div.mjs'
 import Button         from '../../core/Button.mjs'
 import Input          from '../../core/Input.mjs'
+import CSS__Buttons from "../../css/CSS__Buttons.mjs";
 
 export default class WebC__User_Files__Upload extends Web_Component {
     load_attributes() {
+        new CSS__Buttons   (this).apply_framework()
         new CSS__Forms     (this).apply_framework()
         new CSS__Cards     (this).apply_framework()
         new CSS__Icons     (this).apply_framework()

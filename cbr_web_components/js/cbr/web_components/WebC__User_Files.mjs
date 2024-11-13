@@ -14,15 +14,32 @@ export default class WebC__User_Files extends Web_Component {
     }
 
     add_event_listeners() {
+        // Tree refresh handler
         this.shadowRoot.addEventListener('files-refresh', () => {
             const tree_view = this.shadowRoot.querySelector('webc-user-files-tree-view')
-            if (tree_view) {
-                tree_view.refresh()
-            }
+            if (tree_view) { tree_view.refresh() }
         })
 
-        document.addEventListener('active_session_changed', () => this.reload_all_components())
+        // Folder selection handler - show folder viewer, hide file viewer
+        document.addEventListener('folder-selected', () => {
+            const file_viewer   = this.shadowRoot.querySelector('webc-user-files-file-viewer')
+            const folder_viewer = this.shadowRoot.querySelector('webc-user-files-folder-viewer')
 
+            if (file_viewer  ) { file_viewer.style.display   = 'none'  }
+            if (folder_viewer) { folder_viewer.style.display = 'block' }
+        })
+
+        // File selection handler - show file viewer, hide folder viewer
+        document.addEventListener('file-selected', () => {
+            const file_viewer   = this.shadowRoot.querySelector('webc-user-files-file-viewer')
+            const folder_viewer = this.shadowRoot.querySelector('webc-user-files-folder-viewer')
+
+            if (file_viewer  ) { file_viewer.style.display   = 'block' }
+            if (folder_viewer) { folder_viewer.style.display = 'none'  }
+        })
+
+        // Session change handler - reload all components
+        document.addEventListener('active_session_changed', () => this.reload_all_components())
     }
     reload_all_components() {
         // Refresh tree view
@@ -54,6 +71,7 @@ export default class WebC__User_Files extends Web_Component {
         // Right panel for file preview
         const right_panel = new Div({ class: 'files-panel right-panel' })
         right_panel.add_tag({ tag: 'webc-user-files-file-viewer' })
+        right_panel.add_tag({ tag: 'webc-user-files-folder-viewer' })
 
         container.add_elements(left_panel, right_panel)
         this.set_inner_html(container.html())
