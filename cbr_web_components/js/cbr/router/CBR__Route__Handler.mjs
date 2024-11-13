@@ -1,3 +1,5 @@
+import Raw_Html from "../../core/Raw_Html.mjs";
+
 export default class CBR__Route__Handler {
 
     base_path = '/webc/cbr-webc-dev'
@@ -35,19 +37,33 @@ export default class CBR__Route__Handler {
     }
 
     async handleRoute(path) {
-        const contentEl = this.component.shadowRoot.querySelector('#content')
+        const contentEl = this.component.query_selector('#content')
         if (!contentEl) return
 
         const placeholder = contentEl
 
-        const routePath = path.replace(this.base_path, '').replace(/^\/+/, '') || 'home'
+
+        const routePath = path.replace(this.base_path, '').replace(/^\/+/, '') || 'home'                // Get the route path without the base path
+
+        const pathSegments = routePath.split('/').filter(segment => segment)                     // Create navigation classes from the path segments
+        const navClasses = pathSegments.map((segment, index) => {
+            const subPath = pathSegments.slice(0, index + 1).join('-')                                  // Build cumulative path for each level
+            return `nav-${subPath}`
+        })
+
+        const div_classes = `nav-content ${navClasses.join(' ')}`
+        const wrapperDiv = new Raw_Html({class: div_classes })                                               // Create wrapper div with all navigation classes
+
+
 
         try {
-            const content = await this.component.routeContent.fetch_content(routePath)
-            placeholder.innerHTML = content
+            const content         = await this.component.routeContent.fetch_content(routePath)
+            wrapperDiv.raw_html      = content
+            placeholder.innerHTML = wrapperDiv.html()
         } catch (error) {
             console.error('Error loading content:', error)
-            placeholder.innerHTML = '<div class="content-error">Error loading content. Please try again.</div>'
+            wrapperDiv.value = '<div class="content-error">Error loading content. Please try again.</div>'
+            placeholder.innerHTML = wrapperDiv.html()
         }
     }
 }

@@ -4,6 +4,7 @@ import CSS__Alerts               from "../../css/CSS__Alerts.mjs"
 import CSS__Grid                 from '../../css/grid/CSS__Grid.mjs'
 import CSS__Typography           from '../../css/CSS__Typography.mjs'
 import CSS__Side_Menu            from "../../css/menus/CSS__Side_Menu.mjs"
+import CSS__CBR__Layout__Default from "./CSS__CBR__Layout__Default.mjs";
 import Left_Menu                 from "../../css/menus/Left_Menu.mjs"
 import CBR__Left_Footer          from "../elements/CBR__Left_Footer.mjs"
 import CBR__Top_Banner           from "../elements/CBR__Top_Banner.mjs"
@@ -14,6 +15,7 @@ import CBR__Route__Handler       from "../router/CBR__Route__Handler.mjs"
 import CBR__Route__Content       from "../router/CBR__Route__Content.mjs"
 import CBR__Error__Boundary      from "../router/CBR__Error__Boundary.mjs";
 import API__Invoke               from "../../data/API__Invoke.mjs";
+
 
 export default class WebC__CBR__Layout__Default extends Web_Component {
     constructor() {
@@ -28,6 +30,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         new CSS__Grid                (this).apply_framework()
         new CSS__Typography          (this).apply_framework()
         new CSS__Side_Menu           (this).apply_framework()
+        new CSS__CBR__Layout__Default(this).apply_framework()
 
         this.add_css_rules(CBR__Top_Banner          .css_rules())
         this.add_css_rules(CBR__Left_Footer         .css_rules())
@@ -36,28 +39,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         this.add_css_rules(CBR__Content__Placeholder.css_rules())
         this.add_css_rules(CBR__Error__Boundary     .css_rules())
 
-        // Add new CSS rules for routing functionality
-        this.add_css_rules({
-            ".content-loader": {
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                fontSize: '1.2em',
-                color: '#666'
-            },
-            ".content-error": {
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                color: '#ff0000',
-                fontSize: '1.2em'
-            },
-            ".route-content": {
-                padding: '20px'
-            }
-        })
+
     }
 
     async render() {
