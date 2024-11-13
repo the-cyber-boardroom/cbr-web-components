@@ -43,6 +43,24 @@ export default class WebC__User_Files__Actions extends Web_Component {
         }
     }
 
+    async create_markdown_file(filename) {
+        if (!filename.endsWith('.md')) {
+            filename = filename + '.md'
+        }
+
+        try {
+            const file_content = '# New Document\n\nEnter your markdown content here...'
+            await this.api_invoke.invoke_api('/api/user-data/files/add-file', 'POST', {
+                file_name         : filename,
+                file_bytes__base64: btoa(file_content),
+                folder_id         : this.current_folder.node_id || ''
+            })
+            this.raise_refresh_event()
+        } catch (error) {
+            console.error('Error creating markdown file:', error)
+        }
+    }
+
     async delete_current_folder() {
         if (!this.current_folder.node_id) {
             alert('Cannot delete root folder')
@@ -135,64 +153,98 @@ export default class WebC__User_Files__Actions extends Web_Component {
             ".action-button.delete" : { backgroundColor  : "#dc3545"                  ,
                                         marginTop        : "auto"                      },  // Push to bottom
 
-            ".action-button.delete:hover": { backgroundColor : "#bb2d3b"              }
+            ".action-button.delete:hover"  : { backgroundColor : "#bb2d3b"             },
         }
     }
 
+
     render() {
-        const container            = new Div({ class: 'actions-container' })
+        const container         = new Div({ class: 'actions-container' })
+        const folder_info       = this.render_folder_info()
+        const folder_form       = this.render_folder_form()
+        const markdown_form     = this.render_markdown_form()
 
-        // Current folder info at top
-        const folder_info          = new Div({ class: 'folder-info' })
-        const text__current_folder = new Text({ class: 'current-folder' , value: 'Current Folder: '       })
-        const text__folder_name    = new Text({ class: 'folder-name'    , value: this.current_folder.name })
-        folder_info.add_elements(text__current_folder, text__folder_name)
+        const show_rename_delete = this.current_folder.node_id &&  this.current_folder.name !== 'root'
 
-        // Add folder form
-        const form__new_folder     = new Div   ({ class       : 'actions-form'          })
-        const input                = new Input ({ class       : 'input folder-input'    ,
-                                                placeholder : 'New folder name'       ,
-                                                value       : 'new-folder'            })
-        const add_button           = new Button({ class       : 'action-button',  value : 'Add' })
-
-        form__new_folder.add_elements(input, add_button)
-
-        const show_rename_delete = this.current_folder.node_id && this.current_folder.name !== 'root'
-        // Only show rename and delete for non-root folders
         if (show_rename_delete) {
-            // Rename folder form
-            const form__rename_folder  = new Div   ({ class       : 'rename-form'           })
-            const rename_input         = new Input ({ class       : 'input rename-input'    ,
-                                                    placeholder : 'New name'              ,
-                                                    value       : this.current_folder.name })
-            const rename_button        = new Button({ class       : 'action-button rename'  ,
-                                                    value        : 'Rename'                })
-
-            form__rename_folder.add_elements(rename_input, rename_button)
-
-            // Delete button at bottom
-            const delete_btn = new Button({ class : 'action-button delete', value : 'Delete' })
-
-            container.add_elements(folder_info, form__new_folder, form__rename_folder, delete_btn)
+            const rename_form = this.render_rename_delete_form()
+            const delete_btn  = this.render_delete_button()
+            container.add_elements(folder_info, folder_form, markdown_form, rename_form, delete_btn)
         } else {
-            container.add_elements(folder_info, form__new_folder)
+            container.add_elements(folder_info, folder_form, markdown_form)
         }
 
         this.set_inner_html(container.html())
         this.add_css_rules(this.css_rules())
+        this.add_event_handlers(show_rename_delete)
+    }
 
-        // Add folder event listener
-        this.query_selector('.action-button').addEventListener('click', async () => {
-            const input = this.query_selector('.folder-input')
+    // Render helper methods
+    render_folder_info() {
+        const folder_info          = new Div({ class: 'folder-info' })
+        const text__current_folder = new Text({ class: 'current-folder', value: 'Current Folder: ' })
+        const text__folder_name    = new Text({ class: 'folder-name', value: this.current_folder.name })
+        folder_info.add_elements(text__current_folder, text__folder_name)
+        return folder_info
+    }
+
+    render_folder_form() {
+        const form__new_folder = new Div  ({ class: 'actions-form' })
+        const input            = new Input({ class: 'input folder-input new-folder-input', value: 'new-folder'})
+        const add_button      = new Button({ class: 'action-button new-folder-btn'       , value: 'Add'       })
+        form__new_folder.add_elements(input, add_button)
+        return form__new_folder
+    }
+
+    render_markdown_form() {
+        const form__new_markdown = new Div   ({ class: 'actions-form' })
+        const markdown_input     = new Input ({ class: 'input folder-input new-markdown-input', value: 'new-document.md' })
+        const markdown_button    = new Button({ class: 'action-button new-markdown-btn'       , value: 'Create Markdown' })
+        form__new_markdown.add_elements(markdown_input, markdown_button)
+        return form__new_markdown
+    }
+
+    render_rename_delete_form() {
+        const form__rename_folder = new Div({ class: 'rename-form' })
+        const rename_input      = new Input({
+            class      : 'input rename-input',
+            placeholder: 'New name',
+            value      : this.current_folder.name
+        })
+        const rename_button     = new Button({
+            class: 'action-button rename',
+            value: 'Rename'
+        })
+        form__rename_folder.add_elements(rename_input, rename_button)
+        return form__rename_folder
+    }
+
+    render_delete_button() {
+        return new Button({
+            class: 'action-button delete',
+            value: 'Delete'
+        })
+    }
+
+    add_event_handlers(show_rename_delete) {
+        this.query_selector('.new-folder-btn').addEventListener('click', async () => {                           // Add folder handler
+            const input = this.query_selector('.new-folder-input')
             const name = input.value.trim()
             if (name) {
                 await this.add_folder(name)
             }
         })
 
-        // Only add these listeners if not root folder
+        this.query_selector('.new-markdown-btn').addEventListener('click', async () => {                         // Markdown creation handler
+            const input = this.query_selector('.new-markdown-input')
+            const filename = input.value.trim()
+            if (filename) {
+                await this.create_markdown_file(filename)
+            }
+        })
+
+        // Conditional handlers for rename/delete
         if (show_rename_delete) {
-            // Rename folder event listener
             this.query_selector('.action-button.rename').addEventListener('click', async () => {
                 const input = this.query_selector('.rename-input')
                 const new_name = input.value.trim()
@@ -201,7 +253,6 @@ export default class WebC__User_Files__Actions extends Web_Component {
                 }
             })
 
-            // Delete folder event listener
             this.query_selector('.action-button.delete').addEventListener('click', async () => {
                 await this.delete_current_folder()
             })

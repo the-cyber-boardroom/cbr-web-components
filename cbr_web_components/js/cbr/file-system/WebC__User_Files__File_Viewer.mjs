@@ -135,6 +135,10 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
         switch(this.file_data.file_type.toLowerCase()) {            // todo: refactor each of these handlers into separate methods (if not classes)
             case '.md':
+                const markdown_editor = new Div({ class: 'markdown-editor-container' })
+                markdown_editor.add_tag({tag: 'webc-user-files-markdown-editor',
+                                         attributes: { 'file_id': this.current_file.node_id } })
+                return markdown_editor
             case '.txt':
             case '.json':
                 try {                                                                           // For text files, convert decoded content to UTF-8
