@@ -2,6 +2,7 @@ import Web_Component       from "../core/Web_Component.mjs"        ;
 import Data__Chat_Bot      from "../data/Data__Chat_Bot.mjs" ;
 import WebC__Chat_Input    from "./WebC__Chat_Input.mjs"     ;
 import WebC__Chat_Messages from "./WebC__Chat_Messages.mjs"  ;
+import CSS__WebC__Chat_Bot from "./CSS__WebC__Chat_Bot.mjs"  ;
 import A                   from "../core/A.mjs"              ;
 import Div                 from "../core/Div.mjs"            ;
 import Text                from "../core/Text.mjs"           ;
@@ -59,6 +60,7 @@ export default class WebC__Chat_Bot extends Web_Component {
 
     // connected events
     connectedCallback() {
+        new CSS__WebC__Chat_Bot(this).apply_framework()
         super.connectedCallback()
         this.build()
     }
@@ -91,48 +93,6 @@ export default class WebC__Chat_Bot extends Web_Component {
         window.addEventListener('new_chat_ids'     , (e)=>{ this.handle_new_chat_ids     (e.detail) })
     }
 
-    css_rules__chat_bot() {
-        return {    "*"              : { "font-family": "Verdana"},
-                    ".chatbot-ui"    : { display: "flex",
-                                         flex: 1,
-                                         "flex-direction": "column",
-                                         "max-width": "100%",
-                                         //"max-height": "calc(100vh - 320px)",  // todo find a better way to do this, since this had a number of side effects (like loosing the help buttons in mobile)
-                                         "height": "100%"                   , // Adjust to the height of the content-center div
-                                         "background-color": "#fff",
-                                         "border-radius": "10px",
-                                         "box-shadow": "0 0 10px rgba(0,0,0,0.1)",
-                                         overflow: "hidden"},
-                    ".chat-ids"      : { backgroundColor: "black"  ,
-                                         color          : "white"  ,
-                                         padding        : "10px"   },
-                    ".chat-ids a"    : { color          : "white"   },
-                    ".chat-header"   : { "background-color": "#5a4ad1",
-                                         color: "#fff",
-                                         padding: "10px",
-                                         "text-align": "center",
-                                         "font-size": "1.2em" },
-                    ".chat-messages" : { display: "flex",
-                                        "flex-direction": "column",
-                                         "flex-grow": "1",
-                                         padding: "10px",
-                                         "overflow-y": "auto" },
-                    // todo: refactor to chat-input WebC
-                    ".chat-input"      : { padding: "10px",
-                                           background: "#fff",
-                                           "box-shadow": "0 -2px 10px rgba(0,0,0,0.1)" },
-                    ".chat-input input": {  width: "90%",
-                                            padding: "10px",
-                                            "border-radius": "20px",
-                                            border: "1px solid #ccc",
-                                         } ,
-                    ".save-chat:link"  : {  backgroundColor: '#007bff'  ,
-                                            color          : '#fff'     ,
-                                            padding        : '5px'      ,
-                                            borderRadius   : "10px"     ,
-                                            fontWeight     : '600'     }}
-    }
-
     div_chatbot_ui() {
 
         const tag = new Tag()
@@ -147,9 +107,7 @@ export default class WebC__Chat_Bot extends Web_Component {
         const div_chat_header    = tag.clone({tag:'div'            , class:'chat-header'  , value:this.bot_name   })
         const div_chat_ids       = new Tag  ({tag:'div'            , class:'chat-ids'     , id: 'chat_ids'        })
         const webc_chat_messages = new Tag  ({tag:tag_chat_messages, class:'chat-messages', id: chat_messages__id })
-        const webc_chat_input    = new Tag  ({tag:tag_chat_input   ,                        id: chat_input__id    })
-        //const div_chat_input     = tag.clone({tag:'div'            , class:'chat-input'                           })
-        //const input_chat_input   = tag.clone({tag:'input'          , attributes:{type:'text', placeholder:'Enter a message...'}})
+        const webc_chat_input    = new Tag  ({tag:tag_chat_input   , class:'chat-input-ui', id: chat_input__id    })
 
         webc_chat_input   .attributes.channel            = this.channel
         webc_chat_messages.attributes.channel            = this.channel
@@ -202,12 +160,9 @@ export default class WebC__Chat_Bot extends Web_Component {
 
 
     build() {
-        this.add_css_rules(this.css_rules__chat_bot())
         const html = this.div_chatbot_ui().html()
         this.set_inner_html(html)
         this.add_event_hooks()
-
-        //this.html_update_chat_ids_value({a:42})
     }
 
     hide() {
