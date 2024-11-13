@@ -1,6 +1,5 @@
 // WebC__Files__Tree_View.mjs
 import Web_Component    from '../../core/Web_Component.mjs'
-import CSS__Tree_View   from '../../css/tree_view/CSS__Tree_View.mjs'
 import CSS__Icons       from '../../css/icons/CSS__Icons.mjs'
 import CSS__Forms       from '../../css/CSS__Forms.mjs'
 import Icon             from '../../css/icons/Icon.mjs'
@@ -11,7 +10,6 @@ import Input            from '../../core/Input.mjs'
 
 export default class WebC__User_Files__Tree_View extends Web_Component {
     load_attributes() {
-        new CSS__Tree_View(this).apply_framework()
         new CSS__Icons    (this).apply_framework()
         new CSS__Forms    (this).apply_framework()
         this.api_invoke = new API__Invoke()
@@ -22,9 +20,34 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         super.connectedCallback()
         await this.load_data()
         this.render()
-        this.add_event_listeners()
     }
 
+    add_event_listeners() {
+        window.shadow__root = this.shadowRoot
+        this.shadowRoot.querySelectorAll('.tree-item').forEach(item => {
+            const chevron = item.querySelector('.tree-item-icon');
+            if (chevron && !chevron.classList.contains('hidden')) {
+                chevron.addEventListener('click', this.handle__on_click__chevron.bind(this, item, chevron));
+            }
+        });
+
+        this.shadowRoot.querySelectorAll('.tree-item[data-type="folder"]').forEach(item => {
+            item.addEventListener('click', this.handle__on_click__folder.bind(this, item));
+        })
+
+        this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {
+            item.addEventListener('click', this.handle__on_click__file.bind(this, item))
+        })
+
+        document.addEventListener('file-selected', (e) => {
+            this.handle_selection(e.detail.node_id)
+        })
+
+        document.addEventListener('folder-selected', (e) => {
+            this.handle_selection(e.detail.node_id)
+        })
+
+    }
     async load_data() {
         try {
             this.data = await this.api_invoke.invoke_api('/api/user-data/files/json-view')
@@ -49,7 +72,6 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
     async refresh() {
         await this.load_data()
         this.render()
-        this.add_event_listeners()
     }
 
     // file_to_base64(file) {
@@ -133,66 +155,121 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         this.dispatchEvent(custom_event)
     }
 
-
-    add_event_listeners() {
-        window.shadow__root = this.shadowRoot
-        this.shadowRoot.querySelectorAll('.tree-item').forEach(item => {
-            const chevron = item.querySelector('.tree-item-icon');
-            if (chevron && !chevron.classList.contains('hidden')) {
-                chevron.addEventListener('click', this.handle__on_click__chevron.bind(this, item, chevron));
-            }
-        });
-
-        this.shadowRoot.querySelectorAll('.tree-item[data-type="folder"]').forEach(item => {
-            item.addEventListener('click', this.handle__on_click__folder.bind(this, item));
+    handle_selection(node_id) {
+        this.shadowRoot.querySelectorAll('.tree-item-content.selected').forEach(item => {                       // Remove all current selections
+            item.classList.remove('selected')
         })
 
-        this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {
-            item.addEventListener('click', this.handle__on_click__file.bind(this, item))
-        })
+        const selected_item = this.shadowRoot.querySelector(`.tree-item[data-id="${node_id}"] .tree-item-content`)      // Add selected class to the matching item
+        if (selected_item) {
+            selected_item.classList.add('selected')
+        }
+    }
 
+
+
+
+
+    render() {
+        const tree = new Div({ class: 'tree-view' })
+        tree.add_element   (this.create_tree_item(this.data))
+        this.set_inner_html(tree.html()                     )
+        this.add_css_rules (this.css_rules()                )
+        this.add_event_listeners()
     }
 
     css_rules() {
         return {
-            ".tree-add-menu"          : { position         : "absolute",
-                                         right            : "0",
-                                         top              : "100%",
-                                         backgroundColor  : "#fff",
-                                         border           : "1px solid #dee2e6",
-                                         borderRadius     : "0.25rem",
-                                         padding          : "0.5rem",
-                                         zIndex           : "1000",
-                                         boxShadow        : "0 2px 4px rgba(0,0,0,0.1)"            },
+            // Base tree structure
+            ".tree-view"                         : { display          : "flex"                                    ,
+                                                    flexDirection    : "column"                                  ,
+                                                    padding          : "1rem"                                    ,
+                                                    margin           : "1rem"                                    ,
+                                                    borderRadius     : "0.375rem"                                ,
+                                                    boxShadow        : "2px 2px 4px rgba(0,0,0,0.2)"            ,
+                                                    backgroundColor  : "#fff"                                    },
 
-            ".tree-menu-button"       : { display          : "block",
-                                         width            : "100%",
-                                         padding          : "0.5rem 1rem",
-                                         textAlign        : "left",
-                                         border           : "none",
-                                         backgroundColor  : "transparent",
-                                         cursor           : "pointer"                               },
+            // Tree items
+            ".tree-item"                         : { alignItems       : "center"                                  ,
+                                                    padding          : "0.25rem"                                 ,
+                                                    cursor           : "pointer"                                 ,
+                                                    position         : "relative"                                },
 
-            ".tree-menu-button:hover" : { backgroundColor  : "var(--table-hover-bg)"               },
+            ".tree-item:hover"                   : { backgroundColor  : "var(--table-hover-bg, rgba(0,0,0,0.04))" },
 
-            ".hidden"                 : { display          : "none"                                 },
+            // Item content structure
+            ".tree-item-content"                 : { display          : "flex"                                    ,
+                                                    alignItems       : "center"                                  ,
+                                                    gap              : "0.5rem"                                  ,
+                                                    padding          : "0.5rem"                                  ,
+                                                    borderRadius     : "0.375rem"                                ,
+                                                    transition       : "background-color 0.2s ease"              },
 
-            ".tree-view-modal"        : { position         : "fixed",
-                                         top              : "50%",
-                                         left             : "50%",
-                                         transform        : "translate(-50%, -50%)",
-                                         backgroundColor  : "#fff",
-                                         padding          : "1rem",
-                                         borderRadius     : "0.375rem",
-                                         boxShadow        : "0 4px 6px rgba(0,0,0,0.1)"           }
+            // Level-based indentation
+            ".tree-item-content.level-1"         : { paddingLeft      : "1.0rem"                                  },
+            ".tree-item-content.level-2"         : { paddingLeft      : "2.0rem"                                  },
+            ".tree-item-content.level-3"         : { paddingLeft      : "3.0rem"                                  },
+            ".tree-item-content.level-4"         : { paddingLeft      : "4.0rem"                                  },
+            ".tree-item-content.level-5"         : { paddingLeft      : "5.0rem"                                  },
+
+            // Selection states
+            ".tree-item-content.selected"        : { backgroundColor  : "var(--selected-bg, rgba(13, 110, 253, 0.1))",
+                                                    color            : "var(--selected-color, #1a73e8)"           ,
+                                                    fontWeight       : "500"                                      },
+
+            ".tree-item-content.selected .tree-item-icon": {
+                                                    color            : "var(--selected-color, #1a73e8)"           },
+
+            // Icons
+            ".tree-item-icon"                    : { width            : "1.5rem"                                  ,
+                                                    height           : "1.5rem"                                  ,
+                                                    display          : "flex"                                    ,
+                                                    alignItems       : "center"                                  ,
+                                                    color            : "var(--icon-color, #6c757d)"              ,
+                                                    transition       : "transform 0.2s ease"                     },
+
+            ".tree-item-expanded"                : { transform        : "rotate(90deg)"                           },
+
+            ".file-icon"                         : { color            : "var(--file-color, #6c757d)"              },
+            ".folder-icon"                       : { color            : "var(--folder-color, #ffd43b)"            },
+
+            // Text content
+            ".tree-item-text"                    : { fontSize         : "0.8rem"                                  ,
+                                                    color            : "var(--text-color, #333)"                 ,
+                                                    flexGrow         : "1"                                       ,
+                                                    marginLeft       : "0.5rem"                                  ,
+                                                    whiteSpace       : "nowrap"                                  ,
+                                                    overflow         : "hidden"                                  ,
+                                                    textOverflow     : "ellipsis"                                },
+
+            // Children container
+            ".tree-children"                     : { paddingLeft      : "1.5rem"                                  },
+            ".tree-folder-closed"                : { display          : "none"                                    },
+
+            // Action buttons
+            ".tree-item-actions"                 : { marginLeft       : "auto"                                    },
+
+            ".tree-item-button"                  : { padding          : "0.25rem"                                 ,
+                                                    border           : "none"                                    ,
+                                                    background       : "none"                                    ,
+                                                    cursor           : "pointer"                                 ,
+                                                    color            : "var(--action-color, #6c757d)"            },
+
+            ".tree-item-button:hover"            : { color            : "var(--action-hover-color, #495057)"      },
+
+            // Utility classes
+            ".hidden"                            : { display          : "none"                                    },
+
+            // Modal elements
+            ".tree-view-modal"                   : { position         : "fixed"                                   ,
+                                                    top              : "50%"                                     ,
+                                                    left             : "50%"                                     ,
+                                                    transform        : "translate(-50%, -50%)"                   ,
+                                                    backgroundColor  : "#fff"                                    ,
+                                                    padding          : "1rem"                                    ,
+                                                    borderRadius     : "0.375rem"                                ,
+                                                    boxShadow        : "0 4px 6px rgba(0,0,0,0.1)"              }
         }
-    }
-
-    render() {
-        const tree = new Div({ class: 'tree-view' })
-        tree.add_element(this.create_tree_item(this.data))
-        this.set_inner_html(tree.html())
-        this.add_css_rules(this.css_rules())
     }
 }
 
