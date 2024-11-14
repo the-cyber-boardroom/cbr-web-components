@@ -1,3 +1,5 @@
+import "../../prototypes/html-elements.mjs"
+
 import Web_Component             from '../../core/Web_Component.mjs'
 import Layout                    from '../../css/grid/Layout.mjs'
 import CSS__Alerts               from "../../css/CSS__Alerts.mjs"
@@ -7,8 +9,6 @@ import CSS__Side_Menu            from "../../css/menus/CSS__Side_Menu.mjs"
 import CSS__CBR__Layout__Default from "./CSS__CBR__Layout__Default.mjs";
 import CBR__Left_Footer          from "../elements/CBR__Left_Footer.mjs"
 import CBR__Top_Banner           from "../elements/CBR__Top_Banner.mjs"
-import CBR__Left_Logo            from "../elements/CBR__Left_Logo.mjs"
-import CBR__Important_Alert      from "../elements/CBR__Important_Alert.mjs"
 import CBR__Content__Placeholder from "../elements/CBR__Content__Placeholder.mjs"
 import CBR__Route__Handler       from "../router/CBR__Route__Handler.mjs"
 import CBR__Route__Content       from "../router/CBR__Route__Content.mjs"
@@ -23,6 +23,23 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         this.routeHandler   = new CBR__Route__Handler(this)
         this.api_invoke     = new API__Invoke()
     }
+
+    add_event_listeners() {
+       this.addEventListener('left-menu-toggle', (event) => this.on_left_menu_toggle(event))
+   }
+
+   on_left_menu_toggle(event) {
+        const minimized   = event.detail.minimized
+        const layout_col  = this.query_selector('#layout-col-left' )
+        const left_footer = this.query_selector('#left-footer'     )
+        if (minimized) {
+            layout_col .add_class('w-50px' ).remove_class('w-250px')
+            left_footer.hide()
+        } else {
+            layout_col .add_class('w-250px').remove_class('w-50px' )
+            left_footer.show()
+        }
+   }
 
     load_attributes() {
         new CSS__Alerts              (this).apply_framework()
@@ -54,11 +71,11 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         row_banner  = layout.add_row()
         row_content = layout.add_row({class: 'flex-fill flex-nowrap'                           })
 
-        row_banner .add_col({ id: 'top-banner' , class: 'h-75px'                               })
-        row_content.add_col({                    class: 'w-250px flex-column d-flex'           })
-                   .add_col({ id: 'left-menu'  , class: 'flex-fill bg-white'                   }).parent()
-                   .add_col({ id: 'left-footer', class: 'h-75px bg-light-gray'                 })
-        row_content.add_col({ id: 'content'    , class: 'd-flex bg-light-gray m-1'             })
+        row_banner .add_col({ id: 'top-banner'      , class: 'h-75px'                               })
+        row_content.add_col({ id: 'layout-col-left' , class: 'w-250px flex-column d-flex'           })
+                   .add_col({ id: 'left-menu'       , class: 'flex-fill bg-white'                   }).parent()
+                   .add_col({ id: 'left-footer'     , class: 'h-75px bg-light-gray'                 })
+        row_content.add_col({ id: 'content'         , class: 'd-flex bg-light-gray m-1'             })
 
         layout     .with_id('left-footer').add_element(new CBR__Left_Footer()                                )
         layout     .with_id('top-banner' ).add_element(new CBR__Top_Banner()                                 )

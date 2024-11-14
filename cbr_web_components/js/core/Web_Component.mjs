@@ -86,15 +86,13 @@ export default class Web_Component extends HTMLElement {
         }
         this.set_inner_html(html)               // first set the html
         this.add_web_components()               // then add the web components that need the live dom to exist
+        this.add_event_listeners()              // then add the event listeners
     }
 
-    html() {                                    // override this method in the child class to return the html of the component
+    html                () {}                   // override to return the html of the component
+    add_event_listeners () {}                   // override to set the DOM event listeners
+    add_web_components  () {}                   // override to add web components to the current component
 
-    }
-
-    add_web_components() {                      // override this method in the child class to add web components to the current component
-
-    }
 
 
     // other methods
