@@ -91,7 +91,6 @@ export default class WebC__Chat_Bot extends Web_Component {
         window.addEventListener('new_input_message', (e)=>{ this.handle_new_input_message(e.detail) });
         window.addEventListener('clear_messages'   , (e)=>{ this.handle_clear_messages   (e.detail) })
         window.addEventListener('new_chat_ids'     , (e)=>{ this.handle_new_chat_ids     (e.detail) })
-
         this.add_event_listener('.maximize-button', 'click', () => this.toggle_maximize())
     }
 
@@ -212,21 +211,267 @@ export default class WebC__Chat_Bot extends Web_Component {
     // Maximize button section
 
     toggle_maximize() {
-        this.is_maximized = !this.is_maximized
-        const container = this.query_selector('.chatbot-ui')
-        const btn = this.query_selector('.maximize-button')
-        const icon = btn.querySelector('.maximize-icon')
+        this.is_maximized = !this.is_maximized;
+        const container   = this.query_selector('.chatbot-ui');
+        const btn         = this.query_selector('.maximize-button');
+        const icon        = btn.querySelector('.maximize-icon');
 
         if (this.is_maximized) {
-            container.classList.add('maximized')
-            icon.textContent = Icon__Mappings.getIcon('minimize')  // Use appropriate icon name
+            container.classList.add('maximized');
+            icon.textContent = Icon__Mappings.getIcon('minimize');
         } else {
-            container.classList.remove('maximized')
-            icon.textContent = Icon__Mappings.getIcon('maximize')  // Use appropriate icon name
+            container.classList.remove('maximized');
+            icon.textContent = Icon__Mappings.getIcon('maximize');
         }
     }
-
-
 }
 
 WebC__Chat_Bot.define()
+
+
+// todo: add this code to a separate class that provides a floating chat bot
+    // in constructor
+        //
+        //      this.is_resizing        = false;
+        //      this.is_dragging        = false;
+        //      this.drag_offset        = { x: 0, y: 0 };
+        //      this.current_dims       = { width: 0, height: 0 };
+        //      this.resize_edge        = null;
+
+        // in add_event_hooks()
+
+        // // move chat ui via header
+        // const header = this.query_selector('.chat-header');
+        // header.addEventListener('mousedown', (e) => this.start_drag(e));
+        // document.addEventListener('mousemove', (e) => this.handle_drag(e));
+        // document.addEventListener('mouseup', () => this.stop_drag());
+        // // resize chat ui via edges
+        // // Add resize handles
+        // const container = this.query_selector('.chatbot-ui');
+        // const handles = this.create_resize_handles();
+        // handles.forEach(handle => {
+        //     //console.log('handle', handle.dom_create())
+        //     const dom_element = handle.dom_create()
+        //     container.appendChild(dom_element);
+        //     // container.appendChild(handle.dom_element());
+        //     //
+        //     const edge = handle.class.split('resize-')[2];
+        //
+        //     dom_element.addEventListener('mousedown', (e) => {
+        //         e.stopPropagation();
+        //         this.start_resize(e, edge);
+        //     });
+        // });
+        //
+        // // Add resize event listeners
+        // document.addEventListener('mousemove', (e) => {
+        //     if (this.is_resizing) {
+        //         this.handle_resize(e);
+        //     }
+        // });
+        //
+        // document.addEventListener('mouseup', () => {
+        //     this.stop_resize();
+        // });
+    // toggle_maximize() {
+    //     if (this.is_resizing) return;
+    //     this.is_maximized = !this.is_maximized;
+    //     const container   = this.query_selector('.chatbot-ui');
+    //     const btn         = this.query_selector('.maximize-button');
+    //     const icon        = btn.querySelector('.maximize-icon');
+    //
+    //     if (this.is_maximized) {
+    //         // container.style.width  = 'calc(100vw - 100px)';
+    //         // container.style.height = 'calc(100vh - 100px)';
+    //         // container.style.right  = '50px';
+    //         // container.style.bottom = '50px';
+    //         icon.textContent = Icon__Mappings.getIcon('minimize');
+    //         container.classList.add('maximized');
+    //         // container.style.position = 'fixed';
+    //         // container.style.left     = "50px"
+    //         // container.style.right    = "50px"
+    //         // container.style.top      = "50px"
+    //         // container.style.bottom   = "50px"
+    //     } else {
+    //         icon.textContent = Icon__Mappings.getIcon('maximize');
+    //         container.classList.remove('maximized');
+    //         // container.style.width  = `${this.current_dims.width}px`;
+    //         // container.style.height = `${this.current_dims.height}px`;
+    //         // container.style.right  = 'auto';
+    //         // container.style.bottom = 'auto';
+    //         container.style.position = 'absolute';
+    //         container.style.left     = 0
+    //         container.style.right    = 0
+    //         container.style.top      = 0
+    //         container.style.bottom   = 0
+    //
+    //     }
+    // }
+
+    // // chat ui drag via header
+    // start_drag(e) {
+    //     if (!e.target.closest('.chat-header')) { return }
+    //
+    //     this.is_dragging = true;
+    //     const container  = this.query_selector('.chatbot-ui');
+    //     const rect       = container.getBoundingClientRect();
+    //
+    //
+    //     this.current_dims = { width : rect.width,                           // Store current dimensions before starting drag
+    //                           height: rect.height };
+    //
+    //     this.drag_offset  = {x: e.clientX - rect.left,
+    //                          y: e.clientY - rect.top };
+    //
+    //
+    //     if (!this.is_maximized) {                                           // Set initial position and dimensions
+    //         container.style.width  = `${this.current_dims.width}px`;
+    //         container.style.height = `${this.current_dims.height}px`;
+    //     }
+    //
+    //     container.classList.add('dragging');
+    // }
+    //
+    // handle_drag(e) {
+    //     if (!this.is_dragging) { return }
+    //
+    //     const container = this.query_selector('.chatbot-ui');
+    //     const new_x = e.clientX - this.drag_offset.x;
+    //     const new_y = e.clientY - this.drag_offset.y;
+    //
+    //     // Apply different positioning based on state
+    //     if (this.is_maximized) {
+    //         // When maximized, maintain the expanded size but allow repositioning
+    //         container.style.left   = `${new_x}px`;
+    //         container.style.right  = 'auto';
+    //         container.style.top    = `${new_y}px`;
+    //         container.style.bottom = 'auto';
+    //         container.style.width  = 'calc(100vw - 100px)';  // Maintain maximized width
+    //         container.style.height = 'calc(100vh - 100px)';  // Maintain maximized height
+    //     } else {
+    //         // When minimized, maintain original dimensions
+    //         container.style.position = 'fixed';
+    //         container.style.left     = `${new_x}px`;
+    //         container.style.top      = `${new_y}px`;
+    //         container.style.width    = `${this.current_dims.width}px`;
+    //         container.style.height   = `${this.current_dims.height}px`;
+    //     }
+    // }
+    //
+    // stop_drag() {
+    //     if (!this.is_dragging) { return }
+    //
+    //     this.is_dragging = false;
+    //     const container = this.query_selector('.chatbot-ui');
+    //     container.classList.remove('dragging');
+    // }
+    //
+    // // resize chat ui via edges
+    //
+    // create_resize_handles() {
+    //     const edges = [
+    //         'top-left', 'top-right', 'bottom-left', 'bottom-right',
+    //         'top', 'bottom', 'left', 'right'
+    //     ];
+    //
+    //     return edges.map(edge => {
+    //         const handle = new Div({
+    //             class: `resize-handle resize-${edge}`
+    //         });
+    //         return handle;
+    //     });
+    // }
+    //
+    // start_resize(e, edge) {
+    //     if (this.is_maximized) return;
+    //
+    //     this.is_resizing = true;
+    //     this.resize_edge = edge;
+    //
+    //     const container = this.query_selector('.chatbot-ui');
+    //     const rect = container.getBoundingClientRect();
+    //
+    //     this.current_dims = {
+    //         width: rect.width,
+    //         height: rect.height,
+    //         x: rect.left,
+    //         y: rect.top
+    //     };
+    //
+    //     this.resize_start = {
+    //         x: e.clientX,
+    //         y: e.clientY
+    //     };
+    //
+    //     container.classList.add('resizing');
+    // }
+    //
+    // handle_resize(e) {
+    //
+    //     console.log('starting resize', this.resize_edge)
+    //     if (!this.is_resizing) return;
+    //
+    //     const container = this.query_selector('.chatbot-ui');
+    //     const dx = e.clientX - this.resize_start.x;
+    //     const dy = e.clientY - this.resize_start.y;
+    //
+    //     let new_width  = this.current_dims.width;
+    //     let new_height = this.current_dims.height;
+    //     let new_x      = this.current_dims.x;
+    //     let new_y      = this.current_dims.y;
+    //
+    //     // Handle different resize edges
+    //     switch (this.resize_edge) {
+    //         case 'right':
+    //         case 'bottom-right':
+    //         case 'top-right':
+    //             new_width = Math.max(300, this.current_dims.width + dx);
+    //             break;
+    //         case 'left':
+    //         case 'bottom-left':
+    //         case 'top-left':
+    //             const width_diff = Math.max(300 - this.current_dims.width, + dx);
+    //             new_width = this.current_dims.width - width_diff;
+    //             new_x     = this.current_dims.x + width_diff;
+    //             break;
+    //     }
+    //
+    //
+    //     switch (this.resize_edge) {
+    //         case 'bottom':
+    //         case 'bottom-left':
+    //         case 'bottom-right':
+    //             new_height = Math.max(350, this.current_dims.height + dy);
+    //             break;
+    //         case 'top':
+    //         case 'top-left':
+    //         case 'top-right':
+    //             const height_diff = Math.max(350 - this.current_dims.height, + dy);
+    //             new_height = this.current_dims.height - height_diff;
+    //             new_y = this.current_dims.y + height_diff;
+    //             break;
+    //     }
+    //
+    //     // Apply new dimensions
+    //     container.style.width = `${new_width}px`;
+    //     container.style.height = `${new_height}px`;
+    //     container.style.left = `${new_x}px`;
+    //     container.style.top = `${new_y}px`;
+    // }
+    //
+    // stop_resize() {
+    //     if (!this.is_resizing) return;
+    //
+    //     this.is_resizing = false;
+    //     this.resize_edge = null;
+    //
+    //     const container = this.query_selector('.chatbot-ui');
+    //     container.classList.remove('resizing');
+    //
+    //     // Update current dimensions
+    //     const rect = container.getBoundingClientRect();
+    //     this.current_dims = {
+    //         width: rect.width,
+    //         height: rect.height
+    //     };
+    // }
