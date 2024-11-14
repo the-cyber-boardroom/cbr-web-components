@@ -1,4 +1,5 @@
 import Events__Utils from "../events/Events__Utils.mjs";
+import Tag           from "./Tag.mjs";
 
 export default class Web_Component extends HTMLElement {
 
@@ -77,8 +78,24 @@ export default class Web_Component extends HTMLElement {
         this.channel  = this.getAttribute('channel') || this.random_id('webc_channel_')
         this.webc_id  = this.getAttribute('webc_id') || this.random_id('webc_id_')
     }
-    render () {                         // override this method in the child class to render the component (called from connectedCallback)
+
+    render() {                                  // override this method in the child class to render the component (called from connectedCallback)
+        let html = this.html() || ''            // get the html of the component
+        if (html instanceof Tag) {              // if the html is an instance of Tag
+            html = html.html()                  //   then get the html of the Tag
+        }
+        this.set_inner_html(html)               // first set the html
+        this.add_web_components()               // then add the web components that need the live dom to exist
     }
+
+    html() {                                    // override this method in the child class to return the html of the component
+
+    }
+
+    add_web_components() {                      // override this method in the child class to add web components to the current component
+
+    }
+
 
     // other methods
     remove_event_listeners__webc_component() {
@@ -132,6 +149,12 @@ export default class Web_Component extends HTMLElement {
         this.appendChild(child_component)                               // adds it as a child to the current WebC
         return child_component                                          // returns the instance created of WebC_Class
     }
+
+    append_child_to_selector(selector, WebC_Class, ...attributes) {
+        const child_component = WebC_Class.create(...attributes)        // calls static method create from the Web Component class
+        this.query_selector(selector).appendChild(child_component)      // adds it as a child to the current WebC
+        return child_component                                          // returns the instance created of WebC_Class
+    }
     // root_element() {
     //     return null
     // }
@@ -182,6 +205,7 @@ export default class Web_Component extends HTMLElement {
             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
         );
     }
+
 
     set_inner_html(inner_html) {
         this.shadowRoot.innerHTML = inner_html

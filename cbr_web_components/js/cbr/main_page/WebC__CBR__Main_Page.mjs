@@ -5,7 +5,6 @@ import CSS__Grid                 from '../../css/grid/CSS__Grid.mjs'
 import CSS__Typography           from '../../css/CSS__Typography.mjs'
 import CSS__Side_Menu            from "../../css/menus/CSS__Side_Menu.mjs"
 import CSS__CBR__Layout__Default from "./CSS__CBR__Layout__Default.mjs";
-import Left_Menu                 from "../../css/menus/Left_Menu.mjs"
 import CBR__Left_Footer          from "../elements/CBR__Left_Footer.mjs"
 import CBR__Top_Banner           from "../elements/CBR__Top_Banner.mjs"
 import CBR__Left_Logo            from "../elements/CBR__Left_Logo.mjs"
@@ -34,15 +33,21 @@ export default class WebC__CBR__Main_Page extends Web_Component {
 
         this.add_css_rules(CBR__Top_Banner          .css_rules())
         this.add_css_rules(CBR__Left_Footer         .css_rules())
-        this.add_css_rules(CBR__Left_Logo           .css_rules())
-        this.add_css_rules(CBR__Important_Alert     .css_rules())
         this.add_css_rules(CBR__Content__Placeholder.css_rules())
         this.add_css_rules(CBR__Error__Boundary     .css_rules())
-
 
     }
 
     async render() {
+        super.render()
+        await this.handle_first_route()
+    }
+
+    async handle_first_route() {
+        await this.routeHandler.handleRoute(window.location.pathname)
+    }
+
+    html() {
         let layout, row_banner, row_content
 
         layout      = new Layout({ id:'main-page', class: 'h-100vh p-0' })
@@ -55,33 +60,15 @@ export default class WebC__CBR__Main_Page extends Web_Component {
                    .add_col({ id: 'left-footer', class: 'h-75px bg-light-gray'                 })
         row_content.add_col({ id: 'content'    , class: 'd-flex bg-light-gray m-1'             })
 
-
-        layout.with_id('left-menu' ).add_tag({ tag: 'webc-api-side-menu'   })
-
-        layout     .with_id('left-menu'  ).add_element(new CBR__Left_Logo  ()                                )
-        layout     .with_id('left-menu'  ).add_element(new Left_Menu       ({ menu_items: this.menu_items()  }))
-        layout     .with_id('left-menu'  ).add_element(new CBR__Important_Alert()                            )
         layout     .with_id('left-footer').add_element(new CBR__Left_Footer()                                )
         layout     .with_id('top-banner' ).add_element(new CBR__Top_Banner()                                 )
         layout     .with_id('content'    ).add_element(new CBR__Content__Placeholder()                       )
 
-        this.set_inner_html(layout.html())
-
-        // Handle initial route
-        await this.routeHandler.handleRoute(window.location.pathname)
-
+        return layout.html()
 
     }
-
-    menu_items() {                                                                                                  // todo: load this data from toml.json
-        return  [{ icon: 'home'     , label: 'Home'           , href: '/webc/cbr-webc-dev/home/index'         },
-                 { icon: 'robot'    , label: 'Athena'         , href: '/webc/cbr-webc-dev/athena/index'       },
-                 { icon: 'profile'  , label: 'Profile'        , href: '/webc/cbr-webc-dev/profile/index'      },
-                 { icon: 'history'  , label: 'Past Chats'     , href: '/webc/cbr-webc-dev/past-chats/index'   },
-                 { icon: 'file'     , label: 'Files'          , href: '/webc/cbr-webc-dev/files/index'        },
-                 { icon: 'person'   , label: 'Personas'       , href: '/webc/cbr-webc-dev/personas/index'     },
-                 { icon: 'chat'     , label: 'Chat with LLMs' , href: '/webc/cbr-webc-dev/chat/index'         },
-                 { icon: 'docs'     , label: 'Docs'           , href: '/webc/cbr-webc-dev/docs/index'         }]
+    add_web_components() {
+        this.append_child_to_selector('#left-menu', WebC__CBR__Left_Menu)
     }
 }
 

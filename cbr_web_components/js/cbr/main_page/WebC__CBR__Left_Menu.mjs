@@ -4,27 +4,29 @@ import CSS__Typography      from '../../css/CSS__Typography.mjs'
 import Left_Menu            from "../../css/menus/Left_Menu.mjs"
 import Div                  from "../../core/Div.mjs"
 import CBR__Left_Logo       from "../elements/CBR__Left_Logo.mjs"
-import CBR__Left_Footer     from "../elements/CBR__Left_Footer.mjs"
 import CBR__Important_Alert from "../elements/CBR__Important_Alert.mjs"
+import CSS__Alerts          from "../../css/CSS__Alerts.mjs";
+
 
 export default class WebC__CBR__Left_Menu extends Web_Component {
     load_attributes() {
+        new CSS__Alerts    (this).apply_framework()
         new CSS__Side_Menu (this).apply_framework()
         new CSS__Typography(this).apply_framework()
 
         this.add_css_rules(CBR__Left_Logo      .css_rules())
-        this.add_css_rules(CBR__Left_Footer    .css_rules())
         this.add_css_rules(CBR__Important_Alert.css_rules())
-        this.add_css_rules(this.css_rules())
+
     }
 
-    render() {
-        const div_left_menu = new Div({ class: 'left-menu-main'})
-        div_left_menu.value = 'Menu will go here'
-        // this.add_element(new CBR__Left_Logo())
-        // this.add_element(new Left_Menu({ menu_items: this.menu_items() }))
-        // this.add_element(new CBR__Important_Alert())
-        // this.add_element(new CBR__Left_Footer())
+    html() {
+        const div_left_menu       = new Div({ class: 'left-menu-main'})
+        const cbr_left_logo       = new CBR__Left_Logo()
+        const cbr_left_menu       = new Left_Menu({ menu_items: this.menu_items() })
+        const cbr_important_alert = new CBR__Important_Alert()
+
+        div_left_menu.add_elements(cbr_left_logo, cbr_left_menu, cbr_important_alert)
+        return div_left_menu
     }
 
     menu_items() {
@@ -38,18 +40,6 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
             { icon: 'chat'    , label: 'Chat with LLMs', href: '/webc/cbr-webc-dev/chat/index'       },
             { icon: 'docs'    , label: 'Docs'          , href: '/webc/cbr-webc-dev/docs/index'       }
         ]
-    }
-
-    css_rules() {
-        return {
-            ":host"             : { display         : "flex"                      ,
-                                  flexDirection    : "column"                    ,
-                                  height          : "100%"                      ,
-                                  width           : "100%"                      ,
-                                  backgroundColor : "#ffffff"                   },
-
-            ":host > *"         : { flexShrink      : "0"                        }  // Prevent children from shrinking
-        }
     }
 }
 
