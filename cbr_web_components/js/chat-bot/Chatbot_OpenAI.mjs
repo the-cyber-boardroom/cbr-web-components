@@ -59,13 +59,15 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
     apply_ui_tweaks () {
         //this.add_thread_id_ui_link()
         this.set_input_value(this.initial_prompt)
-        if (this.initial_message !== null) {
-            this.messages.add_message_initial(this.initial_message)
-        }
 
         if (this.system_prompt !== null && this.show_system_prompt) {
             this.messages.add_message_system(this.system_prompt)
         }
+
+        if (this.initial_message !== null) {
+            this.messages.add_message_initial(this.initial_message)
+        }
+
         if (this.channel?.startsWith('shared-llm')) {
             this.shadowRoot.querySelector('webc-chat-input').style.display='none'
         }

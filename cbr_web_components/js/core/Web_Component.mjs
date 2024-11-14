@@ -123,6 +123,10 @@ export default class Web_Component extends HTMLElement {
         this.shadowRoot.adoptedStyleSheets = [...currentStylesheets, stylesheet];
     }
 
+    add_event_listener(selector, event_name, callback) {
+        this.query_selector(selector).addEventListener(event_name, callback)
+    }
+
     append_child(WebC_Class, ...attributes) {
         const child_component = WebC_Class.create(...attributes)        // calls static method create from the Web Component class
         this.appendChild(child_component)                               // adds it as a child to the current WebC

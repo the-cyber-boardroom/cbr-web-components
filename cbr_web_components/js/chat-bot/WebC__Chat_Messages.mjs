@@ -1,6 +1,6 @@
-import Web_Component      from "../core/Web_Component.mjs";
-import WebC__Chat_Message from "./WebC__Chat_Message.mjs";
-
+import Web_Component        from "../core/Web_Component.mjs";
+import WebC__Chat_Message   from "./WebC__Chat_Message.mjs";
+import WebC__System__Prompt from './WebC__System__Prompt.mjs';
 
 export default class WebC__Chat_Messages extends Web_Component {
 
@@ -113,7 +113,9 @@ export default class WebC__Chat_Messages extends Web_Component {
     }
 
     add_message_system(message) {
-        return this.add_message(message, 'system')
+        const system_prompt = WebC__System__Prompt.create();
+        system_prompt.setAttribute('content', message);
+        this.appendChild(system_prompt);
     }
 
     add_message_initial(message) {

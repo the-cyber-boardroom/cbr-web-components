@@ -11,20 +11,29 @@ export default class Icon__Mappings {
         'chevron-left'  : '‹',
         'chevron-right' : '›',
         'chevron-up'    : '∧',
-        'chevron-down'  : '∨'
+        'chevron-down'  : '∨',
+        'triangle-right': '▶',
+        'triangle-down' : '▼',
+        'triangle-left' : '◀',
+        'triangle-up'   : '▲'
     }
 
     static UI_ELEMENTS = {
-        'close'         : '×',
-        'plus'          : '+',
-        'minus'         : '−',
-        'check'         : '✓',
-        'cross'         : '✕',
-        'menu'          : '☰',
-        'edit'          : '✎',
-        'search'        : '🔍',
-        'settings'      : '⚙',
-        'more'          : '…'
+        'close'          : '×',
+        'plus'           : '+',
+        'minus'          : '−',
+        'check'          : '✓',
+        'cross'          : '✕',
+        'menu'           : '☰',
+        'edit'           : '✎',
+        'search'         : '🔍',
+        'settings'       : '⚙',
+        'more'           : '…',
+        'maximize'       : '⛶',
+        'minimize'       : '⚊',
+        'restore'        : '❐',
+        'full-screen'    : '⤢',
+        'exit-fullscreen': '⤡'
     }
 
     static SHAPES = {
@@ -109,8 +118,9 @@ export default class Icon__Mappings {
         'undo'          : '↩️',
         'user'          : '👤',
         'red-x'         : '❌',
-
     }
+
+
 
     // Combine all categories into a single map
     static get ALL() {

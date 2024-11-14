@@ -1,6 +1,6 @@
-import Web_Component from "../core/Web_Component.mjs";
-import Tag           from "../core/Tag.mjs";
-import Div           from "../core/Div.mjs";
+import Web_Component        from "../core/Web_Component.mjs";
+import Tag                  from "../core/Tag.mjs";
+import Div                  from "../core/Div.mjs";
 
 
 export default class WebC__Chat_Message extends Web_Component {
@@ -39,34 +39,6 @@ export default class WebC__Chat_Message extends Web_Component {
             this.shadowRoot.querySelector("#clear_button").addEventListener('click', this.clear_message)
         }
     }
-    css_messages() { return {   ".message"      : { "margin-bottom"   : "25px"             ,
-                                                    "max-width"       : "80%"              ,
-                                                    "padding"         : "10px"             },
-                                ".initial"      : { "background-color": "#f8f4f4"           ,
-                                                    "align-self"      : "flex-start"        ,
-                                                    "border-radius"   : "10px 10px 10px 0px"},
-                                ".system"      : { "background-color" : "black"             ,
-                                                    "align-self"      : "flex-start"        ,
-                                                    "padding"         : "5px"               ,
-                                                    "color"           : "white"             ,
-                                                    "font-size"       : "12px"               ,
-                                                    "border-radius"   : "10px 10px 10px 0px"},
-                                ".received"     : { "background-color": "#f2f2f2"           ,
-                                                    "align-self"      : "flex-start"        ,
-                                                    "border-radius"   : "10px 10px 10px 0px"},
-                                ".sent"         : { "background-color": "#724ae8"           ,
-                                                    "align-self"      : "flex-end"          ,
-                                                    "color"           : "#fff"              ,
-                                                    "border-radius"   : "10px 10px 0 10px"  },
-                                ".spinner"      : { "border"          : "4px solid #f3f3f3" , /* Light grey */
-                                                    "border-top"      : "4px solid #3498db" , /* Blue */
-                                                    "border-radius"   : "50%"               ,
-                                                    "width"           : "15px"              ,
-                                                    "height"          : "15px"              },
-                                // "#platform"     : { "_position"        : "relative" ,
-                                //                     "background-color": "red",
-                                //                     "top": "-10px"},
-    }}
 
     append(message) {
         this.message_raw += message
@@ -136,13 +108,12 @@ export default class WebC__Chat_Message extends Web_Component {
     }
 
     html() {
-        let source = this.source_ui_text()
-        const div_class = `message ${this.type}`
+        let source        = this.source_ui_text()
+        const div_class   = `message ${this.type}`
         const div_message = new Tag({tag: 'div', class: div_class})
-        const text_area = new Tag({tag: 'textarea', id:'message_text_area' , class: 'message-edit', value: this.message_raw})
+        const text_area   = new Tag({tag: 'textarea', id:'message_text_area' , class: 'message-edit', value: this.message_raw})
 
-        const div_slot = new Tag({tag: 'slot'})
-        //const div_spinner = new Tag({tag: 'div', class:'spinner'})
+        const div_slot    = new Tag({tag: 'slot'})
         const div_edit    = new Tag({tag:'button', id:'edit_button' , value: 'EDIT'})
         const div_save    = new Tag({tag:'button', id:'save_button' , value: 'OK'})
         const div_clear   = new Tag({tag:'button', id:'clear_button', value: 'X'})
@@ -161,7 +132,6 @@ export default class WebC__Chat_Message extends Web_Component {
                 div_message.add(div_source)
             }
         }
-
 
         let html = div_message.html()
         html += `
@@ -251,6 +221,25 @@ export default class WebC__Chat_Message extends Web_Component {
         return dom_spinner
     }
 
+    css_messages() { return {   ".message"      : { "margin-bottom"   : "25px"             ,
+                                                    "max-width"       : "80%"              ,
+                                                    "padding"         : "10px"             },
+                                ".initial"      : { "background-color": "#f8f4f4"           ,
+                                                    "align-self"      : "flex-start"        ,
+                                                    "border-radius"   : "10px 10px 10px 0px"},
+                                ".received"     : { "background-color": "#f2f2f2"           ,
+                                                    "align-self"      : "flex-start"        ,
+                                                    "border-radius"   : "10px 10px 10px 0px"},
+                                ".sent"         : { "background-color": "#724ae8"           ,
+                                                    "align-self"      : "flex-end"          ,
+                                                    "color"           : "#fff"              ,
+                                                    "border-radius"   : "10px 10px 0 10px"  },
+                                ".spinner"      : { "border"          : "4px solid #f3f3f3" , /* Light grey */
+                                                    "border-top"      : "4px solid #3498db" , /* Blue */
+                                                    "border-radius"   : "50%"               ,
+                                                    "width"           : "15px"              ,
+                                                    "height"          : "15px"              },
+    }}
 }
 
 WebC__Chat_Message.define()

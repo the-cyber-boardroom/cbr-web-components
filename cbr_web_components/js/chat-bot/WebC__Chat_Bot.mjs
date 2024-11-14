@@ -7,6 +7,8 @@ import A                   from "../core/A.mjs"              ;
 import Div                 from "../core/Div.mjs"            ;
 import Text                from "../core/Text.mjs"           ;
 import Tag                 from "../core/Tag.mjs"            ;
+import Icon__Mappings      from "../css/icons/Icon__Mappings.mjs";
+import Icon                from "../css/icons/Icon.mjs";
 
 export default class WebC__Chat_Bot extends Web_Component {
 
@@ -14,13 +16,11 @@ export default class WebC__Chat_Bot extends Web_Component {
 
     constructor() {
         super();
+        this.is_maximized       = false;
         this.target_element     = null
-        //this.div_chat_messages  = null
         this.data_chat_bot      = new Data__Chat_Bot()
         this.bot_name           = 'ChatBot'
-        //this.channel            = this.getAttribute('channel')       || null
         this.show_sent_messages = this.getAttribute('show_sent_messages') || false
-        //this.channels.push(this.channel)
         this.channels.push('WebC__Chat_Bot')
 
         if (this.getAttribute('edit_mode')  === null) {
@@ -64,6 +64,7 @@ export default class WebC__Chat_Bot extends Web_Component {
         super.connectedCallback()
         this.build()
     }
+
     // instance methods
     handle_new_input_message(event_data) {
         if (event_data?.channel === this.channel) {
@@ -88,9 +89,25 @@ export default class WebC__Chat_Bot extends Web_Component {
 
     add_event_hooks() {
         window.addEventListener('new_input_message', (e)=>{ this.handle_new_input_message(e.detail) });
-        //window.addEventListener('channel_message'  , (e)=>{ })
         window.addEventListener('clear_messages'   , (e)=>{ this.handle_clear_messages   (e.detail) })
         window.addEventListener('new_chat_ids'     , (e)=>{ this.handle_new_chat_ids     (e.detail) })
+
+        this.add_event_listener('.maximize-button', 'click', () => this.toggle_maximize())
+    }
+
+    create_header() {
+        const tag = new Tag()
+        const div_chat_header = tag.clone({tag: 'div', class: 'chat-header'})
+        const header_content  = new Div ({ class: 'header-content' })
+        const header_text     = new Text({ class: 'chat-header-title', value: this.bot_name })
+        const maximize_btn    = new Div ({class: 'maximize-button'                 })
+        const maximize_icon   = new Icon({class: 'maximize-icon' , icon: 'maximize', })
+        maximize_btn.add_element(maximize_icon)
+
+        header_content .add_elements(header_text, maximize_btn)
+        div_chat_header.add(header_content)
+
+        return div_chat_header
     }
 
     div_chatbot_ui() {
@@ -104,7 +121,6 @@ export default class WebC__Chat_Bot extends Web_Component {
         tag.html_config.include_id=false
 
         const div_chatbot_ui     = tag.clone({tag:'div'            , class:'chatbot-ui'                           })
-        const div_chat_header    = tag.clone({tag:'div'            , class:'chat-header'  , value:this.bot_name   })
         const div_chat_ids       = new Tag  ({tag:'div'            , class:'chat-ids'     , id: 'chat_ids'        })
         const webc_chat_messages = new Tag  ({tag:tag_chat_messages, class:'chat-messages', id: chat_messages__id })
         const webc_chat_input    = new Tag  ({tag:tag_chat_input   , class:'chat-input-ui', id: chat_input__id    })
@@ -114,17 +130,12 @@ export default class WebC__Chat_Bot extends Web_Component {
         webc_chat_messages.attributes.show_sent_messages = this.show_sent_messages
         webc_chat_messages.attributes.edit_mode          = this.edit_mode
 
-        div_chatbot_ui.add(div_chat_header  )
+        div_chatbot_ui.add(this.create_header())
         div_chatbot_ui.add(div_chat_ids     )
         div_chatbot_ui.add(webc_chat_messages)
         div_chatbot_ui.add(webc_chat_input)
 
-        //div_chatbot_ui.add(div_chat_input)
-        //div_chat_input.add(input_chat_input)
-
         div_chatbot_ui  .html_config.trim_final_html_code = true
-        //input_chat_input.html_config.include_end_tag    = false
-
         div_chat_ids.value ='...'
         return div_chatbot_ui
     }
@@ -196,9 +207,26 @@ export default class WebC__Chat_Bot extends Web_Component {
             this.save_chat_link.style.fontWeight      = '100'
             this.save_chat_link.innerHTML             = 'error'
         }
-
-
     }
+
+    // Maximize button section
+
+    toggle_maximize() {
+        this.is_maximized = !this.is_maximized
+        const container = this.query_selector('.chatbot-ui')
+        const btn = this.query_selector('.maximize-button')
+        const icon = btn.querySelector('.maximize-icon')
+
+        if (this.is_maximized) {
+            container.classList.add('maximized')
+            icon.textContent = Icon__Mappings.getIcon('minimize')  // Use appropriate icon name
+        } else {
+            container.classList.remove('maximized')
+            icon.textContent = Icon__Mappings.getIcon('maximize')  // Use appropriate icon name
+        }
+    }
+
+
 }
 
 WebC__Chat_Bot.define()
