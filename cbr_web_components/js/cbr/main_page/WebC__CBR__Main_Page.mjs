@@ -15,9 +15,9 @@ import CBR__Route__Handler       from "../router/CBR__Route__Handler.mjs"
 import CBR__Route__Content       from "../router/CBR__Route__Content.mjs"
 import CBR__Error__Boundary      from "../router/CBR__Error__Boundary.mjs";
 import API__Invoke               from "../../data/API__Invoke.mjs";
+import WebC__CBR__Left_Menu      from "../main_page/WebC__CBR__Left_Menu.mjs";
 
-
-export default class WebC__CBR__Layout__Default extends Web_Component {
+export default class WebC__CBR__Main_Page extends Web_Component {
     constructor() {
         super()
         this.routeContent   = new CBR__Route__Content()
@@ -55,6 +55,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
                    .add_col({ id: 'left-footer', class: 'h-75px bg-light-gray'                 })
         row_content.add_col({ id: 'content'    , class: 'd-flex bg-light-gray m-1'             })
 
+
         layout.with_id('left-menu' ).add_tag({ tag: 'webc-api-side-menu'   })
 
         layout     .with_id('left-menu'  ).add_element(new CBR__Left_Logo  ()                                )
@@ -67,7 +68,7 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
         this.set_inner_html(layout.html())
 
         // Handle initial route
-        this.routeHandler.handleRoute(window.location.pathname)
+        await this.routeHandler.handleRoute(window.location.pathname)
 
 
     }
@@ -85,4 +86,4 @@ export default class WebC__CBR__Layout__Default extends Web_Component {
 }
 
 
-WebC__CBR__Layout__Default.define()
+WebC__CBR__Main_Page.define()
