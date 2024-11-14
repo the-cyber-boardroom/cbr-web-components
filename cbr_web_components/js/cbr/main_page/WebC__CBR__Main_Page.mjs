@@ -26,7 +26,7 @@ export default class WebC__CBR__Main_Page extends Web_Component {
 
     add_event_listeners() {
        this.addEventListener('left-menu-toggle', (event) => this.on_left_menu_toggle(event))
-   }
+    }
 
    on_left_menu_toggle(event) {
         const minimized   = event.detail.minimized
@@ -84,8 +84,10 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         return layout.html()
 
     }
+
     add_web_components() {
         this.append_child_to_selector('#left-menu', WebC__CBR__Left_Menu)
+        setTimeout(() => { window.dispatchEvent(new Event('resize')) }, 1)
     }
 }
 

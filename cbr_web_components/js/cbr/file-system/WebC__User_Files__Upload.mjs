@@ -1,4 +1,3 @@
-// WebC__User_Files__Upload.mjs
 import Web_Component  from '../../core/Web_Component.mjs'
 import CSS__Forms     from '../../css/CSS__Forms.mjs'
 import CSS__Cards     from '../../css/CSS__Cards.mjs'
@@ -8,7 +7,7 @@ import Icon           from '../../css/icons/Icon.mjs'
 import Div            from '../../core/Div.mjs'
 import Button         from '../../core/Button.mjs'
 import Input          from '../../core/Input.mjs'
-import CSS__Buttons from "../../css/CSS__Buttons.mjs";
+import CSS__Buttons  from "../../css/CSS__Buttons.mjs";
 
 export default class WebC__User_Files__Upload extends Web_Component {
     load_attributes() {
@@ -38,6 +37,10 @@ export default class WebC__User_Files__Upload extends Web_Component {
 
         // Set up drag and drop handlers
         const drop_zone = this.shadowRoot.querySelector('.drop-zone')
+        if (!drop_zone) {
+            console.log("BUG!!! Drop zone not found")
+            return
+        }
         drop_zone.addEventListener('dragover',  this.handle_dragover)
         drop_zone.addEventListener('drop',      this.handle_drop)
         drop_zone.addEventListener('dragenter', () => drop_zone.classList.add('drag-active'))

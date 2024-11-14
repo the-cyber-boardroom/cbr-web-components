@@ -1,14 +1,12 @@
-// WebC__Files__Tree_View.mjs
 import Web_Component    from '../../core/Web_Component.mjs'
 import CSS__Icons       from '../../css/icons/CSS__Icons.mjs'
 import CSS__Forms       from '../../css/CSS__Forms.mjs'
 import Icon             from '../../css/icons/Icon.mjs'
 import API__Invoke      from '../../data/API__Invoke.mjs'
 import Div              from '../../core/Div.mjs'
-import Button           from '../../core/Button.mjs'
-import Input            from '../../core/Input.mjs'
 
 export default class WebC__User_Files__Tree_View extends Web_Component {
+
     load_attributes() {
         new CSS__Icons    (this).apply_framework()
         new CSS__Forms    (this).apply_framework()
@@ -17,10 +15,11 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
     }
 
     async connectedCallback() {
-        super.connectedCallback()
+        this.load_attributes()
         await this.load_data()
         this.render()
     }
+
 
     add_event_listeners() {
         window.shadow__root = this.shadowRoot
@@ -73,15 +72,6 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         await this.load_data()
         this.render()
     }
-
-    // file_to_base64(file) {
-    //     return new Promise((resolve, reject) => {
-    //         const reader    = new FileReader()
-    //         reader.onload  = () => resolve(reader.result.split(',')[1])
-    //         reader.onerror = error => reject(error)
-    //         reader.readAsDataURL(file)
-    //     })
-    // }
 
 
     create_tree_item(node, level = 0) {

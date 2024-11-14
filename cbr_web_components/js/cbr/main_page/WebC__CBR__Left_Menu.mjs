@@ -7,10 +7,14 @@ import Div                  from "../../core/Div.mjs"
 import Button               from "../../core/Button.mjs"
 import CBR__Left_Logo       from "./CBR__Left_Logo.mjs"
 import CBR__Important_Alert from "./CBR__Important_Alert.mjs"
-
+import WebC__Resize_Button from "../../elements/ui/WebC__Resize_Button.mjs";
 
 
 export default class WebC__CBR__Left_Menu extends Web_Component {
+
+    left_menu__resize__breakpoint = 768
+    left_menu__resize__event_name = 'left-menu-toggle'
+
     load_attributes() {
         new CSS__Alerts    (this).apply_framework()
         new CSS__Side_Menu (this).apply_framework()
@@ -19,65 +23,38 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         this.add_css_rules(CBR__Left_Logo      .css_rules())
         this.add_css_rules(CBR__Important_Alert.css_rules())
         this.add_css_rules(this.css_rules())
-        this.minimized          = window.innerWidth < 768                       // Initialize based on window width
-        this.mobile_breakpoint  = 768
+    }
+
+    get div__left_menu_main() {
+        return this.query_selector('.left-menu-main')
+    }
+
+    add_web_components() {
+        let params = { resize_breakpoint : this.left_menu__resize__breakpoint ,
+                       resize_event_name : this.left_menu__resize__event_name }
+        this.add_web_component(WebC__Resize_Button, params )
     }
 
     add_event_listeners() {
-        this.add_event_listener('.toggle-button', 'click', () => this.toggle_menu())
-        window.addEventListener('resize'                 , () => this.handle_resize())
+        this.addEventListener('left-menu-toggle', (event) => this.on_left_menu_toggle(event))
     }
 
-    handle_resize() {
-        if (window.innerWidth < this.mobile_breakpoint && !this.minimized) {
-            this.minimize_menu()
-        } else if (window.innerWidth >= this.mobile_breakpoint && this.minimized) {
-            this.expand_menu()
-        }
-    }
-
-    minimize_menu() {
-        this.minimized = true
-        const menu     = this.query_selector('.left-menu-main')
-        const button   = this.query_selector('.toggle-button')
-        menu.classList.add('left-menu-minimized')
-        button.innerHTML = '→'
-        this.dispatch_menu_event()
-    }
-
-    expand_menu() {
-        this.minimized = false
-        const menu = this.query_selector('.left-menu-main')
-        const button = this.query_selector('.toggle-button')
-        menu.classList.remove('left-menu-minimized')
-        button.innerHTML = '←'
-        this.dispatch_menu_event()
-    }
-
-    toggle_menu() {
-        if (this.minimized) {
-            this.expand_menu()
+    on_left_menu_toggle (event) {
+        const minimized = event.detail.minimized
+        if (minimized) {
+            this.div__left_menu_main.add_class   ('left-menu-minimized')
         } else {
-            this.minimize_menu()
+            this.div__left_menu_main.remove_class('left-menu-minimized')
         }
     }
 
-    dispatch_menu_event() {
-        const event = new CustomEvent('left-menu-toggle', {
-            bubbles  : true                          ,
-            composed : true                          ,
-            detail   : { minimized: this.minimized }
-        })
-        this.dispatchEvent(event)
-    }
     html() {
-        const div_left_menu       = new Div       ({ class: 'left-menu-main'})
-        const toggle_button       = new Button    ({class: 'toggle-button', value: '←'})
+        const div_left_menu       = new Div       ({ class: 'left-menu-main'       })
         const cbr_left_menu       = new Left_Menu ({ menu_items: this.menu_items() })
         const cbr_left_logo       = new CBR__Left_Logo()
         const cbr_important_alert = new CBR__Important_Alert()
 
-        div_left_menu.add_elements(toggle_button, cbr_left_logo, cbr_left_menu, cbr_important_alert)
+        div_left_menu.add_elements(cbr_left_logo, cbr_left_menu, cbr_important_alert)
         return div_left_menu
     }
 
@@ -94,42 +71,15 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         ]
     }
 
-    // toggle_menu() {
-    //     const menu   = this.query_selector('.left-menu-main')
-    //     const button = this.query_selector('.toggle-button')
-    //
-    //     this.minimized = !this.minimized
-    //     menu.classList.toggle('left-menu-minimized')
-    //     button.innerHTML = this.minimized ? '→' : '←'
-    //
-    //     const event = new CustomEvent('left-menu-toggle', {bubbles: true, composed: true,  detail: { minimized: this.minimized }
-    // })
-    // this.dispatchEvent(event)
-    // }
-
     css_rules() {
         return {
-            ".left-menu-main"                       : { transition  : "width 0.3s ease-in-out"    ,
-                                                        position      : "relative"                    },
-
-            ".left-menu-minimized"                  : { width           : "60px"                      ,
-                                                        paddingTop      : "10px"                      ,
-                                                        overflow        : "hidden"                    },
-
-            ".left-menu-minimized .logo-container"  : { display         : "none"                      },
-            ".left-menu-minimized .important-alert" : { display         : "none"                      },
-
-
-            ".toggle-button"                        : { position        : "absolute"                  ,
-                                                        right           : "10px"                      ,
-                                                        top             : "0px"                       ,
-                                                        padding         : "5px"                       ,
-                                                        cursor          : "pointer"                   ,
-                                                        backgroundColor : "transparent"               ,
-                                                        border          : "none"                      ,
-                                                        color           : "#666"                       },
-
-            ".toggle-button:hover"                  : { color           : "#000"                      }
+            ".left-menu-main"                       : { transition : "width 0.3s ease-in-out"    ,
+                                                        position   : "relative"                  },
+            ".left-menu-minimized"                  : { width      : "60px"                      ,
+                                                        paddingTop : "10px"                      ,
+                                                        overflow   : "hidden"                    },
+            ".left-menu-minimized .logo-container"  : { display    : "none"                      },
+            ".left-menu-minimized .important-alert" : { display    : "none"                      },
         }
     }
 }
