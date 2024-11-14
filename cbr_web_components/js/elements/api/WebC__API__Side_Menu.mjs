@@ -25,7 +25,6 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
         super.load_attributes();
         this.data_file                     = this.getAttribute('data-file') || WebC__API__Side_Menu.data_file__default_menu ;
         this.use_cdn_for_toml_file_content = this.hasAttribute('disable-cdn' ) === false
-        console.log('in side menu api')
     }
 
     async setup() {

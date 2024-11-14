@@ -23,8 +23,8 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
     }
 
     async connectedCallback() {
-        super.connectedCallback()
         this.setup()
+        //super.connectedCallback()
         await this.build()
         this.raise_event('build-complete')
     }
@@ -149,7 +149,7 @@ export default class WebC__S3_Browser__Server_Requests extends Web_Component {
 
 
     async html(folders, files_metadata) {
-        let files_text          = `Files: ${files_metadata.file_count} in ${files_metadata.duration.seconds} secs`
+        //let files_text          = `Files: ${files_metadata.file_count} in ${files_metadata.duration.seconds} secs`
         let div_root            = new Div({id:'api_to_table'    })
         let separator_pipe      = new Span({value:'|'})
         let hr_separator        = new HR()

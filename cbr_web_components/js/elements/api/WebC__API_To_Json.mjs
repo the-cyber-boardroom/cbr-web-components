@@ -10,8 +10,9 @@ export default class WebC__API_To_Json extends Web_Component {
     }
 
     async connectedCallback() {
-        super.connectedCallback()
         this.setup()
+        //super.connectedCallback()
+        this.load_attributes()
         await this.text_highlight.load_css()
         await this.text_highlight.load_highlight_js()
         await this.build()
