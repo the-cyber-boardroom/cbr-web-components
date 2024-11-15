@@ -6,9 +6,9 @@ export default class WebC__Chat_Messages extends Web_Component {
 
     constructor() {
         super();
+        this.auto_scroll        = true                        // Auto-scroll to the bottom of the chat window
         this.dom_spinner        = null
         this.channel            = this.getAttribute('channel'           )       || null
-        this.show_sent_messages =
         this.edit_mode          = this.getAttribute('edit_mode'         ) === 'true'
         this.show_sent_messages = this.getAttribute('show_sent_messages') === 'true'
         //if (show_sent_messages == 'true'): { this.show_sent_messages = true }
@@ -30,6 +30,7 @@ export default class WebC__Chat_Messages extends Web_Component {
             let provider = event_data.provider
             let model    = event_data.model
             this.current_message = this.add_message_received(initial_message, images, platform, provider, model ) }
+            this.auto_scroll = true
     }
     handle_stream_data(event_data) {
         if (this.is_message_to_current_channel(event_data)) {
@@ -39,6 +40,7 @@ export default class WebC__Chat_Messages extends Web_Component {
             }
             let chunk = event_data.data
             this.current_message?.append(chunk)
+            this.messages_div_scroll_to_end()
         }
     }
     add_event_hooks() {
@@ -60,6 +62,10 @@ export default class WebC__Chat_Messages extends Web_Component {
         window.addEventListener('add-message', (e)=>{
             this.add_message(e.detail?.message, e.detail?.type, e.detail?.images, e.detail?.platform, e.detail?.provider, e.detail?.model);
         });
+
+        this.messages_div().addEventListener('wheel', () => {              // Add scroll listener
+            this.auto_scroll = false                                     // Disable auto-scroll on manual scroll
+        })
     }
 
     connectedCallback() {
@@ -91,6 +97,8 @@ export default class WebC__Chat_Messages extends Web_Component {
         this.appendChild(new_message)
         new_message.message(message)
         new_message.images(images)
+
+        this.messages_div_scroll_to_end()
 
         return new_message
     }
@@ -155,8 +163,8 @@ export default class WebC__Chat_Messages extends Web_Component {
 
     }
     messages_div_scroll_to_end() {
-        const messages_div = this.messages_div()
-        messages_div.scrollTop = messages_div.scrollHeight
+        if (!this.auto_scroll) { return }
+        this.scrollTop = this.scrollHeight
     }
 }
 
