@@ -7,6 +7,7 @@ import CSS__Cards      from '../../css/CSS__Cards.mjs'
 import CSS__Forms      from '../../css/CSS__Forms.mjs'
 import Div             from '../../core/Div.mjs'
 import API__Invoke     from '../../data/API__Invoke.mjs'
+import WebC__Document__Editor from "./WebC__Document__Editor.mjs";
 
 export default class WebC__Document__Assistant extends Web_Component {
     load_attributes() {
@@ -37,8 +38,15 @@ export default class WebC__Document__Assistant extends Web_Component {
         this.load_attributes()
         await this.load_document_data()
         this.render()
+        this.add_web_components()
         this.add_event_listeners()
         //this.simulate_diff_event()
+    }
+
+    add_web_components() {
+        const params = { 'file-id': this.file_id,
+                         'content': this.state.document.content }
+        this.add_web_component_to('.document-panel', WebC__Document__Editor, params)
     }
 
     async load_document_data() {
@@ -178,15 +186,6 @@ export default class WebC__Document__Assistant extends Web_Component {
         // Document panel (right)
         const document_panel = new Div({ class: 'document-panel' })
 
-        // Editor component
-        document_panel.add_tag({
-            tag: 'webc-document-editor',
-            attributes: {
-                'file-id': this.file_id,
-                'content': this.state.document.content
-            }
-        })
-
         // Diff overlay
         const diff_overlay = new Div({ class: `diff-overlay ${this.state.diff.visible ? 'visible' : ''}` })
         diff_overlay.add_tag({
@@ -206,34 +205,32 @@ export default class WebC__Document__Assistant extends Web_Component {
     css_rules() {
         return {
             ".document-assistant" : { display         : "grid"                      ,      // Main container
-                                    gridTemplateColumns: "30% 70%"                 ,
-                                    height          : "100%"                      ,
-                                    minHeight       : "0"                         ,      // Allow content to scroll
-                                    backgroundColor : "#fff"                      },
+                                     gridTemplateColumns: "30% 70%"                 ,
+                                     height          : "100%"                      ,
+                                     minHeight       : "0"                         ,      // Allow content to scroll
+                                     backgroundColor : "#fff"                      },
 
             ".chat-panel"        : { display         : "flex"                      ,      // Left panel
-                                    flexDirection    : "column"                    ,
-                                    borderRight     : "1px solid #dee2e6"         ,
-                                    height          : "100%"                      ,
-                                    minHeight       : "0"                         },      // Allow content to scroll
+                                     flexDirection    : "column"                    ,
+                                     borderRight     : "1px solid #dee2e6"         ,
+                                     height          : "100%"                      ,
+                                     minHeight       : "0"                         },      // Allow content to scroll
 
-            ".document-panel"    : { display         : "flex"                      ,      // Right panel
-                                    flexDirection    : "column"                    ,
-                                    position        : "relative"                   ,      // For diff overlay
-                                    height          : "100%"                      ,
-                                    minHeight       : "0"                         },      // Allow content to scroll
+            ".document-panel"    : { flex            : 1                           ,
+                                     position        : "relative"                   ,      // For diff overlay
+                                     minHeight       : "0"                         },      // Allow content to scroll
 
             ".diff-overlay"      : { position        : "absolute"                  ,      // Diff overlay
-                                    top             : "0"                         ,
-                                    right           : "0"                         ,
-                                    width           : "100%"                      ,
-                                    height          : "100%"                      ,
-                                    backgroundColor : "rgba(255,255,255,0.95)"    ,
-                                    transform       : "translateX(100%)"          ,      // Hide by default
-                                    transition      : "transform 0.3s ease"       ,
-                                    zIndex          : "100"                       },      // Ensure overlay is on top
+                                     top             : "0"                         ,
+                                     right           : "0"                         ,
+                                     width           : "100%"                      ,
+                                     height          : "100%"                      ,
+                                     backgroundColor : "rgba(255,255,255,0.95)"    ,
+                                     transform       : "translateX(100%)"          ,      // Hide by default
+                                     transition      : "transform 0.3s ease"       ,
+                                     zIndex          : "100"                       },      // Ensure overlay is on top
 
-            ".diff-overlay.visible": { transform     : "translateX(0)"             }      // Show overlay
+            ".diff-overlay.visible": { transform     : "translateX(0)"             } ,     // Show overlay
         }
     }
 

@@ -86,7 +86,7 @@ export default class WebC__CBR__Main_Page extends Web_Component {
     }
 
     add_web_components() {
-        this.append_child_to_selector('#left-menu', WebC__CBR__Left_Menu)
+        this.add_web_component_to('#left-menu', WebC__CBR__Left_Menu)
         setTimeout(() => { window.dispatchEvent(new Event('resize')) }, 1)
     }
 }

@@ -153,17 +153,19 @@ export default class Web_Component extends HTMLElement {
         return child_component                                          // returns the instance created of WebC_Class
     }
 
+    add_web_component_to(selector, WebC_Class, ...attributes) {
+        const child_component = WebC_Class.create(...attributes)        // calls static method create from the Web Component class
+        this.query_selector(selector).appendChild(child_component)      // adds it as a child to the current WebC
+        return child_component                                          // returns the instance created of WebC_Class
+    }
+
     append_child(WebC_Class, ...attributes) {
         const child_component = WebC_Class.create(...attributes)        // calls static method create from the Web Component class
         this.appendChild(child_component)                               // adds it as a child to the current WebC
         return child_component                                          // returns the instance created of WebC_Class
     }
 
-    append_child_to_selector(selector, WebC_Class, ...attributes) {
-        const child_component = WebC_Class.create(...attributes)        // calls static method create from the Web Component class
-        this.query_selector(selector).appendChild(child_component)      // adds it as a child to the current WebC
-        return child_component                                          // returns the instance created of WebC_Class
-    }
+
     // root_element() {
     //     return null
     // }
