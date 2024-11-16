@@ -120,6 +120,11 @@ export default class Web_Component extends HTMLElement {
         this.dispatchEvent(new CustomEvent(event_name, options));
     }
 
+    raise_event_global(event_name, event_detail) {
+        const options =  { bubbles: true, composed: true, detail: event_detail}
+        this.dispatchEvent(new CustomEvent(event_name, options));
+    }
+
     async wait_for_event(event_name, timeout) {
         const timeout_value = timeout || 100
         const timeout_message = `${event_name} event did not fire within the expected timeout value: ${timeout_value}ms.`

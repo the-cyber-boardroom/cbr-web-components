@@ -16,12 +16,12 @@ import CSS__Alerts     from '../CSS__Alerts.mjs';
 export default class WebC__Component__Tester extends Web_Component {
 
     base_path = '/web_components/js/'
-    presets = [ { label: 'LLMs Tests'         , path: 'cbr/llms/WebC__LLM__Test.mjs'                          },
-                { label: 'User Files'         , path: 'cbr/web_components/WebC__User_Files.mjs'            },
-                { label: 'User Session'       , path: 'cbr/session/WebC__CBR__User_Session.mjs'            },
-                { label: 'Athena Examples'    , path: 'cbr/web_components/WebC__Athena__Examples.mjs'      },
-                { label: 'Athena Welcome'     , path: 'cbr/web_components/WebC__Athena__Welcome.mjs'       },
-                { label: 'Past Chats Welcome' , path: 'cbr/web_components/WebC__PastChats__Welcome.mjs'    }]
+    presets = [ { label: 'Document Assistant' , path: 'cbr/document-assistant/WebC__Document__Assistant.mjs' },
+                { label: 'User Files'         , path: 'cbr/web_components/WebC__User_Files.mjs'              },
+                { label: 'User Session'       , path: 'cbr/session/WebC__CBR__User_Session.mjs'              },
+                { label: 'Athena Examples'    , path: 'cbr/web_components/WebC__Athena__Examples.mjs'        },
+                { label: 'Athena Welcome'     , path: 'cbr/web_components/WebC__Athena__Welcome.mjs'         },
+                { label: 'Past Chats Welcome' , path: 'cbr/web_components/WebC__PastChats__Welcome.mjs'      }]
 
     load_attributes() {
         new CSS__Forms     (this).apply_framework()
