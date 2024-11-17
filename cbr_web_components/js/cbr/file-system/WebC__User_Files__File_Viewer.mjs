@@ -1,13 +1,14 @@
-import Web_Component  from '../../core/Web_Component.mjs'
-import CSS__Cards     from '../../css/CSS__Cards.mjs'
-import CSS__Forms     from '../../css/CSS__Forms.mjs'
-import CSS__Icons     from '../../css/icons/CSS__Icons.mjs'
-import API__Invoke    from '../../data/API__Invoke.mjs'
-import Div            from '../../core/Div.mjs'
-import Img            from '../../core/Img.mjs'
-import Button         from '../../core/Button.mjs'
-import Raw_Html       from "../../core/Raw_Html.mjs";
-import CSS__Buttons   from "../../css/CSS__Buttons.mjs";
+import Web_Component                      from '../../core/Web_Component.mjs'
+import CSS__Cards                         from '../../css/CSS__Cards.mjs'
+import CSS__Forms                         from '../../css/CSS__Forms.mjs'
+import CSS__Icons                         from '../../css/icons/CSS__Icons.mjs'
+import API__Invoke                        from '../../data/API__Invoke.mjs'
+import Div                                from '../../core/Div.mjs'
+import Img                                from '../../core/Img.mjs'
+import Button                             from '../../core/Button.mjs'
+import Raw_Html                           from "../../core/Raw_Html.mjs";
+import CSS__Buttons                       from "../../css/CSS__Buttons.mjs";
+import WebC__User_Files__Markdown__Editor from "../markdown-editor/WebC__User_Files__Markdown__Editor.mjs";
 
 export default class WebC__User_Files__File_Viewer extends Web_Component {
     load_attributes() {
@@ -21,7 +22,8 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
     }
 
     connectedCallback() {
-        super.connectedCallback()
+        //super.connectedCallback()
+        this.load_attributes()
         this.build()
         this.add_event_listeners()
     }
@@ -67,11 +69,145 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         }
     }
 
+    add_web_components() {
+        if (!this.file_bytes__base64) return
+
+        try {
+            const decoded_content = atob(this.file_bytes__base64)
+            const file_type = this.file_data.file_type.toLowerCase()
+            const host_element = '.content-container'
+            const content_container = this.query_selector(host_element)
+
+
+            switch(file_type) {
+                case '.md':
+                    this.add_markdown_editor(host_element)
+                    break
+                case '.txt':
+                case '.json':
+                    this.add_text_viewer(content_container, decoded_content)
+                    break
+                case '.doc':
+                case '.docx':
+                case '.xls':
+                case '.xlsx':
+                case '.ppt':
+                case '.pptx':
+                    this.add_document_viewer(content_container)
+                    break
+                case '.jpg':
+                case '.jpeg':
+                case '.png':
+                case '.gif':
+                    this.add_image_viewer(content_container)
+                    break
+                case '.pdf':
+                    this.add_pdf_viewer(content_container)
+                    break
+                default:
+                    this.add_default_viewer(content_container, decoded_content)
+            }
+        } catch (error) {
+            console.error('Error processing file:', error)
+            this.show_error_viewer()
+        }
+    }
+
+    add_markdown_editor(host_element) {
+        const params = { 'file_id': this.current_file.node_id }
+        this.add_web_component_to(host_element, WebC__User_Files__Markdown__Editor, params)
+    }
+
+    add_text_viewer(container, decoded_content) {
+        try {
+            const text = new TextDecoder().decode(
+                new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
+            )
+
+            if (this.file_data.file_type === '.json') {
+                try {
+                    const formatted = JSON.stringify(JSON.parse(text), null, 2)
+                    const code = new Raw_Html({
+                        class: 'content-code',
+                        value: `<pre>${formatted}</pre>`
+                    })
+                    container.appendChild(code.dom_create())
+                } catch {
+                    const text_div = new Raw_Html({
+                        class: 'content-text',
+                        value: text
+                    })
+                    container.appendChild(text_div.dom_create())
+                }
+            } else {
+                const text_div = new Raw_Html({
+                    class: 'content-text',
+                    value: text
+                })
+                container.appendChild(text_div.dom_create())
+            }
+        } catch (error) {
+            console.error('Error converting text:', error)
+            this.show_error_viewer()
+        }
+    }
+
+    async add_document_viewer(container) {
+        const raw_html = await this.render__using_google_viewer()
+        container.appendChild(raw_html.dom_create())
+    }
+
+    add_image_viewer(container) {
+        const src = `data:image/${this.file_data.file_type.slice(1)};base64,${this.file_bytes__base64}`
+        const img = new Img({
+            class: 'content-image',
+            src  : src
+        })
+        container.appendChild(img.dom_create())
+    }
+
+    add_pdf_viewer(container) {
+        const pdf = new Raw_Html({
+            class: 'content-pdf',
+            value: `<embed src    = "data:application/pdf;base64,${this.file_bytes__base64}" 
+                           type   = "application/pdf"
+                           width  = "100%"
+                           height = "600px"/>`
+        })
+        container.appendChild(pdf.dom_create())
+    }
+
+    add_default_viewer(container, decoded_content) {
+        try {
+            const text = new TextDecoder().decode(
+                new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
+            )
+            const text_div = new Raw_Html({
+                class: 'content-text',
+                value: text
+            })
+            container.appendChild(text_div.dom_create())
+        } catch {
+            const binary_div = new Div({
+                class: 'content-binary',
+                value: 'Binary file contents cannot be displayed'
+            })
+            container.appendChild(binary_div.dom_create())
+        }
+    }
+
+    show_error_viewer() {
+        const error_div = new Div({
+            class: 'content-error',
+            value: 'Error displaying file contents'
+        })
+        this.query_selector('.content-container')
+            .appendChild(error_div.dom_create())
+    }
+
     async load_file_data() {
         try {
-            const response = await this.api_invoke.invoke_api(
-                `/api/user-data/files/file-contents?file_id=${this.current_file.node_id}`
-            )
+            const response = await this.api_invoke.invoke_api(`/api/user-data/files/file-contents?file_id=${this.current_file.node_id}`)
             this.file_data          = response.data.file_data
             this.file_bytes__base64 = response.data.file_bytes__base64
             this.file_summary       = response.data.file_summary          // Store summary
@@ -187,91 +323,91 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
     }
 
 
-    async render_content_by_type() {
-        if (!this.file_bytes__base64) return new Div()
-
-        // Decode base64 content
-        let decoded_content;
-        try {
-            decoded_content = atob(this.file_bytes__base64)
-        } catch (error) {
-            console.error('Error decoding base64:', error)
-            return new Div({
-                class: 'content-error',
-                value: 'Error decoding file contents'
-            })
-        }
-
-        switch(this.file_data.file_type.toLowerCase()) {            // todo: refactor each of these handlers into separate methods (if not classes)
-            case '.md':
-                const markdown_editor = new Div({ class: 'markdown-editor-container' })
-                markdown_editor.add_tag({tag: 'webc-user-files-markdown-editor',
-                                         attributes: { 'file_id': this.current_file.node_id } })
-                return markdown_editor
-            case '.txt':
-            case '.json':
-                try {                                                                           // For text files, convert decoded content to UTF-8
-                    const decoded_text = new TextDecoder().decode(
-                        new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
-                    )
-
-                    if (this.file_data.file_type === '.json') {
-                        try {
-                            const formatted = JSON.stringify(JSON.parse(decoded_text), null, 2)
-                            return new Raw_Html({   class: 'content-code',  value: `<pre>${formatted}</pre>` })
-                        } catch {
-                            return new Raw_Html({   class: 'content-text', value: decoded_text })
-                        }
-                    }
-
-                    if (this.file_data.file_type === '.md') {
-                        return new Raw_Html({ class: 'content-markdown', value: marked.marked(decoded_text) })
-                    }
-
-                    return new Raw_Html({ class: 'content-text',    value: decoded_text
-                    })
-                } catch (error) {
-                    console.error('Error converting to text:', error)
-                    return new Raw_Html({
-                        class: 'content-error',
-                        value: 'Error converting file contents'
-                    })
-                }
-            case '.doc':
-            case '.docx':
-            case '.xls':
-            case '.xlsx':
-            case '.ppt':
-            case '.pptx':
-                return await this.render__using_google_viewer()
-
-            case '.jpg':
-            case '.jpeg':
-            case '.png':
-            case '.gif':
-                const src = `data:image/${this.file_data.file_type.slice(1)};base64,${this.file_bytes__base64}`      // For images, we can use the base64 directly since it's already in the correct format
-                return new Img({ class: 'content-image',  src: src })
-            case '.pdf':
-                return new Raw_Html({ class: 'content-pdf',
-                                      value: `<embed src    = "data:application/pdf;base64,${this.file_bytes__base64}" 
-                                                     type   = "application/pdf"
-                                                     width  = "100%"
-                                                     height = "600px"/>` })
-            default:
-                // For unknown types, try to display as text
-                try {
-                    const decoded_text = new TextDecoder().decode(
-                        new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
-                    )
-                    return new Raw_Html({ class: 'content-text',  value: decoded_text })
-                } catch {
-                    return new Div({
-                        class: 'content-binary',
-                        value: 'Binary file contents cannot be displayed'
-                    })
-                }
-        }
-    }
+    // async render_content_by_type() {
+    //     if (!this.file_bytes__base64) return new Div()
+    //
+    //     // Decode base64 content
+    //     let decoded_content;
+    //     try {
+    //         decoded_content = atob(this.file_bytes__base64)
+    //     } catch (error) {
+    //         console.error('Error decoding base64:', error)
+    //         return new Div({
+    //             class: 'content-error',
+    //             value: 'Error decoding file contents'
+    //         })
+    //     }
+    //
+    //     switch(this.file_data.file_type.toLowerCase()) {            // todo: refactor each of these handlers into separate methods (if not classes)
+    //         case '.md':
+    //             const markdown_editor = new Div({ class: 'markdown-editor-container' })
+    //             markdown_editor.add_tag({tag: 'webc-user-files-markdown-editor',
+    //                                      attributes: { 'file_id': this.current_file.node_id } })
+    //             return markdown_editor
+    //         case '.txt':
+    //         case '.json':
+    //             try {                                                                           // For text files, convert decoded content to UTF-8
+    //                 const decoded_text = new TextDecoder().decode(
+    //                     new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
+    //                 )
+    //
+    //                 if (this.file_data.file_type === '.json') {
+    //                     try {
+    //                         const formatted = JSON.stringify(JSON.parse(decoded_text), null, 2)
+    //                         return new Raw_Html({   class: 'content-code',  value: `<pre>${formatted}</pre>` })
+    //                     } catch {
+    //                         return new Raw_Html({   class: 'content-text', value: decoded_text })
+    //                     }
+    //                 }
+    //
+    //                 if (this.file_data.file_type === '.md') {
+    //                     return new Raw_Html({ class: 'content-markdown', value: marked.marked(decoded_text) })
+    //                 }
+    //
+    //                 return new Raw_Html({ class: 'content-text',    value: decoded_text
+    //                 })
+    //             } catch (error) {
+    //                 console.error('Error converting to text:', error)
+    //                 return new Raw_Html({
+    //                     class: 'content-error',
+    //                     value: 'Error converting file contents'
+    //                 })
+    //             }
+    //         case '.doc':
+    //         case '.docx':
+    //         case '.xls':
+    //         case '.xlsx':
+    //         case '.ppt':
+    //         case '.pptx':
+    //             return await this.render__using_google_viewer()
+    //
+    //         case '.jpg':
+    //         case '.jpeg':
+    //         case '.png':
+    //         case '.gif':
+    //             const src = `data:image/${this.file_data.file_type.slice(1)};base64,${this.file_bytes__base64}`      // For images, we can use the base64 directly since it's already in the correct format
+    //             return new Img({ class: 'content-image',  src: src })
+    //         case '.pdf':
+    //             return new Raw_Html({ class: 'content-pdf',
+    //                                   value: `<embed src    = "data:application/pdf;base64,${this.file_bytes__base64}"
+    //                                                  type   = "application/pdf"
+    //                                                  width  = "100%"
+    //                                                  height = "600px"/>` })
+    //         default:
+    //             // For unknown types, try to display as text
+    //             try {
+    //                 const decoded_text = new TextDecoder().decode(
+    //                     new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
+    //                 )
+    //                 return new Raw_Html({ class: 'content-text',  value: decoded_text })
+    //             } catch {
+    //                 return new Div({
+    //                     class: 'content-binary',
+    //                     value: 'Binary file contents cannot be displayed'
+    //                 })
+    //             }
+    //     }
+    // }
 
     async render__using_google_viewer() {                           // todo: a) see if this is the best way to handle these docs, and b) debug the multiple file formats supported
         try {
@@ -340,7 +476,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         return tabs
     }
 
-    async render_file_viewer() {
+    render_file_viewer() {
         const container = new Div({ class: 'viewer-container' })
 
         if (!this.current_file || !this.file_data) {
@@ -376,7 +512,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
             const summary_section = this.render_summary_section()
             const content = new Div({ class: 'content-container' })
-            content.add_element(await this.render_content_by_type())
+            //content.add_element(await this.render_content_by_type())
             content_view.add_elements(summary_section, content)
 
             // Chat View
@@ -396,15 +532,14 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
         this.set_inner_html(container.html())
         this.add_css_rules(this.css_rules())
+
+        this.add_web_components()
         this.add_event_handlers()
+
     }
 
     render_file_actions() {
         const actions = new Div({ class: 'file-actions' })
-
-        // const create_summary_btn = new Button({ class: 'btn btn-primary create-summary', value: 'Create Summary' })
-        // const delete_btn         = new Button({ class: 'btn btn-danger  delete-file'   , value: 'Delete File'    })
-        // const download_btn       = new Button({ class: 'btn btn-success download-file' , value: 'Download'       })
 
         const rename_btn   = new Button({ class: 'btn btn-outline-primary rename-file'    , value: 'Rename'         })
         const summary_btn  = new Button({ class: 'btn btn-primary         create-summary' , value: 'Create Summary' })
