@@ -1,21 +1,23 @@
-import Web_Component from '../../core/Web_Component.mjs'
-import CSS__Forms     from '../../css/CSS__Forms.mjs'
-import CSS__Buttons   from '../../css/CSS__Buttons.mjs'
-import CSS__Icons     from '../../css/icons/CSS__Icons.mjs'
-import API__Invoke    from '../../data/API__Invoke.mjs'
-import Div            from '../../core/Div.mjs'
-import Button         from '../../core/Button.mjs'
-import Raw_Html       from '../../core/Raw_Html.mjs'
-import Textarea       from '../../core/Textarea.mjs'
-import Icon          from '../../css/icons/Icon.mjs'
+import Web_Component         from '../../core/Web_Component.mjs'
+import CSS__Forms            from '../../css/CSS__Forms.mjs'
+import CSS__Buttons          from '../../css/CSS__Buttons.mjs'
+import CSS__Icons            from '../../css/icons/CSS__Icons.mjs'
+import API__User_Data__Files from '../api/API__User_Data__Files.mjs'
+import Div                   from '../../core/Div.mjs'
+import Button                from '../../core/Button.mjs'
+import Raw_Html              from '../../core/Raw_Html.mjs'
+import Textarea              from '../../core/Textarea.mjs'
+import Icon                  from '../../css/icons/Icon.mjs'
+import CSS__Markdown__Editor from "./CSS__Markdown__Editor.mjs";
 
 export default class WebC__User_Files__Markdown__Editor extends Web_Component {
     load_attributes() {
-        new CSS__Forms   (this).apply_framework()
-        new CSS__Buttons (this).apply_framework()
-        new CSS__Icons   (this).apply_framework()
+        new CSS__Forms           (this).apply_framework()
+        new CSS__Buttons         (this).apply_framework()
+        new CSS__Icons           (this).apply_framework()
+        new CSS__Markdown__Editor(this).apply_framework()
         
-        this.api_invoke  = new API__Invoke()
+        this.api         = new API__User_Data__Files()
         this.file_id     = this.getAttribute('file_id') || '970804a2-88d8-41d6-881e-e1c5910b80f8'
         this.edit_mode   = false
         this.view_mode   = 'content'  // 'content' or 'versions'
@@ -33,16 +35,12 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
         this.update_ui()
     }
 
+    // API Calls
     async load_file_data() {
         try {
-            const response = await this.api_invoke.invoke_api(
-                `/api/user-data/files/file-contents?file_id=${this.file_id}`
-            )
-            const base64Content = response.data.file_bytes__base64
-            const binaryContent = atob(base64Content)
-            const bytes = Uint8Array.from(binaryContent, char => char.charCodeAt(0))
-            this.markdown_content = new TextDecoder('utf-8').decode(bytes)
-            this.file_data = response.data.file_data
+            const { content, file_data } = await this.api.get_file_contents(this.file_id)
+            this.markdown_content = content
+            this.file_data = file_data
         } catch (error) {
             console.error('Error loading file:', error)
             this.show_error(error.message)
@@ -51,8 +49,7 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
 
     async load_versions() {
         try {
-            const response = await this.api_invoke.invoke_api(`/api/user-data/files/file-versions?file_id=${this.file_id}`)
-            this.versions = response.data || []
+            this.versions = await this.api.get_file_versions(this.file_id)
         } catch (error) {
             console.error('Error loading versions:', error)
             this.versions = []
@@ -64,20 +61,7 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
             const editor = this.query_selector('.markdown-editor')
             const content = editor.value
 
-            const encoder = new TextEncoder()
-            const utf8Bytes = encoder.encode(content)
-            const base64Content = btoa(Array.from(utf8Bytes)
-                .map(byte => String.fromCharCode(byte))
-                .join(''))
-
-            await this.api_invoke.invoke_api(
-                '/api/user-data/files/update-file',
-                'PUT',
-                {
-                    file_id: this.file_id,
-                    file_bytes__base64: base64Content
-                }
-            )
+            await this.api.update_file(this.file_id, content)
             this.markdown_content = content
             this.edit_mode = false
             await this.load_versions()  // Reload versions after save
@@ -92,24 +76,13 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
 
     async view_version(version_id) {
         try {
-            const response = await this.api_invoke.invoke_api(
-                `/api/user-data/files/file-bytes?file_id=${this.file_id}&version_id=${version_id}`
-            )
-
-            if (response.data?.file_bytes__base64) {
-                const base64Content = response.data.file_bytes__base64
-                const binaryContent = atob(base64Content)
-                const bytes = Uint8Array.from(binaryContent, char => char.charCodeAt(0))
-
-                this.temp_content    = this.markdown_content             // Store current content
-                this.markdown_content = new TextDecoder('utf-8').decode(bytes)
-                this.viewing_version = version_id
-                this.edit_mode      = true
-                this.view_mode      = 'content'                         // Switch to content view
-                this.render()
-            } else {
-                this.show_error('Invalid version data received')
-            }
+            const version_content = await this.api.get_version_content(this.file_id, version_id)
+            this.temp_content = this.markdown_content  // Store current content
+            this.markdown_content = version_content
+            this.viewing_version = version_id
+            this.edit_mode = true
+            this.view_mode = 'content'  // Switch to content view
+            this.render()
         } catch (error) {
             console.error('Error viewing version:', error)
             this.show_error('Failed to load version')
@@ -118,30 +91,20 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
 
     async restore_version(version_id) {
         try {
-            const response = await this.api_invoke.invoke_api(
-                `/api/user-data/files/file-bytes?file_id=${this.file_id}&version_id=${version_id}`
-            )
-
-            if (response.data?.file_bytes__base64) {
-                const base64Content = response.data.file_bytes__base64
-                const binaryContent = atob(base64Content)
-                const bytes = Uint8Array.from(binaryContent, char => char.charCodeAt(0))
-
-                this.markdown_content = new TextDecoder('utf-8').decode(bytes)
-                await this.save_content()
-                this.viewing_version = null
-                this.view_mode      = 'content'                         // Switch to content view
-                this.render()
-                this.show_success('Version restored successfully')
-            } else {
-                this.show_error('Invalid version data received')
-            }
+            const version_content = await this.api.get_version_content(this.file_id, version_id)
+            this.markdown_content = version_content
+            await this.save_content()
+            this.viewing_version = null
+            this.view_mode = 'content'  // Switch to content view
+            this.render()
+            this.show_success('Version restored successfully')
         } catch (error) {
             console.error('Error restoring version:', error)
             this.show_error('Failed to restore version')
         }
     }
 
+    // Events
     raise_refresh_event() {
         const event = new CustomEvent('files-refresh', {
             bubbles : true,
@@ -150,6 +113,7 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
         this.dispatchEvent(event)
     }
 
+    // UI Methods
     show_error(message) {
         const error = this.query_selector('.error-message')
         if (error) {
@@ -418,173 +382,6 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
                 this.viewing_version = null
                 this.render()
             })
-        }
-    }
-
-    css_rules() {
-        return {
-            ".markdown-container"  : { height           : "100%"                      ,
-                                     display          : "flex"                      ,
-                                     flexDirection    : "column"                    ,
-                                     backgroundColor  : "#fff"                      ,
-                                     borderRadius     : "0.375rem"                  ,
-                                     boxShadow        : "0 2px 4px rgba(0,0,0,0.1)" },
-
-            ".editor-container"   : { flex             : "1"                         ,
-                                     display          : "flex"                      ,
-                                     flexDirection    : "column"                    ,
-                                     padding          : "1rem"                      ,
-                                     gap              : "1rem"                      },
-
-            ".editor-toolbar"     : { display          : "flex"                      ,
-                                     justifyContent   : "space-between"             ,
-                                     alignItems       : "center"                    ,
-                                     padding          : "0.5rem 0"                  ,
-                                     borderBottom     : "1px solid #dee2e6"         ,
-                                     marginBottom     : "1rem"                      },
-
-            ".toolbar-group"      : { display          : "flex"                      ,
-                                     gap              : "0.5rem"                    },
-
-            ".split-view"          : { display          : "grid"                      ,
-                                     gridTemplateColumns: "1fr 1fr"                   ,
-                                     gap              : "1rem"                       ,
-                                     height           : "calc(100vh - 200px)"       ,
-                                     minHeight        : "400px"                     },
-
-            ".markdown-editor"     : { width            : "100%"                      ,
-                                     padding          : "1rem"                       ,
-                                     fontSize         : "0.875rem"                  ,
-                                     fontFamily       : "monospace"                 ,
-                                     lineHeight       : "1.5"                       ,
-                                     border           : "1px solid #dee2e6"         ,
-                                     borderRadius     : "0.375rem"                  ,
-                                     resize           : "none"                      },
-
-            ".markdown-preview"    : { padding          : "1rem"                      ,
-                                     overflow         : "auto"                      ,
-                                     fontSize         : "0.875rem"                  ,
-                                     lineHeight       : "1.6"                       ,
-                                     backgroundColor  : "#f8f9fa"                   ,
-                                     borderRadius     : "0.375rem"                  },
-
-            ".error-message"       : { display          : "none"                      ,
-                                     color            : "#dc3545"                   ,
-                                     padding          : "0.75rem"                   ,
-                                     marginBottom     : "1rem"                      ,
-                                     backgroundColor  : "#f8d7da"                   ,
-                                     borderRadius     : "0.375rem"                  ,
-                                     fontSize         : "0.875rem"                  },
-
-            ".success-message"     : { color            : "#155724"                   ,
-                                     backgroundColor  : "#d4edda"                   ,
-                                     padding          : "0.75rem"                   ,
-                                     marginBottom     : "1rem"                      ,
-                                     borderRadius     : "0.375rem"                  ,
-                                     fontSize         : "0.875rem"                  },
-
-
-        ".version-header"     : { display         : "flex"                      ,
-                                 alignItems      : "center"                    ,
-                                 gap             : "0.5rem"                    ,
-                                 marginBottom    : "0.25rem"                   },
-
-        ".version-number"     : { fontWeight      : "600"                       ,
-                                 color           : "#212529"                   },
-
-        ".version-status"     : { fontSize        : "0.75rem"                   ,
-                                 color           : "#198754"                   ,
-                                 fontWeight      : "500"                       },
-
-        ".version-datetime"   : { display         : "flex"                      ,
-                                 gap             : "0.5rem"                    ,
-                                 fontSize        : "0.875rem"                  ,
-                                 color           : "#6c757d"                   ,
-                                 marginBottom    : "0.25rem"                   },
-
-        ".version-size"       : { fontSize        : "0.75rem"                   ,
-                                 color           : "#6c757d"                   },
-
-
-        ".version-item.current .version-number" : {
-                                 color           : "#0d6efd"                   },
-
-            ".versions-list"      : { display          : "flex"                      ,
-                                     flexDirection    : "column"                    ,
-                                     gap              : "0.75rem"                   },
-
-            ".version-item"       : { padding          : "1rem"                      ,
-                                     backgroundColor  : "#f8f9fa"                   ,
-                                     borderRadius     : "0.375rem"                  ,
-                                     border           : "1px solid #dee2e6"         ,
-                                     display          : "flex"                      ,
-                                     justifyContent   : "space-between"             ,
-                                     alignItems       : "center"                    },
-
-            ".version-item.current": { borderColor      : "#0d6efd"                   ,
-                                     borderWidth      : "2px"                       },
-
-            ".version-info"       : { fontSize         : "0.875rem"                  ,
-                                     color            : "#6c757d"                   },
-
-            ".version-date"       : { fontWeight       : "500"                       ,
-                                     color            : "#212529"                   ,
-                                     marginBottom     : "0.25rem"                   },
-
-            // ".version-actions"    : { display          : "flex"                      ,
-            //                          gap              : "0.5rem"                    },
-            ".version-actions"    : { display         : "flex"                      ,
-                                     gap             : "0.5rem"                    ,
-                                     alignItems      : "center"                    },
-
-            ".version-bar"        : { padding          : "0.75rem"                   ,
-                                     backgroundColor  : "#fff3cd"                   ,
-                                     borderRadius     : "0.375rem"                  ,
-                                     display          : "flex"                      ,
-                                     alignItems       : "center"                    ,
-                                     justifyContent   : "space-between"             ,
-                                     marginTop        : "1rem"                      },
-
-            ".version-message"    : { fontSize         : "0.875rem"                  ,
-                                     color            : "#856404"                   },
-
-            // Markdown preview styling
-            ".markdown-preview h1" : { fontSize         : "1.75rem"                   ,
-                                     marginBottom     : "1rem"                      ,
-                                     borderBottom     : "1px solid #dee2e6"         ,
-                                     paddingBottom    : "0.5rem"                    },
-
-            ".markdown-preview h2" : { fontSize         : "1.5rem"                    ,
-                                     marginBottom     : "1rem"                      ,
-                                     borderBottom     : "1px solid #dee2e6"         ,
-                                     paddingBottom    : "0.5rem"                    },
-
-            ".markdown-preview h3" : { fontSize         : "1.25rem"                   ,
-                                     marginBottom     : "0.75rem"                   },
-
-            ".markdown-preview p"  : { marginBottom     : "1rem"                      },
-
-            ".markdown-preview code": { fontFamily      : "monospace"                 ,
-                                      backgroundColor : "#f1f3f5"                   ,
-                                      padding         : "0.2em 0.4em"               ,
-                                      borderRadius    : "0.25rem"                   },
-
-            ".markdown-preview pre": { backgroundColor  : "#f8f9fa"                   ,
-                                     padding          : "1rem"                       ,
-                                     borderRadius     : "0.375rem"                   ,
-                                     marginBottom     : "1rem"                       ,
-                                     overflow         : "auto"                       },
-
-            ".preview-and-versions": { display        : "flex"                       ,
-                                       flexDirection  : "row"                        ,
-                                       padding        : "10px"                       },
-            ".versions-container"  : { flex           : "1"                          ,
-                                       overflow       : "auto"                       ,
-                                       maxWidth       : "250px"                      ,
-                                       padding        : "10px"                       },
-
-            ".viewer-and-editor"   : { flex           : 1                            ,
-                                       padding        : "10px"                       },
         }
     }
 }
