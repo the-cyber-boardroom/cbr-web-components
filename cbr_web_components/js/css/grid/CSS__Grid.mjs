@@ -223,9 +223,9 @@ export default class CSS__Grid {
 
             // Height utilities for flex containers
 
-            ".h-100vh": { height: "100vh" },          // Viewport height
-            ".h-100pc"  : { height: "100%" },         // Parent-relative height
-
+            ".h-100vh"          : { height: "100vh" , boxSizing: "border-box"},          // Viewport height
+            ".h-100pc"          : { height: "100%"  , boxSizing: "border-box"},          // Parent-relative height (auto add boxSizing since without it , 100% has weird side effects, i.e. it prevents "Prevents the element from growing beyond its parent when padding or borders are applied.")
+            ".border-box"       : { boxSizing: "border-box" },
             // Flex alignment utilities (if not already present)
             ".align-items-start": { alignItems: "flex-start" },
             ".align-items-center": { alignItems: "center" },

@@ -24,13 +24,6 @@ export default class CSS__Markdown__Editor {
                                         padding         : "1rem"                      ,
                                         gap             : "1rem"                      },
 
-            ".editor-toolbar"       : { display         : "flex"                      ,         // Toolbar
-                                        justifyContent  : "space-between"             ,
-                                        alignItems      : "center"                    ,
-                                        padding         : "0.5rem 0"                  ,
-                                        borderBottom    : "1px solid #dee2e6"         ,
-                                        marginBottom    : "1rem"                      },
-
             ".toolbar-group"        : { display         : "flex"                      ,         // Button groups
                                         gap             : "0.5rem"                    },
 

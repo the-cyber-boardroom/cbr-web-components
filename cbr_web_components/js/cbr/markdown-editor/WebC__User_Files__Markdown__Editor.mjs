@@ -1,3 +1,4 @@
+import CBR_Events            from '../CBR_Events.mjs'
 import Web_Component         from '../../core/Web_Component.mjs'
 import CSS__Forms            from '../../css/CSS__Forms.mjs'
 import CSS__Buttons          from '../../css/CSS__Buttons.mjs'
@@ -9,8 +10,11 @@ import Raw_Html              from '../../core/Raw_Html.mjs'
 import Textarea              from '../../core/Textarea.mjs'
 import Icon                  from '../../css/icons/Icon.mjs'
 import CSS__Markdown__Editor from "./CSS__Markdown__Editor.mjs";
+import WebC__Versions__Panel from "./WebC__Versions__Panel.mjs";
+import WebC__Markdown__Toolbar from "./WebC__Markdown__Toolbar.mjs";
 
 export default class WebC__User_Files__Markdown__Editor extends Web_Component {
+
     load_attributes() {
         new CSS__Forms           (this).apply_framework()
         new CSS__Buttons         (this).apply_framework()
@@ -20,41 +24,53 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
         this.api         = new API__User_Data__Files()
         this.file_id     = this.getAttribute('file_id') || '970804a2-88d8-41d6-881e-e1c5910b80f8'
         this.edit_mode   = false
-        this.view_mode   = 'content'  // 'content' or 'versions'
+        this.view_mode   = 'versions'  // 'content' or 'versions'
     }
 
     async connectedCallback() {
         this.load_attributes()
         await this.build()
+        this.add_event_listeners()
     }
 
-    async build() {
-        await this.load_file_data()
-        await this.load_versions()
-        this.render()
-        this.update_ui()
+    add_event_listeners() {
+        this.add_window_event_listener(CBR_Events.CBR__FILE__SHOW_HISTORY, this.toggle_view_mode)
     }
+
+
+    async build() {
+        //await this.load_versions()
+        await this.load_file_data()
+        this.render()
+        this.add_web_components()
+        this.update_ui()
+        await this.load_file_data()
+    }
+
+    add_web_components() {
+        const params_versions = { file_id: this.file_id }
+        this.add_web_component_to('.versions-container', WebC__Versions__Panel  , params_versions)
+        this.add_web_component_to('.editor-toolbar'    , WebC__Markdown__Toolbar, {}             )
+    }
+
 
     // API Calls
     async load_file_data() {
         try {
             const { content, file_data } = await this.api.get_file_contents(this.file_id)
             this.markdown_content = content
-            this.file_data = file_data
+            this.file_data        = file_data
+            const event_params    = { content  : content     ,
+                                      file_data: file_data    ,
+                                      file_id  : this.file_id,}
+            this.raise_event_global(CBR_Events.CBR__FILE__LOADED, event_params)
         } catch (error) {
             console.error('Error loading file:', error)
             this.show_error(error.message)
         }
     }
 
-    async load_versions() {
-        try {
-            this.versions = await this.api.get_file_versions(this.file_id)
-        } catch (error) {
-            console.error('Error loading versions:', error)
-            this.versions = []
-        }
-    }
+
 
     async save_content() {
         try {
@@ -148,11 +164,11 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
     update_ui() {
         if (this.view_mode === 'versions') {
             this.query_selector('.versions-container').show()
-            this.query_selector('.versions-btn'      ).innerText = 'Hide Versions'
+            //this.query_selector('.versions-btn'      ).innerText = 'Hide Versions'
         }
         else {
             this.query_selector('.versions-container').hide()
-            this.query_selector('.versions-btn'      ).innerText = 'Show Versions'
+            //this.query_selector('.versions-btn'      ).innerText = 'Show Versions'
         }
     }
 
@@ -225,79 +241,83 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
         })
     }
 
-    render_versions() {
-        const versions_container = new Div({ class: 'versions-container' })
-        const versions_list     = new Div({ class: 'versions-list'      })
-
-        this.versions.forEach(version => {
-            const version_item = new Div({
-                class: `version-item ${this.viewing_version === version.version_id ? 'current' : ''}`
-            })
-
-            // Version info section
-            const info = new Div({ class: 'version-info' })
-
-            // Version number and date/time
-            const version_header = new Div({ class: 'version-header' })
-            version_header.add_elements(
-                new Div({ class: 'version-number' , value: `Version ${version.version_number}`               }),
-                new Div({ class: 'version-status' , value: version.is_latest_version ? '(Latest)' : ''      })
-            )
-
-            // Date and time
-            const date_time = new Div({ class: 'version-datetime' })
-            date_time.add_elements(
-                new Div({ class: 'version-date'   , value: version.created_date                             }),
-                new Div({ class: 'version-time'   , value: version.created_time                             })
-            )
-
-            // File size
-            const size = new Div({
-                class: 'version-size',
-                value: `${(version.file_size / 1024).toFixed(1)} KB`
-            })
-
-            info.add_elements(version_header, date_time, size)
-
-            // Version actions
-            const actions = new Div({ class: 'version-actions' })
-
-            const view_btn = new Button({
-                class      : 'btn btn-sm btn-outline-primary view-btn',
-                value      : 'View',
-                attributes : { 'data-version': version.version_id }
-            })
-            view_btn.add_element(new Icon({ icon: 'eye'   , size: 'sm', spacing: 'right' }))
-
-            const restore_btn = new Button({
-                class      : 'btn btn-sm btn-outline-success restore-btn',
-                value      : 'Restore',
-                attributes : { 'data-version': version.version_id }
-            })
-            restore_btn.add_element(new Icon({ icon: 'history', size: 'sm', spacing: 'right' }))
-
-            // Only add buttons if version_id is not null
-            if (version.version_id !== 'null') {
-                actions.add_elements(view_btn, restore_btn)
-            }
-
-            version_item.add_elements(info, actions)
-            versions_list.add_element(version_item)
-        })
-
-        versions_container.add_element(versions_list)
-        return versions_container
-    }
+    // render_versions() {
+    //     const versions_container = new Div({ class: 'versions-container' })
+    //     const versions_list      = new Div({ class: 'versions-list'      })
+    //
+    //     this.versions.forEach(version => {
+    //         const version_item = new Div({
+    //             class: `version-item ${this.viewing_version === version.version_id ? 'current' : ''}`
+    //         })
+    //
+    //         // Version info section
+    //         const info = new Div({ class: 'version-info' })
+    //
+    //         // Version number and date/time
+    //         const version_header = new Div({ class: 'version-header' })
+    //         version_header.add_elements(
+    //             new Div({ class: 'version-number' , value: `Version ${version.version_number}`               }),
+    //             new Div({ class: 'version-status' , value: version.is_latest_version ? '(Latest)' : ''      })
+    //         )
+    //
+    //         // Date and time
+    //         const date_time = new Div({ class: 'version-datetime' })
+    //         date_time.add_elements(
+    //             new Div({ class: 'version-date'   , value: version.created_date                             }),
+    //             new Div({ class: 'version-time'   , value: version.created_time                             })
+    //         )
+    //
+    //         // File size
+    //         const size = new Div({
+    //             class: 'version-size',
+    //             value: `${(version.file_size / 1024).toFixed(1)} KB`
+    //         })
+    //
+    //         info.add_elements(version_header, date_time, size)
+    //
+    //         // Version actions
+    //         const actions = new Div({ class: 'version-actions' })
+    //
+    //         const view_btn = new Button({
+    //             class      : 'btn btn-sm btn-outline-primary view-btn',
+    //             value      : 'View',
+    //             attributes : { 'data-version': version.version_id }
+    //         })
+    //         view_btn.add_element(new Icon({ icon: 'eye'   , size: 'sm', spacing: 'right' }))
+    //
+    //         const restore_btn = new Button({
+    //             class      : 'btn btn-sm btn-outline-success restore-btn',
+    //             value      : 'Restore',
+    //             attributes : { 'data-version': version.version_id }
+    //         })
+    //         restore_btn.add_element(new Icon({ icon: 'history', size: 'sm', spacing: 'right' }))
+    //
+    //         // Only add buttons if version_id is not null
+    //         if (version.version_id !== 'null') {
+    //             actions.add_elements(view_btn, restore_btn)
+    //         }
+    //
+    //         version_item.add_elements(info, actions)
+    //         versions_list.add_element(version_item)
+    //     })
+    //
+    //     versions_container.add_element(versions_list)
+    //     return versions_container
+    // }
 
     render() {
         const container        = new Div({ class: 'markdown-container' })
         const editor_container = new Div({ class: 'editor-container' })
 
-        const toolbar = this.render_toolbar()
-        const error_msg = new Div({ class: 'error-message' })
+        //const toolbar         = this.render_toolbar()
+
+        const toolbar         = new Div({ class: 'editor-toolbar' })
+        const error_msg       = new Div({ class: 'error-message' })
         editor_container.add_elements(toolbar, error_msg)
         const preview_and_versions       = new Div({ class: 'preview-and-versions' })
         const viewer_and_editor          = new Div({ class: 'viewer-and-editor' })
+        const versions_container         = new Div({ class: 'versions-container' })
+
         //if (this.view_mode === 'content') {
         if (this.edit_mode) {
             const split_view = new Div({ class: 'split-view' })
@@ -332,58 +352,56 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
         //     editor_container.add_element(this.render_versions())
         // }
 
-        editor_container.add_element(preview_and_versions)
-        preview_and_versions.add_element(viewer_and_editor)
-        preview_and_versions.add_element(this.render_versions())
-
-        container.add_element(editor_container)
+        editor_container    .add_element(preview_and_versions)
+        preview_and_versions.add_elements(viewer_and_editor, versions_container)
+        container           .add_element(editor_container)
 
         this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
-        this.add_event_handlers()
+        //this.add_css_rules(this.css_rules())
+        //this.add_event_handlers()
     }
 
-    add_event_handlers() {
-        if (this.edit_mode) {
-            this.query_selector('.markdown-editor').addEventListener('input', (e) => {
-                const preview = this.query_selector('.markdown-preview')
-                preview.innerHTML = marked.marked(e.target.value)
-            })
-
-            this.query_selector('.save-btn').addEventListener('click', () => this.save_content())
-            this.query_selector('.cancel-btn').addEventListener('click', () => this.toggle_edit_mode())
-        } else {
-            this.query_selector('.edit-btn')?.addEventListener('click', () => this.toggle_edit_mode())
-        }
-
-        this.query_selector('.versions-btn').addEventListener('click', () => this.toggle_view_mode())
-
-        //if (this.view_mode === 'versions') {
-        this.query_selector_all('.view-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.view_version(btn.dataset.version)
-            })
-        })
-
-        this.query_selector_all('.restore-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.restore_version(btn.dataset.version)
-            })
-        })
-        //}
-
-        if (this.viewing_version) {
-            this.query_selector('.btn-success')?.addEventListener('click', () => {
-                this.restore_version(this.viewing_version)
-            })
-
-            this.query_selector('.btn-secondary')?.addEventListener('click', () => {
-                this.markdown_content = this.temp_content
-                this.viewing_version = null
-                this.render()
-            })
-        }
-    }
+    // add_event_handlers() {
+    //     if (this.edit_mode) {
+    //         this.query_selector('.markdown-editor').addEventListener('input', (e) => {
+    //             const preview = this.query_selector('.markdown-preview')
+    //             preview.innerHTML = marked.marked(e.target.value)
+    //         })
+    //
+    //         this.query_selector('.save-btn').addEventListener('click', () => this.save_content())
+    //         this.query_selector('.cancel-btn').addEventListener('click', () => this.toggle_edit_mode())
+    //     } else {
+    //         this.query_selector('.edit-btn')?.addEventListener('click', () => this.toggle_edit_mode())
+    //     }
+    //
+    //     this.query_selector('.versions-btn').addEventListener('click', () => this.toggle_view_mode())
+    //
+    //     //if (this.view_mode === 'versions') {
+    //     this.query_selector_all('.view-btn').forEach(btn => {
+    //         btn.addEventListener('click', () => {
+    //             this.view_version(btn.dataset.version)
+    //         })
+    //     })
+    //
+    //     this.query_selector_all('.restore-btn').forEach(btn => {
+    //         btn.addEventListener('click', () => {
+    //             this.restore_version(btn.dataset.version)
+    //         })
+    //     })
+    //     //}
+    //
+    //     if (this.viewing_version) {
+    //         this.query_selector('.btn-success')?.addEventListener('click', () => {
+    //             this.restore_version(this.viewing_version)
+    //         })
+    //
+    //         this.query_selector('.btn-secondary')?.addEventListener('click', () => {
+    //             this.markdown_content = this.temp_content
+    //             this.viewing_version = null
+    //             this.render()
+    //         })
+    //     }
+    // }
 }
 
 WebC__User_Files__Markdown__Editor.define()

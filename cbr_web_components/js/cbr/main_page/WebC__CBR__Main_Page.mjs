@@ -1,4 +1,5 @@
 import "../../prototypes/html-elements.mjs"
+import "../../prototypes/global-event-registry.mjs"
 
 import Web_Component             from '../../core/Web_Component.mjs'
 import Layout                    from '../../css/grid/Layout.mjs'

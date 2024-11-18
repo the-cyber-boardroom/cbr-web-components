@@ -9,8 +9,9 @@ export default class Web_Component extends HTMLElement {
         this.channel   = null
         this.channels  = ['Web_Component']
         this.webc_id   = null
-        this.webc_type = 'Web_Component'            // todo: see if this is useful
-        this.events_utils = new Events__Utils()
+        this.webc_type = 'Web_Component'                         // todo: see if this is useful
+        this.events_utils           = new Events__Utils()        // todo: look at removing this since this not widely used
+        this.window_event_listeners = []                         // keep track of these events so that we can remove them all on disconnectedCallback
     }
 
     // static properties
@@ -40,7 +41,7 @@ export default class Web_Component extends HTMLElement {
         return element;
     }
 
-    // todo: refactor to use the create() method above (since this is adding an element to to document body which is only one of the scenarios
+    // todo: (see how is using this, and remove when not used) refactor to use the create() method above (since this is adding an element to to document body which is only one of the scenarios
     static create_element() {
         return document.createElement(this.element_name);
     }
@@ -59,19 +60,22 @@ export default class Web_Component extends HTMLElement {
 
     // instance - connection and usually overridden methods
 
-    add_event_listeners__web_component() {                              // todo: see if there is a better way to do this (ie. invoke the add_event_listeners() method from this
-        this.events_utils.events_receive.add_event_listener('invoke' , this.channel, this.on_invoke      );
-    }
-
     connectedCallback() {
-        this.load_attributes()
+        this.apply_css          ()               // first apply css to the current dom
+        this.load_attributes    ()               // then load any attributes provided
+        this.render             ()               // then render the core html elements (i.e. assign the inner_html)
+        this.add_web_components ()               // then add the web components that need the live dom to exist
+        this.add_event_listeners()               // then add the event listeners
+        this.add_event_handlers ()               // then add the enent handlers
+
         this.channels.push(this.channel)
-        this.add_event_listeners__web_component()
-        this.render()
+        //this.add_event_listeners__web_component()                   // todo: legacy - to remove
     }
 
     disconnectedCallback() {
-        this.remove_event_listeners__webc_component()
+        this.remove_window_event_listeners()
+        //this.remove_event_listeners__webc_component()              // todo: legacy - to remove
+
     }
 
     load_attributes() {
@@ -85,20 +89,43 @@ export default class Web_Component extends HTMLElement {
             html = html.html()                  //   then get the html of the Tag
         }
         this.set_inner_html(html)               // first set the html
-        this.add_web_components()               // then add the web components that need the live dom to exist
-        this.add_event_listeners()              // then add the event listeners
     }
 
+    apply_css           () {}
     html                () {}                   // override to return the html of the component
     add_event_listeners () {}                   // override to set the DOM event listeners
+    add_event_handlers  () {}                   // override to set the event handlers
     add_web_components  () {}                   // override to add web components to the current component
 
 
+    // EVENT helper methods
+
+    add_window_event_listener(eventType, listener) {
+        const bound_listener = listener.bind(this);                                 // Automatically bind 'this' to the listener
+        window.addEventListener(eventType, bound_listener);                         // Add the event listener to the window object
+        this.window_event_listeners.push({ eventType, listener: bound_listener });  // Store the bound listener for cleanup
+    }
+    add_event__on_click(selector, callback, params = {}) {
+        const element        = this.query_selector(selector);                                            // Find the element using the selector
+        const bound_listener = (event) => callback.call(this, { ...params, event });                    // Create a bound listener that wraps the callback with params
+
+        element.addEventListener('click', bound_listener);                                              // Attach the click event listener
+        this.window_event_listeners.push({ eventType: 'click',  element,  listener: bound_listener, }); // Store the listener for cleanup
+}
+
+    remove_window_event_listeners() {
+        this.window_event_listeners.forEach(({ eventType, element, listener }) => {
+            if (element) {
+                element.removeEventListener(eventType, listener);                   // Remove DOM element event listeners
+            } else {
+                window.removeEventListener(eventType, listener);                    // Remove global window event listeners
+            }
+        });
+        this.window_event_listeners = [];                                           // Clear the stored listeners array
+    }
+
 
     // other methods
-    remove_event_listeners__webc_component() {
-        this.events_utils.events_receive.remove_all_event_listeners()
-    }
 
     on_invoke = (event) => {
         if (this.webc_id ===event.webc_id) {                                                    // only react to events that are sent to this specific webc_id
@@ -323,5 +350,14 @@ export default class Web_Component extends HTMLElement {
             }
         }
     }
+
+    // // todo: legacy: look at who is using this and remove it usage (new code should use add_window_event_listener)
+    // add_event_listeners__web_component() {                              // todo: see if there is a better way to do this (ie. invoke the add_event_listeners() method from this
+    //     this.events_utils.events_receive.add_event_listener('invoke' , this.channel, this.on_invoke      );
+    // }
+    // // todo: legacy: look at who is using this and remove it usage (new code should use add_window_event_listener)
+    // remove_event_listeners__webc_component() {
+    //     this.events_utils.events_receive.remove_all_event_listeners()
+    // }
 }
 

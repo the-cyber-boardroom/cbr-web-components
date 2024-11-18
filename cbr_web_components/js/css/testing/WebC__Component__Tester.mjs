@@ -1,24 +1,24 @@
-import Web_Component   from '../../core/Web_Component.mjs';
-import Button          from '../../core/Button.mjs';
-import Div             from '../../core/Div.mjs';
-import Input           from '../../core/Input.mjs';
-import Label           from '../../core/Label.mjs';
-import Select          from '../../core/Select.mjs';
-import Option          from '../../core/Option.mjs';
-import Icon            from '../icons/Icon.mjs';
-import CSS__Forms      from '../CSS__Forms.mjs';
-import CSS__Typography from '../CSS__Typography.mjs';
-import CSS__Cards      from '../CSS__Cards.mjs';
-import CSS__Buttons    from '../CSS__Buttons.mjs';
-import CSS__Icons      from '../icons/CSS__Icons.mjs';
-import CSS__Alerts     from '../CSS__Alerts.mjs';
-
+import Web_Component       from '../../core/Web_Component.mjs';
+import Button              from '../../core/Button.mjs';
+import Div                 from '../../core/Div.mjs';
+import Input               from '../../core/Input.mjs';
+import Label               from '../../core/Label.mjs';
+import Select              from '../../core/Select.mjs';
+import Option              from '../../core/Option.mjs';
+import Icon                from '../icons/Icon.mjs';
+import CSS__Forms          from '../CSS__Forms.mjs';
+import CSS__Typography     from '../CSS__Typography.mjs';
+import CSS__Cards          from '../CSS__Cards.mjs';
+import CSS__Buttons        from '../CSS__Buttons.mjs';
+import CSS__Icons          from '../icons/CSS__Icons.mjs';
+import CSS__Alerts         from '../CSS__Alerts.mjs';
+import WebC__Events_Viewer from '../../utils/WebC__Events_Viewer.mjs';
 export default class WebC__Component__Tester extends Web_Component {
 
     base_path = '/web_components/js/'
     presets = [ { label: 'Markdown editor'    , path: 'cbr/markdown-editor/WebC__User_Files__Markdown__Editor.mjs'},
                 { label: 'Document Assistant' , path: 'cbr/document-assistant/WebC__Document__Assistant.mjs'      },
-                { label: 'User Files'         , path: 'cbr/web_components/WebC__User_Files.mjs'                   },
+                { label: 'User Files'         , path: 'cbr/file-system/WebC__User_Files.mjs'                   },
                 { label: 'User Session'       , path: 'cbr/session/WebC__CBR__User_Session.mjs'                   },
                 { label: 'Athena Examples'    , path: 'cbr/web_components/WebC__Athena__Examples.mjs'             },
                 { label: 'Athena Welcome'     , path: 'cbr/web_components/WebC__Athena__Welcome.mjs'              },
@@ -35,53 +35,28 @@ export default class WebC__Component__Tester extends Web_Component {
     }
 
     connectedCallback() {
-        super.connectedCallback()
+        //super.connectedCallback()
+        this.load_attributes()
         this.build()
+        this.add_web_components()
         this.setup_event_handlers()
     }
 
+    add_web_components(){
+        this.add_web_component_to(".events-viewer", WebC__Events_Viewer, {})
+    }
     build() {
         this.add_css_rules(this.css_rules())
         this.set_inner_html(this.html())
     }
 
-    css_rules() {
-        return {
-            ".tester-container" : { display         : "flex"           ,        // Container for the whole component
-                                    flexDirection   : "column"         ,
-                                    gap            : "1rem"           },
-            ".card"             : { padding         : "1.5rem"         },       // Card wrapper
-            ".controls"         : { display         : "grid"           ,        // Controls section
-                                    gap            : "1rem"           ,
-                                    gridTemplateColumns: "1fr 1fr auto",
-                                    marginBottom   : "1rem"           },
-            ".path-input"       : { gridColumn      : "1 / -1"         },       // Script path input spans full width
-            ".host-container"   : { backgroundColor : "var(--table-striped-bg)",// Container for tested component
-                                    borderRadius    : "0.375rem"       ,
-                                    padding        : "1.5rem"         ,
-                                    minHeight      : "200px"          },
-            ".load-indicator"   : { display         : "flex"           ,        // Loading indicator
-                                    justifyContent  : "center"         ,
-                                    alignItems      : "center"         ,
-                                    height         : "100%"           },
-            ".status-bar"       : { display         : "flex"           ,        // Status information
-                                    justifyContent  : "space-between"  ,
-                                    alignItems      : "center"         ,
-                                    marginTop      : "1rem"           },
-            ".status-text"      : { fontSize        : "0.875rem"       ,        // Status text
-                                    color          : "var(--color-muted)" },
-            ".auto-reload"      : { display        : "flex"     ,
-                                    alignItems     : "center"   ,
-                                    gap            : "0.5rem"   }
-        }
-    }
-
     html() {
-        const container = new Div({ class: 'tester-container' })
-        const card      = new Div({ class: 'card' })
-        const controls  = new Div({ class: 'controls' })
-        const input     = new Input({class: 'input path-input',  value: this.script_path})
-        const select    = new Select({ class: 'input' })
+        const container     = new Div   ({ class: 'tester-container'   })
+        const card          = new Div   ({ class: 'card'               })
+        const controls      = new Div   ({ class: 'controls'           })
+        const events_viewer = new Div   ({ class: 'events-viewer'      })
+        const input         = new Input ({class: 'input path-input',  value: this.script_path})
+        const select        = new Select({ class: 'input'          })
 
         this.presets.forEach(preset => {
             select.add_element(new Option({ value: preset.path, text: preset.label }))
@@ -97,7 +72,7 @@ export default class WebC__Component__Tester extends Web_Component {
         auto_reload.add_elements(checkbox, label)
         controls   .add_elements(select, refresh_btn, auto_reload, input)
         card       .add_elements(controls, host, status_bar)
-        container  .add_element (card)
+        container  .add_elements(card, events_viewer)
 
         return container.html()
     }
@@ -172,6 +147,40 @@ export default class WebC__Component__Tester extends Web_Component {
         status_bar.innerHTML = ''
         status_bar.appendChild(status_text.dom_create())
         status_bar.appendChild(timestamp  .dom_create())
+    }
+
+
+    css_rules() {
+        return {
+            ".tester-container" : { display         : "flex"           ,        // Container for the whole component
+                                    flexDirection   : "row"            ,
+                                    gap             : "1rem"           },
+            ".card"             : { flex            : 1                ,
+                                    padding         : "1.5rem"         },       // Card wrapper
+            ".controls"         : { display         : "grid"           ,        // Controls section
+                                    gap            : "1rem"            ,
+                                    gridTemplateColumns: "1fr 1fr auto",
+                                    marginBottom   : "1rem"            },
+            ".events-viewer"    : { flex           : 1                 },
+            ".path-input"       : { gridColumn      : "1 / -1"         },       // Script path input spans full width
+            ".host-container"   : { backgroundColor : "var(--table-striped-bg)",// Container for tested component
+                                    borderRadius    : "0.375rem"       ,
+                                    padding        : "1.5rem"         ,
+                                    minHeight      : "200px"          },
+            ".load-indicator"   : { display         : "flex"           ,        // Loading indicator
+                                    justifyContent  : "center"         ,
+                                    alignItems      : "center"         ,
+                                    height         : "100%"           },
+            ".status-bar"       : { display         : "flex"           ,        // Status information
+                                    justifyContent  : "space-between"  ,
+                                    alignItems      : "center"         ,
+                                    marginTop      : "1rem"           },
+            ".status-text"      : { fontSize        : "0.875rem"       ,        // Status text
+                                    color          : "var(--color-muted)" },
+            ".auto-reload"      : { display        : "flex"     ,
+                                    alignItems     : "center"   ,
+                                    gap            : "0.5rem"   }
+        }
     }
 }
 
