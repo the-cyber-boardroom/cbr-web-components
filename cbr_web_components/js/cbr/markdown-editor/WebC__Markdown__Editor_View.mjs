@@ -1,76 +1,86 @@
-// WebC__Markdown__Editor_View.mjs
-
 import Web_Component from '../../core/Web_Component.mjs'
 import CSS__Forms    from '../../css/CSS__Forms.mjs'
 import CSS__Buttons  from '../../css/CSS__Buttons.mjs'
 import CSS__Icons    from '../../css/icons/CSS__Icons.mjs'
 import Div           from '../../core/Div.mjs'
 import Button        from '../../core/Button.mjs'
-import Raw_Html      from '../../core/Raw_Html.mjs'
 import Textarea      from '../../core/Textarea.mjs'
+import CBR_Events    from "../CBR_Events.mjs";
+import CSS__Alerts   from "../../css/CSS__Alerts.mjs";
+import CSS__Grid     from "../../css/grid/CSS__Grid.mjs";
 
 export default class WebC__Markdown__Editor_View extends Web_Component {
-    load_attributes() {
-        new CSS__Forms  (this).apply_framework()
+
+    constructor() {
+        super()
+        this.content = ''
+    }
+    apply_css() {
+        new CSS__Alerts (this).apply_framework()
         new CSS__Buttons(this).apply_framework()
+        new CSS__Forms  (this).apply_framework()
+        new CSS__Grid   (this).apply_framework()
         new CSS__Icons  (this).apply_framework()
 
-        this.file_id          = this.getAttribute('file-id'         )
-        this.channel          = this.getAttribute('channel'         ) || this.random_id('markdown_editor_view_')
-        this.content          = this.getAttribute('content'         ) || ''
-        this.edit_mode        = this.getAttribute('edit-mode'       ) === 'true'
-        this.viewing_version  = this.getAttribute('viewing-version' )
-        this.temp_content     = null
-    }
-
-    connectedCallback() {
-        super.connectedCallback()
-        this.render()
-        this.add_event_listeners()
+        this.add_css_rules(this.css_rules())
     }
 
     add_event_listeners() {
-        if (this.edit_mode) {
-            const editor = this.query_selector('.markdown-editor')
-            if (editor) {
-                editor.addEventListener('input', (e) => {
-                    const preview = this.query_selector('.markdown-preview')
-                    preview.innerHTML = marked.marked(e.target.value)
-                    this.raise_event_global('content-changed', { content: e.target.value })
-                })
-            }
-        }
 
-        // Version bar button handlers
-        if (this.viewing_version) {
-            this.query_selector('.restore-version-btn')?.addEventListener('click', () => {
-                this.raise_event_global('restore-version', {
-                    version_id: this.viewing_version
-                })
-            })
+        this.add_window_event_listener(CBR_Events.CBR__FILE__LOADED     , this.on_file_loaded     )
+        this.add_window_event_listener(CBR_Events.CBR__FILE__EDIT_MODE  , this.on_file_edit_mode  )
+        this.add_window_event_listener(CBR_Events.CBR__FILE__VIEW_MODE  , this.on_file_view_mode  )
+        this.add_window_event_listener(CBR_Events.CBR__FILE__GET_CONTENT, this.on_file_get_content)
 
-            this.query_selector('.return-current-btn')?.addEventListener('click', () => {
-                this.raise_event_global('return-current')
-            })
-        }
+        this.add_event__on('input', '.markdown-editor', this.on_input_change)
+
+        // const editor = this.query_selector('.markdown-editor')
+        // editor.addEventListener('input', (e) => this.on_input_change(e))
+
+        // // Version bar button handlers
+        // if (this.viewing_version) {
+        //     this.query_selector('.restore-version-btn')?.addEventListener('click', () => {
+        //         this.raise_event_global('restore-version', {
+        //             version_id: this.viewing_version
+        //         })
+        //     })
+        //
+        //     this.query_selector('.return-current-btn')?.addEventListener('click', () => {
+        //         this.raise_event_global('return-current')
+        //     })
+        // }
+    }
+    on_input_change({event}) {
+        this.content = event.target.value
+        this.refresh_content()
+        this.raise_event_global(CBR_Events.CBR__FILE__CHANGED, {content: this.content})
     }
 
-    render_editor() {
-        return new Textarea({
-            class: 'markdown-editor',
-            value: this.content,
-            attributes: {
-                spellcheck   : false,
-                'data-gramm': false
-            }
-        })
+    on_file_loaded(event) {
+        this.file_id      = event.detail?.file_id
+        this.content      = event.detail?.content
+        this.refresh_content()
+        //const editor_html = this.html__editor_viewer().html()
+        //this.set_inner_html(editor_html)
+    }
+    on_file_edit_mode() {
+        this.div_markdown_editor .show()
+        this.div_markdown_preview.show()
+        this.div_split_view.remove_class('viewer-only')
+    }
+    on_file_get_content(event) {
+        event.detail.content = this.content
     }
 
-    render_preview() {
-        return new Raw_Html({
-            class: 'markdown-preview',
-            value: marked.marked(this.content || '')
-        })
+    on_file_view_mode() {
+        this.div_markdown_editor .hide()
+        this.div_markdown_preview.show()
+        this.div_split_view.add_class('viewer-only')
+
+    }
+    refresh_content() {
+        this.query_selector('.markdown-editor').value      = this.content
+        this.query_selector('.markdown-preview').innerHTML = marked.marked(this.content || '')
     }
 
     render_version_bar() {
@@ -92,39 +102,44 @@ export default class WebC__Markdown__Editor_View extends Web_Component {
         return version_bar
     }
 
-    render() {
+
+    html() {
         const container = new Div({ class: 'editor-view-container' })
 
-        if (this.edit_mode) {
-            const split_view = new Div({ class: 'split-view' })
-            split_view.add_elements(
-                this.render_editor(),
-                this.render_preview()
-            )
-            container.add_element(split_view)
-        } else {
-            if (this.viewing_version) {
-                container.add_element(this.render_version_bar())
-            }
-            container.add_element(this.render_preview())
-        }
+        const split_view = new Div({ class: 'split-view' })
+        split_view.add_elements( new Textarea({ class: 'markdown-editor'}),
+                                 new Div     ({class: 'markdown-preview'}))
+        container.add_element(split_view)
+        return container
 
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
+        // } else {
+        //     if (this.viewing_version) {
+        //         container.add_element(this.render_version_bar())
+        //     }
+        // }
+
     }
+
+    // properties with dom elements
+    get div_markdown_editor ()     { return this.query_selector('.markdown-editor' ) }
+    get div_markdown_preview()     { return this.query_selector('.markdown-preview') }
+    get div_split_view      ()     { return this.query_selector('.split-view'      ) }
 
     css_rules() {
         return {
-            ".editor-view-container": { display          : "flex"                      ,         // Main container
-                                      flexDirection    : "column"                    ,
-                                      height          : "100%"                      ,
-                                      gap             : "1rem"                      },
 
-            ".split-view"          : { display          : "grid"                      ,         // Edit mode view
-                                      gridTemplateColumns: "1fr 1fr"                 ,
-                                      gap              : "1rem"                      ,
-                                      height           : "calc(100vh - 200px)"       ,
-                                      minHeight        : "400px"                     },
+            ".editor-view-container" : { display           : "flex"                      ,         // Main container
+                                         flexDirection     : "column"                    ,
+                                         height            : "100%"                      ,
+                                         gap               : "1rem"                      },
+
+            ".split-view"            : { display            : "grid"                      ,         // Edit mode view
+                                         gridTemplateColumns: "1fr 1fr"                   ,
+                                         gap                : "1rem"                      ,
+                                         height             : "calc(100vh - 200px)"       ,
+                                         minHeight          : "400px"                     },
+
+            ".split-view.viewer-only"           : { gridTemplateColumns: "1fr"                       },
 
             ".markdown-editor"     : { width            : "100%"                      ,         // Editor textarea
                                       padding          : "1rem"                      ,

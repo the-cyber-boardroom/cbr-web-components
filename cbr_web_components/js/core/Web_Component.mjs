@@ -66,9 +66,10 @@ export default class Web_Component extends HTMLElement {
         this.render             ()               // then render the core html elements (i.e. assign the inner_html)
         this.add_web_components ()               // then add the web components that need the live dom to exist
         this.add_event_listeners()               // then add the event listeners
-        this.add_event_handlers ()               // then add the enent handlers
+        this.add_event_handlers ()               // then add the event handlers
 
         this.channels.push(this.channel)
+        this.component_ready()                   // use when needing to run code when the component is ready
         //this.add_event_listeners__web_component()                   // todo: legacy - to remove
     }
 
@@ -96,7 +97,7 @@ export default class Web_Component extends HTMLElement {
     add_event_listeners () {}                   // override to set the DOM event listeners
     add_event_handlers  () {}                   // override to set the event handlers
     add_web_components  () {}                   // override to add web components to the current component
-
+    component_ready     () {}                   // override to run code when the component is ready
 
     // EVENT helper methods
 
@@ -105,13 +106,19 @@ export default class Web_Component extends HTMLElement {
         window.addEventListener(eventType, bound_listener);                         // Add the event listener to the window object
         this.window_event_listeners.push({ eventType, listener: bound_listener });  // Store the bound listener for cleanup
     }
-    add_event__on_click(selector, callback, params = {}) {
+
+
+    add_event__on(event_type, selector, callback, params = {}) {
         const element        = this.query_selector(selector);                                            // Find the element using the selector
         const bound_listener = (event) => callback.call(this, { ...params, event });                    // Create a bound listener that wraps the callback with params
 
-        element.addEventListener('click', bound_listener);                                              // Attach the click event listener
-        this.window_event_listeners.push({ eventType: 'click',  element,  listener: bound_listener, }); // Store the listener for cleanup
-}
+        element.addEventListener(event_type, bound_listener);                                              // Attach the click event listener
+        this.window_event_listeners.push({ eventType: event_type,  element,  listener: bound_listener, }); // Store the listener for cleanup
+    }
+
+    add_event__on_click(selector, callback, params = {}) {
+        this.add_event__on('click', selector, callback, params);
+    }
 
     remove_window_event_listeners() {
         this.window_event_listeners.forEach(({ eventType, element, listener }) => {
@@ -124,32 +131,19 @@ export default class Web_Component extends HTMLElement {
         this.window_event_listeners = [];                                           // Clear the stored listeners array
     }
 
-
-    // other methods
-
-    on_invoke = (event) => {
-        if (this.webc_id ===event.webc_id) {                                                    // only react to events that are sent to this specific webc_id
-            let event_data = event.event_data                                                   // get the event_data
-            let callback   = event.callback                                                     // get the callback
-            if (typeof this[event_data.method] === 'function') {                                // check if the method defined in the method exists in this
-                const result = this[event_data.method](...Object.values(event_data.params));    // if so execute it and capture the return value
-                if (typeof callback === 'function') {                                           // check if the callback is a function
-                    callback(result)                                                            // if it is defined, invoke it with the return value of the function execution
-                }
-            }
-        }
-    }
-    // instance methods
-
     // events methods
     raise_event(event_name, event_detail) {
-        const options =  { bubbles: false, detail: event_detail}
-        this.dispatchEvent(new CustomEvent(event_name, options));
+        const options      =  { bubbles: false, detail: event_detail}
+        const custom_event = new CustomEvent(event_name, options)
+        this.dispatchEvent(custom_event);
+        return custom_event
     }
 
-    raise_event_global(event_name, event_detail) {
-        const options =  { bubbles: true, composed: true, detail: event_detail}
-        this.dispatchEvent(new CustomEvent(event_name, options));
+    raise_event_global(event_name, event_detail={}) {
+        const options      =  { bubbles: true, composed: true, detail: event_detail}
+        const custom_event = new CustomEvent(event_name, options)
+        this.dispatchEvent(custom_event);
+        return custom_event
     }
 
     async wait_for_event(event_name, timeout) {
@@ -298,6 +292,7 @@ export default class Web_Component extends HTMLElement {
     }
 
     process_rules(styleSheet, rules, parentRule = null) {
+        if (!rules) { return}
         Object.entries(rules).forEach(([selector, properties]) => {
             if (typeof properties !== 'object') {
                 // Skip if properties is not an object
@@ -359,5 +354,18 @@ export default class Web_Component extends HTMLElement {
     // remove_event_listeners__webc_component() {
     //     this.events_utils.events_receive.remove_all_event_listeners()
     // }
+    // on_invoke = (event) => {
+    //     if (this.webc_id ===event.webc_id) {                                                    // only react to events that are sent to this specific webc_id
+    //         let event_data = event.event_data                                                   // get the event_data
+    //         let callback   = event.callback                                                     // get the callback
+    //         if (typeof this[event_data.method] === 'function') {                                // check if the method defined in the method exists in this
+    //             const result = this[event_data.method](...Object.values(event_data.params));    // if so execute it and capture the return value
+    //             if (typeof callback === 'function') {                                           // check if the callback is a function
+    //                 callback(result)                                                            // if it is defined, invoke it with the return value of the function execution
+    //             }
+    //         }
+    //     }
+    // }
+    // instance methods
 }
 

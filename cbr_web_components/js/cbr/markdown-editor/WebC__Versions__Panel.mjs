@@ -5,7 +5,6 @@ import CSS__Buttons          from '../../css/CSS__Buttons.mjs'
 import CSS__Icons            from '../../css/icons/CSS__Icons.mjs'
 import Div                   from '../../core/Div.mjs'
 import Button                from '../../core/Button.mjs'
-import H                     from '../../core/H.mjs'
 import Icon                  from '../../css/icons/Icon.mjs'
 import CSS__Alerts           from "../../css/CSS__Alerts.mjs";
 import CSS__Grid             from "../../css/grid/CSS__Grid.mjs";
@@ -32,6 +31,7 @@ export default class WebC__Versions__Panel extends Web_Component {
 
     add_event_listeners() {
         this.add_window_event_listener(CBR_Events.CBR__FILE__LOADED, this.on_file_loaded)
+        this.add_window_event_listener(CBR_Events.CBR__FILE__SAVED , this.on_file_loaded)
 
         window.addEventListener('versions-update', (event) => {
             if (event.detail.file_id === this.file_id) {
@@ -48,7 +48,7 @@ export default class WebC__Versions__Panel extends Web_Component {
         })
     }
 
-        async load_versions() {
+    async load_versions() {
         try {
             this.versions = await this.api.get_file_versions(this.file_id)
         } catch (error) {
@@ -145,11 +145,6 @@ export default class WebC__Versions__Panel extends Web_Component {
             },
             ".primary-message" : { height          : "100%"       ,
                                    boxSizing       : "border-box" } ,
-
-            // ".versions-container" : { flex             : "1"                         ,         // Container
-            //                         overflow         : "auto"                      ,
-            //                         maxWidth         : "250px"                     ,
-            //                         padding          : "10px"                      },
 
             ".versions-list"     : { display          : "flex"                      ,         // List layout
                                     flexDirection    : "column"                    ,

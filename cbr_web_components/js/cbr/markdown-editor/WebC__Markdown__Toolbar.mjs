@@ -1,16 +1,19 @@
-// WebC__Markdown__Toolbar.mjs
-
-import Web_Component from '../../core/Web_Component.mjs'
-import CSS__Buttons  from '../../css/CSS__Buttons.mjs'
-import CSS__Icons    from '../../css/icons/CSS__Icons.mjs'
-import Div           from '../../core/Div.mjs'
-import Button        from '../../core/Button.mjs'
-import Icon          from '../../css/icons/Icon.mjs'
-import CBR_Events from "../CBR_Events.mjs";
+import Web_Component        from '../../core/Web_Component.mjs'
+import CSS__Buttons         from '../../css/CSS__Buttons.mjs'
+import CSS__Icons           from '../../css/icons/CSS__Icons.mjs'
+import Div                  from '../../core/Div.mjs'
+import Text                 from '../../core/Text.mjs'
+import Button               from '../../core/Button.mjs'
+import Icon                 from '../../css/icons/Icon.mjs'
+import CBR_Events           from "../CBR_Events.mjs";
+import WebC__Markdown__Data from "./WebC__WebC__Markdown__Data.mjs";
 
 export default class WebC__Markdown__Toolbar extends Web_Component {
 
-    event__toggle_versions = 'versions-toggle'
+    constructor() {
+        super()
+        this.file_id = null
+    }
 
     apply_css() {
         new CSS__Buttons(this).apply_framework()
@@ -19,46 +22,45 @@ export default class WebC__Markdown__Toolbar extends Web_Component {
     }
 
     load_attributes() {
-
         this.file_id        = this.getAttribute('file-id')
         this.channel        = this.getAttribute('channel') || this.random_id('markdown_toolbar_')
         this.edit_mode      = this.getAttribute('edit-mode') === 'true'
         this.view_mode      = this.getAttribute('view-mode') || 'content'
     }
 
-    // connectedCallback() {
-    //     super.connectedCallback()
-    //     this.add_event_listeners()
-    //     this.add_event_handlers()
-    // }
-
     add_event_listeners() {
-        window.addEventListener('editor-state-change', (event) => {
-            if (event.detail.file_id === this.file_id) {
-                this.edit_mode = event.detail.edit_mode
-                this.view_mode = event.detail.view_mode
-                this.render()
-            }
-        })
+        this.add_window_event_listener(CBR_Events.CBR__FILE__LOAD     , this.on_file_load           )
+        this.add_window_event_listener(CBR_Events.CBR__FILE__VIEW_MODE, this.on_file_view_mode      )
+        this.add_window_event_listener(CBR_Events.CBR__FILE__EDIT_MODE, this.on_file_edit_mode      )
     }
 
     add_event_handlers() {
-        // // Edit mode buttons
-        // if (this.edit_mode) {
-        //     this.query_selector('.save-btn'  ).addEventListener('click', () => this.raise_toolbar_event('editor-save'  ))
-        //     this.query_selector('.cancel-btn').addEventListener('click', () => this.raise_toolbar_event('editor-cancel'))
-        // } else {
-        //     this.query_selector('.edit-btn')?.addEventListener('click', () => this.raise_toolbar_event('editor-edit'  ))
-        // }
-
-        // Versions toggle
-        //this.query_selector('.versions-btn').addEventListener('click', () => this.raise_toolbar_event(this.event__toggle_versions))
-        //this.add_event_listener('.versions-btn', 'click', () => this.raise_toolbar_event(CBR_Events.CBR__FILE__SHOW_HISTORY))
-        this.add_event__on_click('.edit-btn'    , this.raise_toolbar_event, {event_name: CBR_Events.CBR__FILE__EDIT         })
+        this.add_event__on_click('.edit-btn'    , this.raise_toolbar_event, {event_name: CBR_Events.CBR__FILE__EDIT_MODE    })
+        this.add_event__on_click('.cancel-btn'  , this.raise_toolbar_event, {event_name: CBR_Events.CBR__FILE__CANCEL       })
+        this.add_event__on_click('.save-btn'    , this.raise_toolbar_event, {event_name: CBR_Events.CBR__FILE__SAVE         })
         this.add_event__on_click('.versions-btn', this.raise_toolbar_event, {event_name: CBR_Events.CBR__FILE__SHOW_HISTORY })
     }
 
-    raise_toolbar_event({event_name}) {
+    add_web_components() {
+        this.add_web_component_to('.markdown-data', WebC__Markdown__Data)
+    }
+
+    on_file_load(event) {
+        this.file_id = event.detail.file_id
+    }
+    on_file_view_mode() {
+        this.btn_edit  .enable()
+        this.btn_cancel.disable()
+        this.btn_save  .disable()
+    }
+
+    on_file_edit_mode() {
+        this.btn_edit  .disable()
+        this.btn_cancel.enable()
+        this.btn_save  .enable()
+    }
+
+    raise_toolbar_event({event_name} ) {
         this.raise_event_global(event_name, { file_id  : this.file_id })
     }
 
@@ -67,50 +69,30 @@ export default class WebC__Markdown__Toolbar extends Web_Component {
         const left_group       = new Div({ class: 'left-group'       })
         const right_group      = new Div({ class: 'right-group'      })
 
-        if (this.edit_mode) {
-            const save_btn = new Button({
-                class: 'btn btn-success save-btn',
-                value: 'Save Changes'
-            })
-            save_btn.add_element(new Icon({
-                icon   : 'save',
-                size   : 'sm',
-                spacing: 'right'
-            }))
 
-            const cancel_btn = new Button({
-                class: 'btn btn-secondary cancel-btn',
-                value: 'Cancel'
-            })
-            cancel_btn.add_element(new Icon({
-                icon   : 'cross',
-                size   : 'sm',
-                spacing: 'right'
-            }))
+        const save_btn      = new Button({ class: 'btn btn-success           save-btn'    })
+        const cancel_btn    = new Button({ class: 'btn btn-secondary         cancel-btn'  })
+        const edit_btn      = new Button({ class: 'btn btn-primary           edit-btn'    })
+        const versions_btn  = new Button({ class: 'btn btn-outline-secondary versions-btn'})
+        const markdown_data = new Div   ({ class: 'markdown-data'                         })
+        save_btn    .add_elements(new Icon({ icon: 'save'   , size: 'sm', }), new Text({value: 'Save'        }))
+        cancel_btn  .add_elements(new Icon({ icon: 'cross'  , size: 'sm', }), new Text({value: 'Cancel'      }))
+        edit_btn    .add_elements(new Icon({ icon: 'edit'   , size: 'sm', }), new Text({value: 'Edit'        }))
+        versions_btn.add_elements(new Icon({ icon: 'history', size: 'sm', }), new Text({value: 'Show History'}))
 
-            left_group.add_elements(save_btn, cancel_btn)
-        } else {
-            const edit_btn = new Button({
-                class: 'btn btn-primary edit-btn',
-                value: 'Edit'
-            })
-            edit_btn.add_element(new Icon({
-                icon   : 'edit',
-                size   : 'sm',
-                spacing: 'right'
-            }))
-            left_group.add_element(edit_btn)
-        }
-
-        const versions_btn = new Button({class: 'btn btn-outline-secondary versions-btn',
-                                         value: this.view_mode === 'content' ? 'Show History' : 'Hide History'})
-        versions_btn.add_element(new Icon({ icon   : 'history',  size   : 'sm',  spacing: 'right' }))
-        right_group.add_element(versions_btn)
-
-        markdown_toolbar.add_elements(left_group, right_group)
+        left_group      .add_elements(edit_btn, save_btn, cancel_btn, markdown_data)
+        right_group     .add_element (versions_btn                                 )
+        markdown_toolbar.add_elements(left_group, right_group                      )
         return markdown_toolbar
     }
 
+    // properties with dom elements
+    get btn_edit()     { return this.query_selector('.edit-btn'    ) }
+    get btn_cancel()   { return this.query_selector('.cancel-btn'  ) }
+    get btn_save()     { return this.query_selector('.save-btn'    ) }
+    get btn_versions() { return this.query_selector('.versions-btn') }
+
+    // css rules for this component
     css_rules() {
         return {
             ".markdown-toolbar"    : { display         : "flex"                      ,          // Main toolbar
@@ -118,6 +100,7 @@ export default class WebC__Markdown__Toolbar extends Web_Component {
                                        padding         : "0.5rem 0"                  ,
                                        borderBottom    : "1px solid #dee2e6"         ,
             },
+            ".markdown-data"          : { display: "inline-flex"                        },
 
             // Button states
             ".btn-secondary:hover": { backgroundColor : "#6c757d"                   ,          // Hover states

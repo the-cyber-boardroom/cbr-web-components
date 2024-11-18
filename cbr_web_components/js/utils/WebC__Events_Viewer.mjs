@@ -17,7 +17,7 @@ export default class WebC__Events_Viewer extends Web_Component {
         this.filter_text    = ''
         this.refresh_timer  = null
         this.event_handler  = this.handle_event.bind(this)
-        this.events_to_skip = ['mouseenter', 'resize', 'popstate', 'click']
+        this.events_to_skip = ['mouseenter', 'resize', 'popstate', 'click', 'input']
     }
 
     connectedCallback() {
