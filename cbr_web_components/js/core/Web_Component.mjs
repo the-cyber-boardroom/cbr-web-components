@@ -70,12 +70,13 @@ export default class Web_Component extends HTMLElement {
 
         this.channels.push(this.channel)
         this.component_ready()                   // use when needing to run code when the component is ready
-        //this.add_event_listeners__web_component()                   // todo: legacy - to remove
+
+        this.add_event_listeners__web_component()         // todo: legacy - to remove, but first remove dependency from  WebC__Chat_Bot
     }
 
     disconnectedCallback() {
         this.remove_window_event_listeners()
-        //this.remove_event_listeners__webc_component()              // todo: legacy - to remove
+        this.remove_event_listeners__webc_component()              // todo: legacy - to remove
 
     }
 
@@ -347,25 +348,25 @@ export default class Web_Component extends HTMLElement {
     }
 
     // // todo: legacy: look at who is using this and remove it usage (new code should use add_window_event_listener)
-    // add_event_listeners__web_component() {                              // todo: see if there is a better way to do this (ie. invoke the add_event_listeners() method from this
-    //     this.events_utils.events_receive.add_event_listener('invoke' , this.channel, this.on_invoke      );
-    // }
+    add_event_listeners__web_component() {                              // todo: see if there is a better way to do this (ie. invoke the add_event_listeners() method from this
+        this.events_utils.events_receive.add_event_listener('invoke' , this.channel, this.on_invoke      );
+    }
     // // todo: legacy: look at who is using this and remove it usage (new code should use add_window_event_listener)
-    // remove_event_listeners__webc_component() {
-    //     this.events_utils.events_receive.remove_all_event_listeners()
-    // }
-    // on_invoke = (event) => {
-    //     if (this.webc_id ===event.webc_id) {                                                    // only react to events that are sent to this specific webc_id
-    //         let event_data = event.event_data                                                   // get the event_data
-    //         let callback   = event.callback                                                     // get the callback
-    //         if (typeof this[event_data.method] === 'function') {                                // check if the method defined in the method exists in this
-    //             const result = this[event_data.method](...Object.values(event_data.params));    // if so execute it and capture the return value
-    //             if (typeof callback === 'function') {                                           // check if the callback is a function
-    //                 callback(result)                                                            // if it is defined, invoke it with the return value of the function execution
-    //             }
-    //         }
-    //     }
-    // }
+    remove_event_listeners__webc_component() {
+        this.events_utils.events_receive.remove_all_event_listeners()
+    }
+    on_invoke = (event) => {
+        if (this.webc_id ===event.webc_id) {                                                    // only react to events that are sent to this specific webc_id
+            let event_data = event.event_data                                                   // get the event_data
+            let callback   = event.callback                                                     // get the callback
+            if (typeof this[event_data.method] === 'function') {                                // check if the method defined in the method exists in this
+                const result = this[event_data.method](...Object.values(event_data.params));    // if so execute it and capture the return value
+                if (typeof callback === 'function') {                                           // check if the callback is a function
+                    callback(result)                                                            // if it is defined, invoke it with the return value of the function execution
+                }
+            }
+        }
+    }
     // instance methods
 }
 

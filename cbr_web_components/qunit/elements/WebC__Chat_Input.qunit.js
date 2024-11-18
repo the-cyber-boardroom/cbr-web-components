@@ -45,6 +45,7 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
         window.addEventListener('new_input_message', on_new_input_message);
 
         assert.equal(message_received, null)
+
         webc_chat_input.input.value = message_to_send
 
         webc_chat_input.input.dispatchEvent(keyevent)
