@@ -299,7 +299,11 @@ export default class CSS__Buttons {
                 display: "flex",
                 flexWrap: "wrap",
                 gap: "0.5rem"
-            }
+            },
+
+            // useful classes
+
+            ".hidden"            : { display: "none" }
         }
     }
 }

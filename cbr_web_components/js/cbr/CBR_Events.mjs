@@ -10,6 +10,7 @@ export const CBR_Events = {
     CBR__FILE__SAVED           : 'cbr::file:saved'          ,
     CBR__FILE__SAVE            : 'cbr::file:save'           ,
     CBR__FILE__SHOW_HISTORY    : 'cbr::file:show-history'   ,
+    CBR__FILE__HIDE_HISTORY    : 'cbr::file:hide-history'   ,
 
 }
 

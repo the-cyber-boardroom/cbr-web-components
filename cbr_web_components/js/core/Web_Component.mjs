@@ -69,6 +69,7 @@ export default class Web_Component extends HTMLElement {
         this.add_event_handlers ()               // then add the event handlers
 
         this.channels.push(this.channel)
+        this.final_ui_changes()                  // use when needing to make final changes to the UI
         this.component_ready()                   // use when needing to run code when the component is ready
 
         this.add_event_listeners__web_component()         // todo: legacy - to remove, but first remove dependency from  WebC__Chat_Bot
@@ -98,6 +99,7 @@ export default class Web_Component extends HTMLElement {
     add_event_listeners () {}                   // override to set the DOM event listeners
     add_event_handlers  () {}                   // override to set the event handlers
     add_web_components  () {}                   // override to add web components to the current component
+    final_ui_changes    () {}                   // override to make final changes to the UI
     component_ready     () {}                   // override to run code when the component is ready
 
     // EVENT helper methods
