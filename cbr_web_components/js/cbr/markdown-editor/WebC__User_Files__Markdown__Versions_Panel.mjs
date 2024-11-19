@@ -10,7 +10,7 @@ import CSS__Alerts           from "../../css/CSS__Alerts.mjs";
 import CSS__Grid             from "../../css/grid/CSS__Grid.mjs";
 import API__User_Data__Files from "../api/API__User_Data__Files.mjs";
 
-export default class WebC__Versions__Panel extends Web_Component {
+export default class WebC__User_Files__Markdown__Versions_Panel extends Web_Component {
 
     constructor() {
         super();
@@ -192,4 +192,4 @@ export default class WebC__Versions__Panel extends Web_Component {
     }
 }
 
-WebC__Versions__Panel.define()
+WebC__User_Files__Markdown__Versions_Panel.define()

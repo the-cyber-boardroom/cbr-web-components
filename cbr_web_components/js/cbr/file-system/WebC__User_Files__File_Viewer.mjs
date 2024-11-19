@@ -8,7 +8,7 @@ import Img                                from '../../core/Img.mjs'
 import Button                             from '../../core/Button.mjs'
 import Raw_Html                           from "../../core/Raw_Html.mjs";
 import CSS__Buttons                       from "../../css/CSS__Buttons.mjs";
-import WebC__User_Files__Markdown__Editor from "../markdown-editor/WebC__User_Files__Markdown__Editor.mjs";
+import WebC__User_Files__Markdown from "../markdown-editor/WebC__User_Files__Markdown.mjs";
 
 export default class WebC__User_Files__File_Viewer extends Web_Component {
     load_attributes() {
@@ -115,7 +115,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
     add_markdown_editor(host_element) {
         const params = { 'file_id': this.current_file.node_id }
-        this.add_web_component_to(host_element, WebC__User_Files__Markdown__Editor, params)
+        this.add_web_component_to(host_element, WebC__User_Files__Markdown, params)
     }
 
     add_text_viewer(container, decoded_content) {

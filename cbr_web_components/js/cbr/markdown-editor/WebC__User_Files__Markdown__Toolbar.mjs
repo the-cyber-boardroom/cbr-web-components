@@ -1,14 +1,14 @@
-import Web_Component        from '../../core/Web_Component.mjs'
-import CSS__Buttons         from '../../css/CSS__Buttons.mjs'
-import CSS__Icons           from '../../css/icons/CSS__Icons.mjs'
-import Div                  from '../../core/Div.mjs'
-import Text                 from '../../core/Text.mjs'
-import Button               from '../../core/Button.mjs'
-import Icon                 from '../../css/icons/Icon.mjs'
-import CBR_Events           from "../CBR_Events.mjs";
-import WebC__Markdown__Data from "./WebC__WebC__Markdown__Data.mjs";
+import Web_Component                    from '../../core/Web_Component.mjs'
+import CSS__Buttons                     from '../../css/CSS__Buttons.mjs'
+import CSS__Icons                       from '../../css/icons/CSS__Icons.mjs'
+import Div                              from '../../core/Div.mjs'
+import Text                             from '../../core/Text.mjs'
+import Button                           from '../../core/Button.mjs'
+import Icon                             from '../../css/icons/Icon.mjs'
+import CBR_Events                       from "../CBR_Events.mjs";
+import WebC__User_Files__Markdown__Data from "./WebC__User_Files__Markdown__Data.mjs";
 
-export default class WebC__Markdown__Toolbar extends Web_Component {
+export default class WebC__User_Files__Markdown__Toolbar extends Web_Component {
 
     constructor() {
         super()
@@ -45,7 +45,7 @@ export default class WebC__Markdown__Toolbar extends Web_Component {
     }
 
     add_web_components() {
-        this.add_web_component_to('.markdown-data', WebC__Markdown__Data)
+        this.add_web_component_to('.markdown-data', WebC__User_Files__Markdown__Data)
     }
 
     on_file_load(event) {
@@ -123,4 +123,4 @@ export default class WebC__Markdown__Toolbar extends Web_Component {
     }
 }
 
-WebC__Markdown__Toolbar.define()
+WebC__User_Files__Markdown__Toolbar.define()

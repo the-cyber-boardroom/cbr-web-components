@@ -6,7 +6,7 @@ import CSS__Grid             from "../../css/grid/CSS__Grid.mjs";
 import CBR_Events            from "../CBR_Events.mjs";
 import API__User_Data__Files from "../api/API__User_Data__Files.mjs";
 
-export default class WebC__Markdown__Data extends Web_Component {
+export default class WebC__User_Files__Markdown__Data extends Web_Component {
 
     constructor() {
         super();
@@ -107,4 +107,4 @@ export default class WebC__Markdown__Data extends Web_Component {
     }
 }
 
-WebC__Markdown__Data.define()
+WebC__User_Files__Markdown__Data.define()

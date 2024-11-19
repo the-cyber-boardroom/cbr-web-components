@@ -13,10 +13,11 @@ import CSS__Buttons        from '../CSS__Buttons.mjs';
 import CSS__Icons          from '../icons/CSS__Icons.mjs';
 import CSS__Alerts         from '../CSS__Alerts.mjs';
 import WebC__Events_Viewer from '../../utils/WebC__Events_Viewer.mjs';
+
 export default class WebC__Component__Tester extends Web_Component {
 
     base_path = '/web_components/js/'
-    presets = [ { label: 'Markdown editor'    , path: 'cbr/markdown-editor/WebC__User_Files__Markdown__Editor.mjs'},
+    presets = [ { label: 'Markdown editor'    , path: 'cbr/markdown-editor/WebC__User_Files__Markdown.mjs'},
                 { label: 'Document Assistant' , path: 'cbr/document-assistant/WebC__Document__Assistant.mjs'      },
                 { label: 'User Files'         , path: 'cbr/file-system/WebC__User_Files.mjs'                   },
                 { label: 'User Session'       , path: 'cbr/session/WebC__CBR__User_Session.mjs'                   },
@@ -43,7 +44,7 @@ export default class WebC__Component__Tester extends Web_Component {
     }
 
     add_web_components(){
-        this.add_web_component_to(".events-viewer", WebC__Events_Viewer, {})
+        //this.add_web_component_to(".events-viewer", WebC__Events_Viewer, {})
     }
     build() {
         this.add_css_rules(this.css_rules())
@@ -72,7 +73,8 @@ export default class WebC__Component__Tester extends Web_Component {
         auto_reload.add_elements(checkbox, label)
         controls   .add_elements(select, refresh_btn, auto_reload, input)
         card       .add_elements(controls, host, status_bar)
-        container  .add_elements(card, events_viewer)
+        //container  .add_elements(card, events_viewer)
+        container  .add_elements(card)
 
         return container.html()
     }

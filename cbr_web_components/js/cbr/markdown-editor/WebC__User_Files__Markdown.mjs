@@ -1,11 +1,12 @@
-import CBR_Events                  from '../CBR_Events.mjs'
-import Web_Component               from '../../core/Web_Component.mjs'
-import Div                         from '../../core/Div.mjs'
-import WebC__Versions__Panel       from "./WebC__Versions__Panel.mjs";
-import WebC__Markdown__Toolbar     from "./WebC__Markdown__Toolbar.mjs";
-import WebC__Markdown__Editor_View from "./WebC__Markdown__Editor_View.mjs";
+import CBR_Events                                 from '../CBR_Events.mjs'
+import Web_Component                              from '../../core/Web_Component.mjs'
+import Div                                        from '../../core/Div.mjs'
+import WebC__User_Files__Markdown__Versions_Panel from "./WebC__User_Files__Markdown__Versions_Panel.mjs";
+import WebC__User_Files__Markdown__Toolbar        from "./WebC__User_Files__Markdown__Toolbar.mjs";
+import WebC__User_Files__Markdown__Editor_View    from "./WebC__User_Files__Markdown__Editor_View.mjs";
 
-export default class WebC__User_Files__Markdown__Editor extends Web_Component {
+
+export default class WebC__User_Files__Markdown extends Web_Component {
 
     apply_css() {
         this.add_css_rules(this.css_rules())
@@ -15,9 +16,9 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
         this.file_id     = this.getAttribute('file_id') || '970804a2-88d8-41d6-881e-e1c5910b80f8'
     }
 
-
     component_ready() {
         this.raise_file_load_event()
+        this.raise_event_global(CBR_Events.CBR__FILE__SHOW_HISTORY)
     }
 
     add_event_listeners() {
@@ -30,9 +31,9 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
     add_web_components() {
         const params_versions = { file_id: this.file_id }
         const params_editor   = { file_id: this.file_id }
-        this.add_web_component_to('.versions-container', WebC__Versions__Panel      , params_versions)
-        this.add_web_component_to('.editor-toolbar'    , WebC__Markdown__Toolbar    , {}             )
-        this.add_web_component_to('.viewer-and-editor' , WebC__Markdown__Editor_View, params_editor  )
+        this.add_web_component_to('.versions-container', WebC__User_Files__Markdown__Versions_Panel      , params_versions)
+        this.add_web_component_to('.editor-toolbar'    , WebC__User_Files__Markdown__Toolbar    , {}             )
+        this.add_web_component_to('.viewer-and-editor' , WebC__User_Files__Markdown__Editor_View, params_editor  )
     }
     // event handlers
 
@@ -135,4 +136,4 @@ export default class WebC__User_Files__Markdown__Editor extends Web_Component {
     }
 }
 
-WebC__User_Files__Markdown__Editor.define()
+WebC__User_Files__Markdown.define()

@@ -9,7 +9,7 @@ import CBR_Events    from "../CBR_Events.mjs";
 import CSS__Alerts   from "../../css/CSS__Alerts.mjs";
 import CSS__Grid     from "../../css/grid/CSS__Grid.mjs";
 
-export default class WebC__Markdown__Editor_View extends Web_Component {
+export default class WebC__User_Files__Markdown__Editor_View extends Web_Component {
 
     constructor() {
         super()
@@ -200,4 +200,4 @@ export default class WebC__Markdown__Editor_View extends Web_Component {
     }
 }
 
-WebC__Markdown__Editor_View.define()
+WebC__User_Files__Markdown__Editor_View.define()
