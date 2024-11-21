@@ -13,7 +13,7 @@ export default class WebC__User_Files__Markdown extends Web_Component {
     }
 
     load_attributes() {
-        this.file_id     = this.getAttribute('file_id') || '970804a2-88d8-41d6-881e-e1c5910b80f8'
+        this.file_id     = this.getAttribute('file_id') || '8e2cc157-31f6-4b66-9dfa-f49f9c4b7b6d'
     }
 
     component_ready() {

@@ -39,6 +39,9 @@ export default class CSS__CBR__Layout__Default {
                                 bottom         : "0"                  ,
                                 right          : "0"                  },
 
+            ".nav-dev"      : { width           :"100%"                ,
+                                boxSizing       : "border-box"         },
+
             // ".nav-docs > *" : { maxWidth        : "100%"              ,         // Ensure children don't overflow
             //                     overflow        : "auto"              ,         // Add scrollbars when needed
             //                     flex           : "1 1 auto"           }         // Allow children to grow/shrink
