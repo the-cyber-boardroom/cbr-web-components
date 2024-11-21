@@ -190,7 +190,10 @@ export default class WebC__Component__Tester extends Web_Component {
             this.stop_server_check()
         }
 
-        this.ws_connection = new WebSocket('ws://localhost:5001/api/user-data/notifications/ws')
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host     = window.location.host;
+        const path     = '/api/user-data/notifications/ws';
+        this.ws_connection = new WebSocket(`${protocol}//${host}${path}`);
 
         this.ws_connection.onopen = () => {
             console.log('WebSocket connected')
@@ -200,7 +203,7 @@ export default class WebC__Component__Tester extends Web_Component {
 
         this.ws_connection.onmessage = async (event) => {
             const data = JSON.parse(event.data)
-            console.log('Heartbeat received:', data.data.timestamp)
+            //console.log('Heartbeat received:', data.data.timestamp)
         }
 
         this.ws_connection.onerror = (error) => {
@@ -220,7 +223,7 @@ export default class WebC__Component__Tester extends Web_Component {
                 //const delay = this.ws_retry_delay * Math.pow(2, this.ws_retry_count)
                 const delay = 0.1
                 this.ws_retry_count++
-                console.log(`Reconnecting in ${delay/1000} seconds...`, 'info')
+                console.log(`Reconnecting in ${delay/1000} seconds...`, this.ws_retry_count, this.ws_max_retries)
                 setTimeout(() => this.start_server_check(), delay)
             } else {
                 console.log('Failed to reconnect to server', 'error')
@@ -233,7 +236,7 @@ export default class WebC__Component__Tester extends Web_Component {
             this.ws_connection.close()
             this.ws_connection = null
         }
-        this.ws_retry_count = 0                                                   // Reset retry count
+        //this.ws_retry_count = 0                                                   // Reset retry count
     }
 
 
