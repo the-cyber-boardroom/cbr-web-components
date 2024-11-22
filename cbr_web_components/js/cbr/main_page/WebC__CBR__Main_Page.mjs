@@ -33,7 +33,7 @@ export default class WebC__CBR__Main_Page extends Web_Component {
     }
 
     connectedCallback() {
-        this.base_path = this.get_base_path()
+        this.extract_base_path_and_version()
         super.connectedCallback();
     }
 
@@ -79,12 +79,16 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         await this.routeHandler.handle_route(window.location.pathname)
     }
 
-    get_base_path() {
-        const path_parts = window.location.pathname.split('/')
-        if (path_parts.length >= 3) {
-            return `/webc/${path_parts[2]}`               // Extract the base path (e.g., /webc/cbr or /webc/cbr-dev)
+    extract_base_path_and_version() {
+        const path_parts = window.location.pathname.split('/');
+
+        if (path_parts.length >= 2) {
+            this.version = path_parts[2];             // Version is the second part of the path (e.g., dev, prod, v0.1.100)
+        } else {
+            this.version = 'latest';                 // Default version
         }
-        return '/webc/cbr'                                // Default fallback
+
+        this.base_path = `/ui/${this.version}`;      // Use this.version
     }
 
     html() {
@@ -100,9 +104,9 @@ export default class WebC__CBR__Main_Page extends Web_Component {
                    .add_col({ id: 'left-footer'     , class: 'h-75px bg-light-gray'                 })
         row_content.add_col({ id: 'content'         , class: 'd-flex bg-light-gray m-1'             })
 
-        layout     .with_id('left-footer').add_element(new CBR__Left_Footer()                                )
-        layout     .with_id('top-banner' ).add_element(new CBR__Top_Banner()                                 )
-        layout     .with_id('content'    ).add_element(new CBR__Content__Placeholder()                       )
+        layout     .with_id('left-footer').add_element(new CBR__Left_Footer         ({version:this.version}))
+        layout     .with_id('top-banner' ).add_element(new CBR__Top_Banner          ()                      )
+        layout     .with_id('content'    ).add_element(new CBR__Content__Placeholder()                      )
 
         return layout.html()
 

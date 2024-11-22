@@ -7,18 +7,21 @@ export default class CBR__Left_Footer extends Div {
     href__settings = '/web/user/profile'
     href__logout = '/web/sign-out'
 
-    constructor({id, ...kwargs}={}) {
+    constructor({id, version, ...kwargs}={}) {
         kwargs.class = `left-footer ${kwargs.class || ''}`
         super({id, ...kwargs})
-
-        const div_footer      = new Div ({ class: 'footer-container'                                         })
-        const div_icons       = new Div ({ class: 'icons-container'                                          })
-        const div_version     = new Div ({ class: 'version-container'                                        })
-        const a_settings      = new A   ({ class: 'link-icon'       , href: this.href__settings              })
-        const a_logout        = new A   ({ class: 'link-icon'       , href: this.href__logout                })
-        const icon_settings   = new Icon({ class: 'footer-icon'     , icon: 'settings'                       })
-        const icon_logout     = new Icon({ class: 'footer-icon'     , icon: 'logout'                         })
-        const text_version    = new Div ({ class: 'version-text'    , value: '© Cyber Boardroom - v0.208.12' })
+        this.version = version || 'NA'
+        this.build()
+    }
+    build() {
+        const div_footer      = new Div ({ class: 'footer-container'                                               })
+        const div_icons       = new Div ({ class: 'icons-container'                                                })
+        const div_version     = new Div ({ class: 'version-container'                                              })
+        const a_settings      = new A   ({ class: 'link-icon'       , href: this.href__settings                    })
+        const a_logout        = new A   ({ class: 'link-icon'       , href: this.href__logout                      })
+        const icon_settings   = new Icon({ class: 'footer-icon'     , icon: 'settings'                             })
+        const icon_logout     = new Icon({ class: 'footer-icon'     , icon: 'logout'                               })
+        const text_version    = new Div ({ class: 'version-text'    , value: `© Cyber Boardroom - ${this.version}` })
 
         a_settings  .add_element (icon_settings          )
         a_logout    .add_element (icon_logout            )
