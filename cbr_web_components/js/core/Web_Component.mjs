@@ -67,7 +67,6 @@ export default class Web_Component extends HTMLElement {
         this.add_web_components ()               // then add the web components that need the live dom to exist
         this.add_event_listeners()               // then add the event listeners
         this.add_event_handlers ()               // then add the event handlers
-
         this.channels.push(this.channel)
         this.final_ui_changes()                  // use when needing to make final changes to the UI
         this.component_ready()                   // use when needing to run code when the component is ready

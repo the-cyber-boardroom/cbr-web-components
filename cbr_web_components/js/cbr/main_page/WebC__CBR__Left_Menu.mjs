@@ -7,15 +7,23 @@ import Div                  from "../../core/Div.mjs"
 import Button               from "../../core/Button.mjs"
 import CBR__Left_Logo       from "./CBR__Left_Logo.mjs"
 import CBR__Important_Alert from "./CBR__Important_Alert.mjs"
-import WebC__Resize_Button from "../../elements/ui/WebC__Resize_Button.mjs";
+import WebC__Resize_Button  from "../../elements/ui/WebC__Resize_Button.mjs";
+import CBR_Events           from "../CBR_Events.mjs";
 
 
 export default class WebC__CBR__Left_Menu extends Web_Component {
 
     left_menu__resize__breakpoint = 768
-    left_menu__resize__event_name = 'left-menu-toggle'
+    left_menu__resize__event_name = CBR_Events.CBR__UI__LEFT_MENU_TOGGLE
 
-    load_attributes() {
+    constructor() {
+        super();
+        this.base_path = '/'
+    }
+
+    // Web_Component overrides
+
+    apply_css() {
         new CSS__Alerts    (this).apply_framework()
         new CSS__Side_Menu (this).apply_framework()
         new CSS__Typography(this).apply_framework()
@@ -25,8 +33,12 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         this.add_css_rules(this.css_rules())
     }
 
-    get div__left_menu_main() {
-        return this.query_selector('.left-menu-main')
+    load_attributes() {
+        this.base_path    = this.getAttribute('base_path') || this.base_path
+    }
+
+    add_event_listeners() {
+        this.add_window_event_listener(CBR_Events.CBR__UI__LEFT_MENU_TOGGLE, this.on_left_menu_toggle)
     }
 
     add_web_components() {
@@ -35,9 +47,9 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         this.add_web_component(WebC__Resize_Button, params )
     }
 
-    add_event_listeners() {
-        this.addEventListener('left-menu-toggle', (event) => this.on_left_menu_toggle(event))
-    }
+    // component methods
+
+
 
     on_left_menu_toggle (event) {
         const minimized = event.detail.minimized
@@ -59,18 +71,28 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
     }
 
     menu_items() {
-        return [
-            { icon: 'home'    , label: 'Home'          , href: '/webc/cbr-webc-dev/home/index'       },
-            { icon: 'robot'   , label: 'Athena'        , href: '/webc/cbr-webc-dev/athena/index'     },
-            { icon: 'profile' , label: 'Profile'       , href: '/webc/cbr-webc-dev/profile/index'    },
-            { icon: 'history' , label: 'Past Chats'    , href: '/webc/cbr-webc-dev/past-chats/index' },
-            { icon: 'file'    , label: 'Files'         , href: '/webc/cbr-webc-dev/files/index'      },
-            { icon: 'person'  , label: 'Personas'      , href: '/webc/cbr-webc-dev/personas/index'   },
-            { icon: 'chat'    , label: 'Chat with LLMs', href: '/webc/cbr-webc-dev/chat/index'       },
-            { icon: 'docs'    , label: 'Docs'          , href: '/webc/cbr-webc-dev/docs/index'       }
+        const menu_paths = [
+            { icon: 'home'    , label: 'Home'          , path: 'home'       },
+            { icon: 'robot'   , label: 'Athena'        , path: 'athena'     },
+            { icon: 'profile' , label: 'Profile'       , path: 'profile'    },
+            { icon: 'history' , label: 'Past Chats'    , path: 'past-chats' },
+            { icon: 'file'    , label: 'Files'         , path: 'files'      },
+            { icon: 'person'  , label: 'Personas'      , path: 'personas'   },
+            { icon: 'chat'    , label: 'Chat with LLMs', path: 'chat'       },
+            { icon: 'docs'    , label: 'Docs'          , path: 'docs'       }
         ]
+
+        return menu_paths.map(item => ({
+            icon  : item.icon,
+            label : item.label,
+            href  : `${this.base_path}/${item.path}/index`
+        }))
     }
 
+    // GETTERS
+    get div__left_menu_main() { return this.query_selector('.left-menu-main')  }
+
+    // CSS RULES
     css_rules() {
         return {
             ".left-menu-main"                       : { transition : "width 0.3s ease-in-out"    ,

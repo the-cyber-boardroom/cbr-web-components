@@ -16,6 +16,7 @@ import CBR__Route__Content       from "../router/CBR__Route__Content.mjs"
 import CBR__Error__Boundary      from "../router/CBR__Error__Boundary.mjs";
 import API__Invoke               from "../../data/API__Invoke.mjs";
 import WebC__CBR__Left_Menu      from "../main_page/WebC__CBR__Left_Menu.mjs";
+import CBR_Events                from "../CBR_Events.mjs";
 
 export default class WebC__CBR__Main_Page extends Web_Component {
     constructor() {
@@ -23,13 +24,27 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         this.routeContent   = new CBR__Route__Content()
         this.routeHandler   = new CBR__Route__Handler(this)
         this.api_invoke     = new API__Invoke()
+        this.base_path      = '/'
     }
 
+    // Web_Component overrides
     add_event_listeners() {
-       this.addEventListener('left-menu-toggle', (event) => this.on_left_menu_toggle(event))
+       this.add_window_event_listener(CBR_Events.CBR__UI__LEFT_MENU_TOGGLE , this.on_left_menu_toggle   )
     }
 
-   on_left_menu_toggle(event) {
+    connectedCallback() {
+        this.base_path = this.get_base_path()
+        super.connectedCallback();
+    }
+
+    async component_ready() {
+        this.routeHandler.set_base_path(this.base_path)
+        await this.handle_first_route()
+    }
+    // EVENT HANDLERS
+
+    on_left_menu_toggle(event) {
+        console.log(event)
         const minimized   = event.detail.minimized
         const layout_col  = this.query_selector('#layout-col-left' )
         const left_footer = this.query_selector('#left-footer'     )
@@ -58,11 +73,18 @@ export default class WebC__CBR__Main_Page extends Web_Component {
 
     async render() {
         super.render()
-        await this.handle_first_route()
     }
 
     async handle_first_route() {
-        await this.routeHandler.handleRoute(window.location.pathname)
+        await this.routeHandler.handle_route(window.location.pathname)
+    }
+
+    get_base_path() {
+        const path_parts = window.location.pathname.split('/')
+        if (path_parts.length >= 3) {
+            return `/webc/${path_parts[2]}`               // Extract the base path (e.g., /webc/cbr or /webc/cbr-dev)
+        }
+        return '/webc/cbr'                                // Default fallback
     }
 
     html() {
@@ -87,7 +109,7 @@ export default class WebC__CBR__Main_Page extends Web_Component {
     }
 
     add_web_components() {
-        this.add_web_component_to('#left-menu', WebC__CBR__Left_Menu)
+        this.add_web_component_to('#left-menu', WebC__CBR__Left_Menu, {base_path : this.base_path})
         setTimeout(() => { window.dispatchEvent(new Event('resize')) }, 1)
     }
 }
