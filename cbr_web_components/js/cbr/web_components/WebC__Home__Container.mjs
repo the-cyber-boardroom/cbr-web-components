@@ -1,24 +1,38 @@
-import Web_Component    from '../../core/Web_Component.mjs';
-import Layout          from '../../css/grid/Layout.mjs';
-import CSS__Grid       from '../../css/grid/CSS__Grid.mjs';
-import CSS__Typography from '../../css/CSS__Typography.mjs';
-import CSS__Cards      from '../../css/CSS__Cards.mjs';
-import API__Invoke     from '../../data/API__Invoke.mjs';
-import Div             from '../../core/Div.mjs';
-import H               from '../../core/H.mjs';
+import Web_Component        from '../../core/Web_Component.mjs';
+import Layout               from '../../css/grid/Layout.mjs';
+import CSS__Grid            from '../../css/grid/CSS__Grid.mjs';
+import CSS__Typography      from '../../css/CSS__Typography.mjs';
+import CSS__Cards           from '../../css/CSS__Cards.mjs';
+import API__Invoke          from '../../data/API__Invoke.mjs';
+import Div                  from '../../core/Div.mjs';
+import H                    from '../../core/H.mjs';
+import WebC__Markdown__Card from "../../elements/markdown/WebC__Markdown__Card.mjs";
+import WebC__API_Markdown_To_Html from "../../elements/api/WebC__API_Markdown_To_Html.mjs";
+
 
 export default class WebC__Home__Container extends Web_Component {
-    load_attributes() {
-        new CSS__Grid      (this).apply_framework()
-        new CSS__Typography(this).apply_framework()
-        new CSS__Cards     (this).apply_framework()
+    constructor(props) {
+        super(props);
         this.api_invoke = new API__Invoke()
     }
 
-    async connectedCallback() {
-        super.connectedCallback()
-        await this.render()
+    apply_css() {
+        new CSS__Grid      (this).apply_framework()
+        new CSS__Typography(this).apply_framework()
+        new CSS__Cards     (this).apply_framework()
     }
+
+    // async connectedCallback() {
+    //     super.connectedCallback()
+    //     await this.render()
+    // }
+
+    add_web_components() {
+        this.add_web_component_to('.welcome-section', WebC__API_Markdown_To_Html, {'content-path': 'en/web-site/home-page/welcome.md', 'apply-css': ''})
+        this.add_web_component_to('.card-1'         , WebC__Markdown__Card      , {'content-path': 'en/web-site/home-page/card-1.md' , 'apply-css': ''})
+        this.add_web_component_to('.card-2'         , WebC__Markdown__Card      , {'content-path': 'en/web-site/home-page/card-2.md' , 'apply-css': ''})
+    }
+
 
     create_video_section(title, url) {
 
@@ -52,13 +66,7 @@ export default class WebC__Home__Container extends Web_Component {
 
         // Welcome section
         const welcome = new Div({ class: 'welcome-section card mb-4 m-1' })
-        welcome.add_tag({
-            tag: 'webc-api-markdown-to-html',
-            attributes: {
-                'content-path': 'en/web-site/home-page/welcome.md',
-                'apply-css': ''
-            }
-        })
+
         layout.add_element(welcome)
 
         // Videos section
@@ -79,26 +87,13 @@ export default class WebC__Home__Container extends Web_Component {
         // Cards section
         const cards_row = layout.add_row({ class: 'mb-4' })
 
-        const card1_col = cards_row.add_col({ class: 'col-6' })
-        const div_card_1 = new Div({ class: 'cards-section' })
-        div_card_1.add_tag({
-            tag: 'webc-markdown-card',
-            class: 'cards-section',
-            'content-path': 'en/web-site/home-page/card-1.md',
-            'apply-css': ''
-        })
-        card1_col.add_element(div_card_1)
+        const card_1_col = cards_row.add_col({ class: 'col-6' })
+        const card_2_col = cards_row.add_col({ class: 'col-6' })
 
-        const card2_col = cards_row.add_col({ class: 'col-6' })
-        const div_card_2 = new Div({ class: 'cards-section' })
-        div_card_2.add_tag({
-            tag: 'webc-markdown-card',
-            attributes: {
-                'content-path': 'en/web-site/home-page/card-2.md',
-                'apply-css': ''
-            }
-        })
-        card2_col.add_element(div_card_2)
+        const div_card_1 = new Div({ class: 'cards-section card-1' })
+        const div_card_2 = new Div({ class: 'cards-section card-2' })
+        card_1_col.add_element(div_card_1)
+        card_2_col.add_element(div_card_2)
 
 
         this.set_inner_html(layout.html())
