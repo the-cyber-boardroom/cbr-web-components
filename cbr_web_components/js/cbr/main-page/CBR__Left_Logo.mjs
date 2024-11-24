@@ -1,7 +1,7 @@
 import Div from "../../core/Div.mjs"
 import Img from "../../core/Img.mjs"
 
-export default class CBR__Logo extends Div {
+export default class CBR__Left_Logo extends Div {
     constructor({id, ...kwargs}={}) {
         kwargs.class = `logo ${kwargs.class || ''}`
         super({id, ...kwargs})

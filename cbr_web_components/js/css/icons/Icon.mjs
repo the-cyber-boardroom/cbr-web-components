@@ -7,7 +7,13 @@ export default class Icon extends Span {
         kwargs.class = `icon ${kwargs.class || ''}`                     // Set up base class name
         super(kwargs)                                                   // Initialize Span with our kwargs
 
-        if (icon    ) { this.value = Icon__Mappings.getIcon(icon) }     // Add icon from Icon__Mappings
+        if (icon) {
+            this.value = Icon__Mappings.getIcon(icon)                   // Add icon from Icon__Mappings
+            this.attributes = {                                         // Merge with existing attributes
+                ...this.attributes || {},                               // Preserve existing attributes
+                icon: icon                                              // Add icon attribute
+            }
+        }
         if (size    ) { this.add_class(`icon-${size}`           ) }     // Handle size
         if (color   ) { this.add_class(`icon-${color}`          ) }     // Handle color
         if (rotate  ) { this.add_class(`icon-rotate-${rotate}`  ) }     // Handle rotation

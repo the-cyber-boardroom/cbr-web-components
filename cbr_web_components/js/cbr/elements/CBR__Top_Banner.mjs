@@ -2,7 +2,6 @@ import Icon                 from "../../css/icons/Icon.mjs"
 import Div                  from "../../core/Div.mjs"
 import Tag                  from "../../core/Tag.mjs"
 
-
 export default class CBR__Top_Banner extends Div {
     constructor({...kwargs}={}) {
         super({...kwargs})
@@ -12,7 +11,7 @@ export default class CBR__Top_Banner extends Div {
     setup() {
         this.add_class('top-banner')
 
-        const menu_icon    = new Icon({ class: 'menu-icon icon-lg'  , icon: 'menu'                                       })    // Hamburger menu
+        const menu_icon    = new Icon({ class: 'menu-icon icon-lg'  , icon: 'menu' })    // Hamburger menu
         const user_session = new Tag({tag: 'webc-cbr-user-session' })
 
         this.add_elements(menu_icon, user_session)
