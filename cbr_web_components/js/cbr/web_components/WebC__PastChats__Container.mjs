@@ -17,18 +17,22 @@ import A               from '../../core/A.mjs';
 import Text            from '../../core/Text.mjs';
 
 export default class WebC__PastChats__Container extends Web_Component {
-    load_attributes() {
+
+    constructor() {
+        super()
+        this.api_invoke = new API__Invoke()
+    }
+
+    apply_css() {
         new CSS__Grid      (this).apply_framework()
         new CSS__Typography(this).apply_framework()
         new CSS__Tables    (this).apply_framework()
         new CSS__Cards     (this).apply_framework()
-        this.api_invoke = new API__Invoke()
+        this.add_css_rules(this.css_rules())
     }
 
-    async connectedCallback() {
-        super.connectedCallback()
+    async load_data() {
         await this.load_chats()
-        this.render()
     }
 
     async load_chats() {
@@ -70,98 +74,63 @@ export default class WebC__PastChats__Container extends Web_Component {
 
     format_size(bytes) {
         return bytes
-        if (!bytes) return '0.0 KB'
-        const kb = bytes / 1024
-        return `${kb.toFixed(1)} KB`
+        // if (!bytes) return '0.0 KB'
+        // const kb = bytes / 1024
+        // return `${kb.toFixed(1)} KB`
     }
 
     create_action_links(chat) {
         if (!chat.chat_id) return new Div()
 
-        const container = new Div({ class: 'action-links' })
+        const container  = new Div({ class: 'action-links' })
+        const view_link  = new A  ({ value: 'view' ,  href: `/web/chat/view/${chat.chat_path}`      ,  target: '_blank' }) // View link
+        const pdf_link   = new A  ({ value: 'pdf'  ,  href: `/web/chat/view/${chat.chat_path}/pdf`  ,  target: '_blank' }) // PDF link
+        const image_link = new A  ({ value: 'image',  href: `/web/chat/view/${chat.chat_path}/image`,  target: '_blank' }) // Image link
 
-        // View link
-        const view_link = new A({
-            value: 'view',
-            href: `/web/chat/view/${chat.chat_path}`,
-            target: '_blank'
-        })
 
-        // PDF link
-        const pdf_link = new A({
-            value: 'pdf',
-            href: `/web/chat/view/${chat.chat_path}/pdf`,
-            target: '_blank'
-        })
-
-        // Image link
-        const image_link = new A({
-            value: 'image',
-            href: `/web/chat/view/${chat.chat_path}/image`,
-            target: '_blank'
-        })
-
-        // Separators
-        const separator1 = new Text({ value: ' | ' })
+        const separator1 = new Text({ value: ' | ' })               // Separators
         const separator2 = new Text({ value: ' | ' })
 
         container.add_elements(view_link, separator1, pdf_link, separator2, image_link)
         return container
     }
 
-    render() {
+    html() {
         const layout = new Layout({ class: 'container' })
 
-        // Add intro card
-        layout.add_element(this.create_intro_card())
+        layout.add_element(this.create_intro_card())                                // Add intro card
+        const table = new Table({ class: 'table' })                                 // Create table
 
-        // Create table
-        const table = new Table({ class: 'table' })
+        const thead = new THead().add_element (new TR()                             // Table header
+                                 .add_elements(new TH({ value: 'Date/Time'   }),
+                                               new TH({ value: 'Last Prompt' }),
+                                               new TH({ value: 'History'     }),
+                                               new TH({ value: 'Prompts'     }),
+                                               new TH({ value: 'Responses'   }),
+                                               new TH({ value: 'Actions'     })))
 
-        // Table header
-        const thead = new THead().add_element(
-            new TR().add_elements(
-                new TH({ value: 'Date/Time' }),
-                new TH({ value: 'Last Prompt' }),
-                new TH({ value: 'History' }),
-                new TH({ value: 'Prompts' }),
-                new TH({ value: 'Responses' }),
-                new TH({ value: 'Actions' })
-            )
-        )
-
-        // Table body
-        const tbody = new TBody()
+        const tbody = new TBody()                                                   // Table body
 
         if (this.chats && this.chats.length > 0) {
             this.chats.forEach(chat => {
-                const row = new TR().add_elements(
-                    new TD({ value: this.format_date_time(chat.date, chat.time) }),
-                    new TD({ value: chat.last_user_prompt || '-' }),
-                    new TD({ value: chat.history_size || '1' }),
-                    new TD({ value: this.format_size(chat.prompts_size) }),
-                    new TD({ value: this.format_size(chat.responses_size) }),
-                    new TD().add_element(this.create_action_links(chat))
-                )
+                const row = new TR().add_elements(new TD({ value: this.format_date_time(chat.date, chat.time) }),
+                                                  new TD({ value: chat.last_user_prompt || '-'                }),
+                                                  new TD({ value: chat.history_size     || '1'                }),
+                                                  new TD({ value: this.format_size(chat.prompts_size)         }),
+                                                  new TD({ value: this.format_size(chat.responses_size)       }),
+                                                  new TD().add_element(this.create_action_links(chat)          ))
                 tbody.add_element(row)
             })
         } else {
-            tbody.add_element(
-                new TR().add_element(
-                    new TD({
-                        value: 'No saved chats found',
-                        attributes: { colspan: '6' },
-                        class: 'text-center'
-                    })
-                )
-            )
+            tbody.add_element(new TR().add_element(new TD({ value     : 'No saved chats found',
+                                                            attributes: { colspan: '6'        },
+                                                            class      : 'text-center'        })))
         }
 
         table.add_elements(thead, tbody)
         layout.add_element(table)
 
-        this.set_inner_html(layout.html())
-        this.add_css_rules(this.css_rules())
+        return layout
     }
 
     css_rules() {

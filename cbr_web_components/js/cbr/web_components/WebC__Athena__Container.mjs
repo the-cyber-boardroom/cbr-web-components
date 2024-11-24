@@ -1,24 +1,35 @@
-import Web_Component    from '../../core/Web_Component.mjs';
-import Layout           from '../../css/grid/Layout.mjs';
-import CSS__Grid        from '../../css/grid/CSS__Grid.mjs';
-import CSS__Typography  from '../../css/CSS__Typography.mjs';
-import API__Invoke      from '../../data/API__Invoke.mjs';
+import Web_Component            from '../../core/Web_Component.mjs';
+import Layout                   from '../../css/grid/Layout.mjs';
+import CSS__Grid                from '../../css/grid/CSS__Grid.mjs';
+import CSS__Typography          from '../../css/CSS__Typography.mjs';
+import API__Invoke              from '../../data/API__Invoke.mjs';
+import Chatbot_OpenAI           from "../../chat-bot/Chatbot_OpenAI.mjs";
+import WebC__Athena__Banner     from "./WebC__Athena__Banner.mjs";
+import WebC__Athena__Welcome    from "./WebC__Athena__Welcome.mjs";
+import WebC__Athena__Examples   from "./WebC__Athena__Examples.mjs";
+import WebC__Athena__Config     from "./WebC__Athena__Config.mjs";
 
 export default class WebC__Athena__Container extends Web_Component {
-    load_attributes() {
-        new CSS__Grid      (this).apply_framework()
-        new CSS__Typography(this).apply_framework()
-        this.channel    = this.getAttribute('channel') || `athena_${this.random_id()}`
-        this.api_invoke = new API__Invoke()
 
+    constructor(){
+        super()
+        this.api_invoke = new API__Invoke()
+    }
+
+    load_attributes() {
+        this.channel    = this.getAttribute('channel') || `athena_${this.random_id()}`
         // Get initial config from localStorage
         this.show_system_prompt = localStorage.getItem('athena_show_system_prompt') === 'true'
         this.edit_mode          = localStorage.getItem('athena_edit_mode') === 'true'
     }
 
-    connectedCallback() {
-        super.connectedCallback()
-        this.add_event_listeners()
+    async apply_css() {
+        new CSS__Grid      (this).apply_framework()
+        new CSS__Typography(this).apply_framework()
+    }
+
+    async load_data() {
+        this.system_prompt = await this.build_system_prompt()
     }
 
     add_event_listeners() {
@@ -84,8 +95,25 @@ export default class WebC__Athena__Container extends Web_Component {
         return `${athena_prompt}\n\n${formatted_user_data}`.trim()          // Combine the prompts, with Athena prompt first
     }
 
-    async render() {
-        const system_prompt = await this.build_system_prompt()
+    async add_web_components() {
+
+        const params__chat_bot = { initial_message   : 'Hello, I am Athena. How can I help you?' ,
+                                   channel           : this.channel                              ,
+                                   edit_mode         : String(this.edit_mode)                    ,
+                                   name              : 'Athena'                                  ,
+                                   url               : '/api/open_ai/prompt_with_system__stream' ,
+                                   system_prompt     : this.system_prompt                        ,
+                                   show_system_prompt: String(this.show_system_prompt)           }
+
+        const params__channel  = { channel: this.channel }
+        this.add_web_component_to('#athena-banner'  , WebC__Athena__Banner                      )
+        this.add_web_component_to('#athena-welcome' , WebC__Athena__Welcome                     )
+        this.add_web_component_to('#athena-chatbot' , Chatbot_OpenAI         , params__chat_bot )
+        this.add_web_component_to('#athena-examples', WebC__Athena__Examples , params__channel  )
+        this.add_web_component_to('#athena-config'  , WebC__Athena__Config   , params__channel  )
+    }
+
+    html() {
 
         const layout = new Layout({
             id: 'athena-page',
@@ -96,41 +124,24 @@ export default class WebC__Athena__Container extends Web_Component {
         const row_banner = layout.add_row({ id: 'athena-row', class: 'm-1' })
 
         // Banner column (left side)
+
         row_banner.add_col({id: 'athena-banner', class: 'col-6' })
-                  .add_tag({ tag: 'webc-athena-banner'})
 
         // Welcome message column (right side)
         row_banner.add_col({id: 'athena-welcome', class: 'col-6' })
-                  .add_tag({ tag: 'webc-athena-welcome'})
 
         // Content row
         const row_content = layout.add_row({ class: 'flex-fill m-1' })
+        row_content.add_col({id: 'athena-chatbot', class: 'col-9'})                 // Chat column
 
-        // Chat column
-        row_content.add_col({class: 'col-9'})
-                    .add_tag({ tag               : 'chatbot-openai',
-                              initial_message   : 'Hello, I am Athena. How can I help you?',
-                              channel          : this.channel,
-                              edit_mode        : String(this.edit_mode),
-                              name             : 'Athena',
-                              url              : '/api/open_ai/prompt_with_system__stream',
-                              system_prompt    : system_prompt,
-                              show_system_prompt: String(this.show_system_prompt) })
+        const right_col = row_content.add_col({ class: 'col-3' })                   // Right column with examples and config
 
-        // Right column with examples and config
-        const right_col = row_content.add_col({ class: 'col-3' })
 
-        // Examples section
-        right_col.add_col({ class: 'mb-3' })
-                .add_tag({ tag: 'webc-athena-examples',
-                          channel: this.channel })
+        right_col.add_col({id: 'athena-examples', class: 'mb-3' })                  // Examples section
+        right_col.add_col({id: 'athena-config'  , class: 'mb-3' })                  // Config section
 
-        // Config section
-        right_col.add_col({ class: 'mb-3' })
-                 .add_tag({ tag: 'webc-athena-config',
-                           channel: this.channel })
 
-        this.set_inner_html(layout.html())
+        return layout
     }
 }
 

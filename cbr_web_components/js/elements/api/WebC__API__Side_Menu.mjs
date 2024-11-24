@@ -16,22 +16,22 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
     static class__side_menu_text      = 'side_menu_text';
     static class__svg_style__monitor = 'svg_style__monitor';
 
-  // base class methods overrides
-    async connectedCallback() {
-        super.connectedCallback();
+    async apply_css() {
+        await super.apply_css();
+        this.add_css_rules(this.css_rules())
     }
 
-    async load_attributes() {
+    load_attributes() {
         super.load_attributes();
         this.data_file                     = this.getAttribute('data-file') || WebC__API__Side_Menu.data_file__default_menu ;
         this.use_cdn_for_toml_file_content = this.hasAttribute('disable-cdn' ) === false
     }
 
-    async setup() {
-        this.menu_data = null
-        await super.setup()
-        await this.load_menu_data()
+    async load_data() {
+        await super.load_data()
 
+        this.menu_data = null
+        await this.load_menu_data()
         await this.load_material_icons()
     }
 
@@ -41,11 +41,7 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
          this.css_load_result = await this.load_libraries__css.load_material_design()
     }
 
-    async build() {
-        this.renderMenu();
-    }
-
-    renderMenu() {
+    html() {
         const currentPath   = window.location.pathname;
         const div_side_menu = new Div({class: WebC__API__Side_Menu.class__side_menu})
         for (const key in this.menu_data) {
@@ -83,7 +79,7 @@ export default class WebC__API__Side_Menu extends WebC__API_Markdown_To_Html {
         a_screenshot .add_element (svg_screenshot)
         div_side_menu.add_elements(hr_separator, a_screenshot)
 
-        this.set_inner_html(div_side_menu.html())
+        return div_side_menu
     }
 
     css_rules() {

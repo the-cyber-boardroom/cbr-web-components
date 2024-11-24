@@ -1,8 +1,9 @@
 import Web_Component from "./Web_Component.mjs";
 
 export default class WebC__Container extends Web_Component {
-  connectedCallback() {
-    super.connectedCallback();
+
+  async connectedCallback() {
+    await super.connectedCallback();
 
     const template = document.createElement('template');
     template.innerHTML = `

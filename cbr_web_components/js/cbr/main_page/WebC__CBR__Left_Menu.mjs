@@ -1,14 +1,14 @@
-import Web_Component        from '../../core/Web_Component.mjs'
-import CSS__Alerts          from "../../css/CSS__Alerts.mjs";
+import API__Invoke          from "../../../js/data/API__Invoke.mjs"
 import CSS__Side_Menu       from "../../css/menus/CSS__Side_Menu.mjs"
-import CSS__Typography      from '../../css/CSS__Typography.mjs'
 import Left_Menu            from "../../css/menus/Left_Menu.mjs"
+import CSS__Alerts          from "../../css/CSS__Alerts.mjs";
+import CSS__Typography      from '../../css/CSS__Typography.mjs'
 import Div                  from "../../core/Div.mjs"
-import Button               from "../../core/Button.mjs"
-import CBR__Left_Logo       from "./CBR__Left_Logo.mjs"
-import CBR__Important_Alert from "./CBR__Important_Alert.mjs"
+import Web_Component        from '../../core/Web_Component.mjs'
 import WebC__Resize_Button  from "../../elements/ui/WebC__Resize_Button.mjs";
 import CBR_Events           from "../CBR_Events.mjs";
+import CBR__Left_Logo       from "./CBR__Left_Logo.mjs"
+import CBR__Important_Alert from "./CBR__Important_Alert.mjs"
 
 
 export default class WebC__CBR__Left_Menu extends Web_Component {
@@ -17,8 +17,10 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
     left_menu__resize__event_name = CBR_Events.CBR__UI__LEFT_MENU_TOGGLE
 
     constructor() {
-        super();
-        this.base_path = '/'
+        super()
+        this.base_path  = '/'
+        this.api_invoke = new API__Invoke()
+        this.menu_data  = null
     }
 
     // Web_Component overrides
@@ -33,6 +35,10 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         this.add_css_rules(this.css_rules())
     }
 
+    async load_data() {
+        await this.fetch_menu_items()
+    }
+
     load_attributes() {
         this.base_path    = this.getAttribute('base_path') || this.base_path
     }
@@ -45,6 +51,18 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         let params = { resize_breakpoint : this.left_menu__resize__breakpoint ,
                        resize_event_name : this.left_menu__resize__event_name }
         this.add_web_component(WebC__Resize_Button, params )
+    }
+
+    // API methods
+
+    async fetch_menu_items() {
+        try {
+            const response = await this.api_invoke.invoke_api('/api/user-data/ui/left-menu', 'GET')
+            this.menu_data = response.menu_items
+        } catch (error) {
+            console.error('Error fetching menu items:', error)
+            this.menu_data = {}  // Set empty object on error
+        }
     }
 
     // component methods
@@ -71,22 +89,24 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
     }
 
     menu_items() {
-        const menu_paths = [
-            { icon: 'home'    , label: 'Home'          , path: 'home'       },
-            { icon: 'robot'   , label: 'Athena'        , path: 'athena'     },
-            { icon: 'profile' , label: 'Profile'       , path: 'profile'    },
-            { icon: 'history' , label: 'Past Chats'    , path: 'past-chats' },
-            { icon: 'file'    , label: 'Files'         , path: 'files'      },
-            { icon: 'person'  , label: 'Personas'      , path: 'personas'   },
-            { icon: 'chat'    , label: 'Chat with LLMs', path: 'chat'       },
-            { icon: 'docs'    , label: 'Docs'          , path: 'docs'       }
-        ]
+        if (!this.menu_data) return []
 
-        return menu_paths.map(item => ({
-            icon  : item.icon,
-            label : item.label,
-            href  : `${this.base_path}/${item.path}/index`
-        }))
+        return Object.entries(this.menu_data).map(([key, item]) => {
+            const link_attributes = {
+                'data-target-type'   : item.web_component ? 'web_component' : 'link' , // Add target type attribute
+                'data-component-path': item.web_component_path || ''                 ,
+                icon                 : item.icon                                     ,
+                label                : item.label                                    ,
+            }
+
+            if (item.web_component) {
+                link_attributes['data-component'] = item.web_component             // Add data-component attribute for web components
+                link_attributes['href'] = `${this.base_path}/${key}`                 // Use key as path for history
+            } else {
+                link_attributes['href'] = `${this.base_path}/${key}/index`          // Regular path navigation
+            }
+            return link_attributes
+        })
     }
 
     // GETTERS

@@ -17,26 +17,39 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
     static on_error_return_value                       = { html:'(error loading markdown content)', metadata:{}}
 
     // base class methods overrides
-    async connectedCallback() {
-        super.connectedCallback()
-        await this.setup()
-        await this.build()
-        if (this.apply_css) {                                                   // todo: find a better place to put this logic
+
+    async apply_css() {
+        if (this.should_apply_css) {                                                   // todo: find a better place to put this logic
             this.add_css_rules(this.css_rules())
         }
+    }
+
+    async load_data() {
+        const mock_responses                   = JSON.parse(this.getAttribute('mock_responses'))
+        this.markdown_metadata                 = null
+        this.markdown_html                     = null
+        this.api_invoke                        = new API__Invoke()
+        this.api_invoke.mock_responses         = mock_responses
+        this.api_invoke.on_error_return_value  = WebC__API_Markdown_To_Html.on_error_return_value
+        await this.load_html_content_and_metadata()
+
+        this.load_libraries__css               = new Load_Libraries__CSS({target:this, mock_responses:mock_responses})      // todo: legacy, not needed anymore in the new pure WebC model
+    }
+
+    async component_ready() {
         this.raise_event('build-complete')
     }
 
     load_attributes() {
         super.load_attributes()
         this.content_path                      = this.getAttribute('content-path')
-        this.apply_css                         = this.hasAttribute('apply-css'   )
+        this.should_apply_css                  = this.hasAttribute('apply-css'   )                   // todo: fix this clash of attribute name 'should_apply_css', with override should_apply_css in Web_Component
         this.use_cdn_for_markdown_file_content = this.hasAttribute('disable-cdn' ) === false
     }
 
     // class methods
 
-    async build() {
+    html() {
         const div_markdown    = new Div     ({class: WebC__API_Markdown_To_Html.class__markdown_section     })
         const div_html        = new Raw_Html({class: WebC__API_Markdown_To_Html.class__markdown_html        })
         const div_metadata    = new Div     ({class: WebC__API_Markdown_To_Html.class__markdown_metadata    })
@@ -63,8 +76,7 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
         }
         div_markdown.add_element(div_html)
 
-        const html         = div_markdown.html()
-        this.set_inner_html(html)
+        return div_markdown
     }
 
     css_rules() {
@@ -124,17 +136,6 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
         } else {
             return WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + this.content_path
         }
-    }
-
-    async setup() {
-        const mock_responses                   = JSON.parse(this.getAttribute('mock_responses'))
-        this.load_libraries__css               = new Load_Libraries__CSS({target:this, mock_responses:mock_responses})
-        this.markdown_metadata                 = null
-        this.markdown_html                     = null
-        this.api_invoke                        = new API__Invoke()
-        this.api_invoke.mock_responses         = mock_responses
-        this.api_invoke.on_error_return_value  = WebC__API_Markdown_To_Html.on_error_return_value
-        await this.load_html_content_and_metadata()
     }
 }
 

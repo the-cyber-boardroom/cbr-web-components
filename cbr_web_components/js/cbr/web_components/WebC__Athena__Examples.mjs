@@ -7,37 +7,46 @@ import H               from '../../core/H.mjs';
 import Div             from '../../core/Div.mjs';
 
 export default class WebC__Athena__Examples extends Web_Component {
-    load_attributes() {
+
+    constructor() {
+        super();
+        this.api_invoke = new API__Invoke()
+    }
+
+    async apply_css() {
         new CSS__Grid      (this).apply_framework()
         new CSS__Typography(this).apply_framework()
         new CSS__Cards     (this).apply_framework()
         this.add_css_rules(this.css_rules())
-        this.api_invoke = new API__Invoke()
+    }
+
+    async load_data() {
+        this.content = await this.load_content()
+    }
+
+    load_attributes() {
         this.channel = this.getAttribute('channel') || null
     }
 
-    async render() {
-        const content = await this.load_content()
-
+    html() {
         // Container with title
         const container = new Div({class: 'm-1'})
         const title     = new H({ level: 2,
-                                  value: content?.title || 'Prompt examples',
+                                  value: this.content?.title || 'Prompt examples',
                                   class: 'mb-4 text-center' })
         container.add_element(title)
 
         // Add each example as a card
-        content?.examples?.forEach(example => {const card = new Div({ class: 'card mb-3 example-card'})
+        this.content?.examples?.forEach(example => {const card = new Div({ class: 'card mb-3 example-card'})
             const card_body = new Div({ class: 'card-body text-center',  value: example })
             card.add_element(card_body)
             container.add_element(card)
         })
 
-        this.set_inner_html(container.html())
-        this.setup_event_handlers()
+        return container
     }
 
-    setup_event_handlers() {
+    add_event_handlers() {
         this.shadowRoot.querySelectorAll('.example-card').forEach(card => {
             card.addEventListener('click', () => this.handle_example_click(card))
         })

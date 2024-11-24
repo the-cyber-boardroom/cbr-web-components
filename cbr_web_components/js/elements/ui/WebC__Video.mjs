@@ -8,10 +8,8 @@ export default class WebC__Video extends Web_Component {
     static class__video_title   = 'video_title'
 
   // base class methods overrides
-    async connectedCallback() {
-        super.connectedCallback()
+    apply_css() {
         this.add_css_rules(this.css_rules())
-        this.build()
     }
 
     load_attributes() {
@@ -22,7 +20,7 @@ export default class WebC__Video extends Web_Component {
         this.video_height   = this.getAttribute('height'  )
     }
 
-    build () {
+    html () {
         const attr_video   = {width: this.video_width, height: this.video_height, controls: null}           // add the controls extra attribute so that controls are always present
         const div_video    = new Div({class: WebC__Video.class__video_section     })
         if (this.video_title) {
@@ -36,9 +34,7 @@ export default class WebC__Video extends Web_Component {
         tag_video.add_element(tag_source)
         div_video.add_element(tag_video)
 
-        const html         = div_video.html()
-        this.set_inner_html(html)
-        return html
+        return div_video
     }
 
     css_rules() {

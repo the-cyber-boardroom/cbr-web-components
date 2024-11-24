@@ -60,18 +60,20 @@ export default class Web_Component extends HTMLElement {
 
     // instance - connection and usually overridden methods
 
-    connectedCallback() {
-        this.apply_css          ()               // first apply css to the current dom
-        this.load_attributes    ()               // then load any attributes provided
-        this.render             ()               // then render the core html elements (i.e. assign the inner_html)
-        this.add_web_components ()               // then add the web components that need the live dom to exist
-        this.add_event_listeners()               // then add the event listeners
-        this.add_event_handlers ()               // then add the event handlers
-        this.channels.push(this.channel)
-        this.final_ui_changes()                  // use when needing to make final changes to the UI
-        this.component_ready()                   // use when needing to run code when the component is ready
+    async connectedCallback() {                        // todo see if any other methods should be async (of I should make them all async)
+              this.load_attributes    ()               // start by loading any attributes provided
+        await this.apply_css          ()               // then apply css to the current dom
 
-        this.add_event_listeners__web_component()         // todo: legacy - to remove, but first remove dependency from  WebC__Chat_Bot
+        await this.load_data          ()               // then load any data required
+              this.render             ()               // then render the core html elements (i.e. assign the inner_html)
+        await this.add_web_components ()               // then add the web components that need the live dom to exist
+              this.add_event_listeners()               // then add the event listeners
+              this.add_event_handlers ()               // then add the event handlers
+        await this.final_ui_changes()                  // use when needing to make final changes to the UI
+        await this.component_ready()                   // use when needing to run code when the component is ready
+
+              this.channels.push(this.channel)                  // todo: legacy - review usage and see if the current patterns can handle this requirement better
+              this.add_event_listeners__web_component()         // todo: legacy - to remove, but first remove dependency from  WebC__Chat_Bot
     }
 
     disconnectedCallback() {
@@ -93,13 +95,14 @@ export default class Web_Component extends HTMLElement {
         this.set_inner_html(html)               // first set the html
     }
 
-    apply_css           () {}
-    html                () {}                   // override to return the html of the component
-    add_event_listeners () {}                   // override to set the DOM event listeners
-    add_event_handlers  () {}                   // override to set the event handlers
-    add_web_components  () {}                   // override to add web components to the current component
-    final_ui_changes    () {}                   // override to make final changes to the UI
-    component_ready     () {}                   // override to run code when the component is ready
+    async apply_css           () {}                   // override to apply css to the current dom
+    async load_data           () {}                   // override to trigger the load any data required
+          html                () {}                   // override to return the html of the component
+          add_event_listeners () {}                   // override to set the DOM event listeners
+          add_event_handlers  () {}                   // override to set the event handlers
+    async add_web_components  () {}                   // override to add web components to the current component
+    async final_ui_changes    () {}                   // override to make final changes to the UI
+    async component_ready     () {}                   // override to run code when the component is ready
 
     // EVENT helper methods
 

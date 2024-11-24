@@ -8,7 +8,6 @@ export default class Left_Menu extends Div {
         super({id, ...kwargs})
 
         this.menu_items = menu_items || []
-
         this.render_menu()
     }
 
@@ -17,7 +16,7 @@ export default class Left_Menu extends Div {
             const menuItem = new Div({ class: 'side-menu-item' })
             const link = new A({
                 class: 'side-menu-link',
-                attributes: { href: item.href }
+                attributes: item
             })
 
             const icon = new Icon({

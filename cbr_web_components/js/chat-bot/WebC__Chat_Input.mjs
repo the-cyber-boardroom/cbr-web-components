@@ -39,9 +39,9 @@ export default class WebC__Chat_Input extends Web_Component {
         return this.query_selector('.chat-images')
     }
 
-    // methods
+    // Web_Component overrides
 
-    add_event_hooks() {
+    add_event_listeners() {
         this.events_utils.events_receive.add_event_listener('keydown', this.channel, this.on_input_keydown)
         this.events_utils.events_receive.add_event_listener('paste'  , this.channel, this.process_paste)
 
@@ -53,55 +53,13 @@ export default class WebC__Chat_Input extends Web_Component {
         window.addEventListener            ('streamComplete', (event) => this.on_stream_complete(event))
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this.build()
-        this.add_event_hooks()
-    }
-
-    build() {
+    async apply_css() {
         this.add_css_rules(this.css_rules())
-        this.set_inner_html(this.html())
-        //this.setup_upload_button()
     }
 
-    css_rules() {
-        return { "*": {"font-family": "Verdana"},
-                 ".chat-input"       : { "padding":       "10px"                         ,
-                                         "background"    : "#fff"                        ,
-                                         "box-shadow"    : "0 -2px 10px rgba(0,0,0,0.1)" ,
-                                         "display"       : "flex"                        ,
-                                         "align-items"   : "center"                      },
-                 "webc-form-input" : { "width"         : "96%"                         },
-                                       //  "padding"       : "10px"                        ,
-                                       //  "border-radius" : "20px"                        ,
-                                       //  "border"        : "1px solid #ccc"              },
-                 "#file-input"       : { "opacity"       : "0px"                         ,   /* Hide the file input */
-                                         "position"      : "absolute"                    ,
-                                         "z-index"       : "-1"                          },  /* Place it behind the scene */
-                 ".file-input-label" : { "margin-right"  : "8px"                         ,   /* Spacing between button and input box */
-                                         "cursor"        : "pointer"                     },
-                 "#action-button"    : { "padding"         : "10px 20px"                    ,
-                                         "font-size"       : "16px"                         ,
-                                         "cursor"          : "pointer"                      ,
-                                         "background-color": "#007bff"                      ,
-                                         "color"           : "white"                        ,
-                                         "border"          : "none"                         ,
-                                         "border-radius"   : "4px"                          ,
-                                         "margin-left"     : "10px"                         ,
-                                         "display"         : "flex"                         ,
-                                         "align-items"     : "center"                       ,
-                                         "justify-content" : "center"                      },
-                 "#clear-button"     : { "padding"         : "10px 20px"                    ,
-                                         "background-color": "#808080"                        ,
-                                         "border"          : "none"                         ,
-                                         "color"           : "white"                        ,
-                                         "border-radius"   : "4px"                          ,
-                                         "margin-left"     : "10px"                         ,
-                                         "font-size"       : "16px"                         ,
-                                         "cursor"          : "pointer"                      },
-        }
-    }
+    // other methods
+
+
 
     html() {
         //todo add back this HTML mode
@@ -317,6 +275,44 @@ export default class WebC__Chat_Input extends Web_Component {
     //         image.src = resizedDataUrl;                                 // Set the image source to the resized image
     //     }
     // }
+
+    css_rules() {
+        return { "*": {"font-family": "Verdana"},
+                 ".chat-input"       : { "padding":       "10px"                         ,
+                                         "background"    : "#fff"                        ,
+                                         "box-shadow"    : "0 -2px 10px rgba(0,0,0,0.1)" ,
+                                         "display"       : "flex"                        ,
+                                         "align-items"   : "center"                      },
+                 "webc-form-input" : { "width"         : "96%"                         },
+                                       //  "padding"       : "10px"                        ,
+                                       //  "border-radius" : "20px"                        ,
+                                       //  "border"        : "1px solid #ccc"              },
+                 "#file-input"       : { "opacity"       : "0px"                         ,   /* Hide the file input */
+                                         "position"      : "absolute"                    ,
+                                         "z-index"       : "-1"                          },  /* Place it behind the scene */
+                 ".file-input-label" : { "margin-right"  : "8px"                         ,   /* Spacing between button and input box */
+                                         "cursor"        : "pointer"                     },
+                 "#action-button"    : { "padding"         : "10px 20px"                    ,
+                                         "font-size"       : "16px"                         ,
+                                         "cursor"          : "pointer"                      ,
+                                         "background-color": "#007bff"                      ,
+                                         "color"           : "white"                        ,
+                                         "border"          : "none"                         ,
+                                         "border-radius"   : "4px"                          ,
+                                         "margin-left"     : "10px"                         ,
+                                         "display"         : "flex"                         ,
+                                         "align-items"     : "center"                       ,
+                                         "justify-content" : "center"                      },
+                 "#clear-button"     : { "padding"         : "10px 20px"                    ,
+                                         "background-color": "#808080"                        ,
+                                         "border"          : "none"                         ,
+                                         "color"           : "white"                        ,
+                                         "border-radius"   : "4px"                          ,
+                                         "margin-left"     : "10px"                         ,
+                                         "font-size"       : "16px"                         ,
+                                         "cursor"          : "pointer"                      },
+        }
+    }
 }
 
 WebC__Chat_Input.define()

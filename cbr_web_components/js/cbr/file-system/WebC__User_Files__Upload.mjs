@@ -10,22 +10,31 @@ import Input          from '../../core/Input.mjs'
 import CSS__Buttons  from "../../css/CSS__Buttons.mjs";
 
 export default class WebC__User_Files__Upload extends Web_Component {
-    load_attributes() {
-        new CSS__Buttons   (this).apply_framework()
-        new CSS__Forms     (this).apply_framework()
-        new CSS__Cards     (this).apply_framework()
-        new CSS__Icons     (this).apply_framework()
-        this.api_invoke     = new API__Invoke()
-        this.current_folder = {
-            node_id: null,
-            name: 'root'
-        }
+
+    constructor() {
+        super();
+        this.api_invoke = new API__Invoke()
     }
 
-    connectedCallback() {
-        super.connectedCallback()
-        this.build()
-        this.add_event_listeners()
+    async apply_css() {
+        new CSS__Buttons (this).apply_framework()
+        new CSS__Forms   (this).apply_framework()
+        new CSS__Cards   (this).apply_framework()
+        new CSS__Icons   (this).apply_framework()
+        this.add_css_rules(this.css_rules())
+    }
+
+    load_attributes() {
+        this.current_folder = { node_id: null,  name: 'root' }
+    }
+
+    add_event_handlers() {
+
+        const btn   = this.shadowRoot.querySelector('#select-files-btn')
+        const input = this.shadowRoot.querySelector('#file-input'      )
+        if (btn && input) {
+            btn.addEventListener('click', () => input.click())
+        }
     }
 
     add_event_listeners() {
@@ -185,7 +194,7 @@ export default class WebC__User_Files__Upload extends Web_Component {
         }
     }
 
-    build() {
+    html() {
         const container = new Div({ class: 'upload-container' })
         const folder    = new Div({ class: 'current-folder', value: `Current folder: ${this.current_folder.name}` })
         const drop_zone = new Div({ class: 'drop-zone' })
@@ -213,15 +222,7 @@ export default class WebC__User_Files__Upload extends Web_Component {
         drop_zone.add_elements(upload_icon, text, methods)
         container.add_elements(folder, drop_zone, status)
 
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
-
-        // Add click handler after elements are in DOM
-        const btn = this.shadowRoot.querySelector('#select-files-btn')
-        const input = this.shadowRoot.querySelector('#file-input')
-        if (btn && input) {
-            btn.addEventListener('click', () => input.click())
-        }
+        return container
     }
 }
 

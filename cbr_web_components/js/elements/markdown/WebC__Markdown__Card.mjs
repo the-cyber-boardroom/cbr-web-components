@@ -13,7 +13,7 @@ export default class WebC__Markdown__Card extends WebC__API_Markdown_To_Html {
     static class__action         = 'markdown_action';
     static class__action_link    = 'markdown_action_link';
 
-    async build() {
+    html() {
         const div_card        = new Div ({ class: WebC__Markdown__Card.class__card           });                     // Create individual Div components for the card structure
         const div_card_body   = new Div ({ class: WebC__Markdown__Card.class__card_body      });
         const div_title       = new Div ({ class: WebC__Markdown__Card.class__card_title     });
@@ -38,8 +38,7 @@ export default class WebC__Markdown__Card extends WebC__API_Markdown_To_Html {
         div_card_body.add_element(div_action   );                                                                   // Add action button to the card body
         div_card     .add_element(div_card_body);                                                                   // Assemble the card structure
 
-        const html = div_card.html();                                                                               // Convert to HTML and set as inner content of the component
-        this.set_inner_html(html);
+        return div_card
     }
 
 

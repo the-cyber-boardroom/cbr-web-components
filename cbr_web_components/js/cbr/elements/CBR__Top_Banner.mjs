@@ -9,12 +9,7 @@ export default class CBR__Top_Banner extends Div {
         this.setup()
     }
 
-    async setup() {
-        // const userImg = new Img({
-        //     class: 'user-img img-circle',
-        //     src: '/assets/cbr/account-circle.svg',
-        //     alt: 'User'
-        // })
+    setup() {
         this.add_class('top-banner')
 
         const menu_icon    = new Icon({ class: 'menu-icon icon-lg'  , icon: 'menu'                                       })    // Hamburger menu

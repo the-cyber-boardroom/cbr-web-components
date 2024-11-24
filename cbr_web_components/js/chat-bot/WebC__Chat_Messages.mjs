@@ -43,7 +43,7 @@ export default class WebC__Chat_Messages extends Web_Component {
             this.messages_div_scroll_to_end()
         }
     }
-    add_event_hooks() {
+    add_event_listeners() {
         //console.log("configuring event hooks in WebC__Chat_Messages")
 
         var current_message = null
@@ -68,15 +68,12 @@ export default class WebC__Chat_Messages extends Web_Component {
         })
     }
 
-    connectedCallback() {
-        this.build()
-        this.add_event_hooks()
+    async apply_css() {
+        this.add_css_rules(this.css_rules())
     }
 
-    build() {
-        this.add_css_rules(this.css_rules())
-        const html = `<div class="messages"><slot></slot></div>`
-        this.set_inner_html(html)
+    html() {
+        return `<div class="messages"><slot></slot></div>`
     }
 
     css_rules() { return { "*"         : { "font-family"    : "Verdana" },

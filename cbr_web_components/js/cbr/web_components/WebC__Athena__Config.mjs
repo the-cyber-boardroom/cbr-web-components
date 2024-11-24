@@ -8,20 +8,16 @@ import Raw_Html         from "../../core/Raw_Html.mjs";
 import CSS__Grid from "../../css/grid/CSS__Grid.mjs";
 
 export default class WebC__Athena__Config extends Web_Component {
+
     load_attributes() {
         new CSS__Grid      (this).apply_framework()
         new CSS__Cards     (this).apply_framework()
         new CSS__Forms     (this).apply_framework()
         new CSS__Typography(this).apply_framework()
 
-        this.channel = this.getAttribute('channel')
+        this.channel            = this.getAttribute('channel')
         this.show_system_prompt = localStorage.getItem('athena_show_system_prompt') === 'true'
-        this.edit_mode = localStorage.getItem('athena_edit_mode') === 'true'
-    }
-
-    connectedCallback() {
-        super.connectedCallback()
-        this.add_event_listeners()
+        this.edit_mode          = localStorage.getItem('athena_edit_mode'         ) === 'true'
     }
 
     add_event_listeners() {
@@ -57,7 +53,7 @@ export default class WebC__Athena__Config extends Web_Component {
         this.dispatchEvent(event)
     }
 
-    render() {
+    html() {
         const card       = new Div({ class: 'card m-1 bg-light-cyan' })
         const body       = new Div({ class: 'card-body' })
         const title      = new H({ level: 3, class: 'card-title', value: 'Configuration' })
@@ -90,7 +86,7 @@ export default class WebC__Athena__Config extends Web_Component {
         body      .add_elements(title, form)
         card      .add_element(body)
 
-        this.set_inner_html(card.html())
+        return card
     }
 }
 

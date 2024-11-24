@@ -5,6 +5,15 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
 
     constructor() {
         super()
+        this.chat_thread_id     = this.random_uuid()
+        this.stop_fetch         = false
+        this.on_message_sent    = this.on_message_sent.bind(this);
+        this.on_stop_stream     = this.on_stop_stream.bind (this);
+        this.on_select_model    = this.on_select_model.bind(this);
+    }
+
+    load_attributes() {
+        super.load_attributes()
         this.provider           = this.getAttribute('provider'          )
         this.platform           = this.getAttribute('platform'          )
         this.model              = this.getAttribute('model'             )
@@ -21,16 +30,9 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         this.show_system_prompt = this.getAttribute('show_system_prompt') !== 'false'  // default to true
         this.stream             = this.getAttribute('stream'            ) !== 'false'  // default to true
         this.fetch              = this.getAttribute('fetch'             ) !== 'false'  // default to true
-        this.chat_thread_id     = this.random_uuid()
-        this.stop_fetch         = false
-        this.on_message_sent    = this.on_message_sent.bind(this);
-        this.on_stop_stream     = this.on_stop_stream.bind (this);
-        this.on_select_model    = this.on_select_model.bind(this);
     }
 
-    connectedCallback() {
-        super.connectedCallback()
-        this.add_event_listeners()
+    final_ui_changes() {
         this.apply_ui_tweaks()
     }
 
@@ -46,6 +48,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
     }
 
     add_event_listeners() {
+        super.add_event_listeners()
         this.addEventListener  ('messageSent'   , this.on_message_sent )
         window.addEventListener('stop_stream' , this.on_stop_stream  )
         window.addEventListener('select_model', this.on_select_model )

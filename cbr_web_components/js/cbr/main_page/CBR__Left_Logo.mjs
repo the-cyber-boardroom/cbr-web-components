@@ -5,8 +5,8 @@ export default class CBR__Logo extends Div {
     constructor({id, ...kwargs}={}) {
         kwargs.class = `logo ${kwargs.class || ''}`
         super({id, ...kwargs})
-        const cbr_logo = '/assets/cbr/cbr-logo-beta.png'
-        //const cbr_logo = 'https://static.dev.aws.cyber-boardroom.com/cbr-static/latest/assets/cbr/cbr-logo-beta.png'
+        //const cbr_logo = 'assets/cbr/cbr-logo-beta.png'
+        const cbr_logo = 'https://static.dev.aws.cyber-boardroom.com/cbr-static/latest/assets/cbr/cbr-logo-beta.png'
         const div_container = new Div({ class: 'logo-container'                                            })
         const div_logo      = new Div({ class: 'logo-wrapper'                                              })
         const img_logo      = new Img({ class: 'logo'      , alt: 'Cyber Boardroom Logo',  src: cbr_logo   })

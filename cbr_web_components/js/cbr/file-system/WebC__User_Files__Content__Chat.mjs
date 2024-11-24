@@ -8,6 +8,12 @@ import Button        from '../../core/Button.mjs'
 import Raw_Html      from '../../core/Raw_Html.mjs'
 
 export default class WebC__User_Files__Content__Chat extends Web_Component {
+
+    async apply_css() {
+        this.add_css_rules (this.css_rules())
+    }
+
+
     load_attributes() {
         new CSS__Forms  (this).apply_framework()
         new CSS__Cards  (this).apply_framework()
@@ -17,20 +23,14 @@ export default class WebC__User_Files__Content__Chat extends Web_Component {
         this.chat_mode  = 'content'                                    // Can be 'content' or 'summary'
     }
 
-    async connectedCallback() {
-        super.connectedCallback()
-        await this.build()
-    }
-
-    async build() {
+    async load_data() {
         await this.load_file_data()
-        this.render()
     }
 
     async load_file_data() {
         try {
-            const path = `/api/user-data/files/file-contents?file_id=${this.file_id}`
-            const response = await this.api_invoke.invoke_api(path)
+            const path         = `/api/user-data/files/file-contents?file_id=${this.file_id}`
+            const response     = await this.api_invoke.invoke_api(path)
             this.file_data     = response.data.file_data
             this.file_summary  = JSON.parse(response.data.file_summary)
             this.content_bytes = response.data.file_bytes__base64
@@ -93,15 +93,13 @@ export default class WebC__User_Files__Content__Chat extends Web_Component {
         }
     }
 
-    render() {
+    html() {
         const container = new Div({ class: 'content-chat-container' })
         const error_msg = new Div({ class: 'error-message' })
 
         container.add_elements(this.render_toolbar(),  error_msg,  this.render_chat() )
 
-        this.set_inner_html(container.html())
-        this.add_css_rules (this.css_rules())
-        this.add_event_handlers()
+        return container
     }
 
     add_event_handlers() {

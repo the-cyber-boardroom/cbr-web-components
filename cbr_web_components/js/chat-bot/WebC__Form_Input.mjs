@@ -22,15 +22,8 @@ export default class WebC__Form_Input extends Web_Component {
         this.events_utils.events_receive.add_event_listener('append_value', this.channel, this.on_append_value);
     }
 
-    build() {
+    apply_css() {
         this.add_css_rules(this.css_rules__chat_input())
-        this.set_inner_html(this.html())
-        this.add_event_listeners()
-    }
-
-    connectedCallback() {
-        super.connectedCallback()
-        this.build()
     }
 
     disconnectedCallback() {
@@ -72,7 +65,7 @@ export default class WebC__Form_Input extends Web_Component {
         const div__form_input    = new Tag({tag: 'div'    , id: 'form_input'})
         const text_area          = new Tag({tag:'textarea', id: 'text_area', value:'', attributes:{rows: '1'}})
         div__form_input.add(text_area)
-        return div__form_input.html()
+        return div__form_input
     }
 
     text_area_trigger_input_event() {

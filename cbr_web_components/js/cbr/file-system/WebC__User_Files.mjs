@@ -2,30 +2,24 @@ import Web_Component        from '../../core/Web_Component.mjs'
 import Div                  from '../../core/Div.mjs'
 import API__Invoke          from "../../data/API__Invoke.mjs";
 import WebC__Resize_Button  from "../../elements/ui/WebC__Resize_Button.mjs";
+import WebC__User_Files__Tree_View from "./WebC__User_Files__Tree_View.mjs";
+import WebC__User_Files__Actions from "./WebC__User_Files__Actions.mjs";
+import WebC__User_Files__Upload from "./WebC__User_Files__Upload.mjs";
+import WebC__User_Files__File_Viewer from "./WebC__User_Files__File_Viewer.mjs";
+import WebC__User_Files__Folder_Viewer from "./WebC__User_Files__Folder_Viewer.mjs";
 
 export default class WebC__User_Files extends Web_Component {
-    load_attributes() {
-        this.add_css_rules(this.css_rules())
+
+    constructor() {
+        super();
         this.api_invoke = new API__Invoke()
     }
 
-
-    add_web_components() {
-        let params = { resize_event_name : 'resize-user-files-left-panel' }
-        this.add_web_component(WebC__Resize_Button, params )
-    }
-    get div__left_panel() {
-        return this.query_selector('.left-panel')
+    async apply_css() {
+        this.add_css_rules(this.css_rules())
     }
 
-    on_left_panel_resize (event) {
-        const minimized = event.detail.minimized
-        if (minimized) {
-            this.div__left_panel.add_class   ('left-panel-minimized')
-        } else {
-            this.div__left_panel.remove_class('left-panel-minimized')
-        }
-    }
+
     add_event_listeners() {
         this.addEventListener('resize-user-files-left-panel', (event) => this.on_left_panel_resize(event))
 
@@ -57,6 +51,20 @@ export default class WebC__User_Files extends Web_Component {
 
         })
     }
+
+    get div__left_panel() {
+        return this.query_selector('.left-panel')
+    }
+
+    on_left_panel_resize (event) {
+        const minimized = event.detail.minimized
+        if (minimized) {
+            this.div__left_panel.add_class   ('left-panel-minimized')
+        } else {
+            this.div__left_panel.remove_class('left-panel-minimized')
+        }
+    }
+
     reload_all_components() {
         const tree_view = this.shadowRoot.querySelector('webc-user-files-tree-view')                    // Refresh tree view
         if (tree_view) {
@@ -73,18 +81,30 @@ export default class WebC__User_Files extends Web_Component {
         })
     }
 
+    add_web_components() {
+        let params = { resize_event_name : 'resize-user-files-left-panel' }
+        this.add_web_component(WebC__Resize_Button, params )
+
+        this.add_web_component_to('.left-panel'     , WebC__User_Files__Tree_View    )
+        this.add_web_component_to('.left-panel'     , WebC__User_Files__Actions      )
+        this.add_web_component_to('.left-panel'     , WebC__User_Files__Upload       )
+        this.add_web_component_to('.preview-section', WebC__User_Files__File_Viewer  )
+        this.add_web_component_to('.preview-section', WebC__User_Files__Folder_Viewer)
+    }
+
+
     html() {
         const container = new Div({ class: 'files-container'           })
 
         const left_panel = new Div({ class: 'files-panel left-panel'   })                 // Left panel for tree view and actions
-        left_panel.add_tag({ tag: 'webc-user-files-tree-view'          })
-        left_panel.add_tag({ tag: 'webc-user-files-actions'            })
-        left_panel.add_tag({ tag: 'webc-user-files-upload'             })
+        // left_panel.add_tag({ tag: 'webc-user-files-tree-view'          })
+        // left_panel.add_tag({ tag: 'webc-user-files-actions'            })
+        // left_panel.add_tag({ tag: 'webc-user-files-upload'             })
 
         const right_panel = new Div({ class: 'files-panel right-panel' })               // Right panel for file preview and chat
         const preview_section = new Div({ class: 'preview-section'     })
-        preview_section.add_tag({ tag: 'webc-user-files-file-viewer'   })
-        preview_section.add_tag({ tag: 'webc-user-files-folder-viewer' })
+        // preview_section.add_tag({ tag: 'webc-user-files-file-viewer'   })
+        // preview_section.add_tag({ tag: 'webc-user-files-folder-viewer' })
 
         right_panel.add_elements(preview_section)
         container  .add_elements(left_panel, right_panel)

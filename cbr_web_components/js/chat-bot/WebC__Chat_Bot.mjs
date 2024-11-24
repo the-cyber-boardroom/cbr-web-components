@@ -20,16 +20,8 @@ export default class WebC__Chat_Bot extends Web_Component {
         this.target_element     = null
         this.data_chat_bot      = new Data__Chat_Bot()
         this.bot_name           = 'ChatBot'
-        this.show_sent_messages = this.getAttribute('show_sent_messages') || false
         this.channels.push('WebC__Chat_Bot')
 
-        if (this.getAttribute('edit_mode')  === null) {
-            this.edit_mode = 'true' }
-        else { this.edit_mode = this.getAttribute('edit_mode')}
-
-        if (this.getAttribute('show_sent_messages')  === null) {
-            this.show_sent_messages = 'true' }
-        else { this.show_sent_messages = this.getAttribute('show_sent_messages') }
     }
 
     // properties
@@ -58,12 +50,40 @@ export default class WebC__Chat_Bot extends Web_Component {
         return getComputedStyle(this.target_element)
     }
 
-    // connected events
-    connectedCallback() {
+    // Web_Component overrider methods
+
+    async apply_css() {
         new CSS__WebC__Chat_Bot(this).apply_framework()
-        super.connectedCallback()
-        this.build()
     }
+
+    load_attributes() {
+        super.load_attributes();
+        this.show_sent_messages = this.getAttribute('show_sent_messages') || false
+
+        if (this.getAttribute('edit_mode')  === null) {
+            this.edit_mode = 'true' }
+        else {
+            this.edit_mode = this.getAttribute('edit_mode')
+        }
+
+        if (this.getAttribute('show_sent_messages')  === null) {
+            this.show_sent_messages = 'true' }
+        else {
+            this.show_sent_messages = this.getAttribute('show_sent_messages')
+        }
+    }
+
+    add_event_listeners() {
+        window.addEventListener('new_input_message', (e)=>{ this.handle_new_input_message(e.detail) });
+        window.addEventListener('clear_messages'   , (e)=>{ this.handle_clear_messages   (e.detail) })
+        window.addEventListener('new_chat_ids'     , (e)=>{ this.handle_new_chat_ids     (e.detail) })
+        this.add_event_listener('.maximize-button', 'click', () => this.toggle_maximize())
+    }
+
+    html() {
+        return this.div_chatbot_ui()
+    }
+
 
     // instance methods
     handle_new_input_message(event_data) {
@@ -87,12 +107,7 @@ export default class WebC__Chat_Bot extends Web_Component {
         $(this.messages.childNodes).remove()
     }
 
-    add_event_hooks() {
-        window.addEventListener('new_input_message', (e)=>{ this.handle_new_input_message(e.detail) });
-        window.addEventListener('clear_messages'   , (e)=>{ this.handle_clear_messages   (e.detail) })
-        window.addEventListener('new_chat_ids'     , (e)=>{ this.handle_new_chat_ids     (e.detail) })
-        this.add_event_listener('.maximize-button', 'click', () => this.toggle_maximize())
-    }
+
 
     create_header() {
         const tag = new Tag()
@@ -168,12 +183,6 @@ export default class WebC__Chat_Bot extends Web_Component {
         this.save_chat_link.addEventListener('click'         , async (event) => this.on_save_chat_click(event, cbr_chat_id))
     }
 
-
-    build() {
-        const html = this.div_chatbot_ui().html()
-        this.set_inner_html(html)
-        this.add_event_hooks()
-    }
 
     hide() {
         this.hidden = true

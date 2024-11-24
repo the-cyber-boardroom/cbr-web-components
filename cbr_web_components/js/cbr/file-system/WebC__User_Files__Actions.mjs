@@ -8,6 +8,11 @@ import Button        from '../../core/Button.mjs'
 import Input         from '../../core/Input.mjs'
 
 export default class WebC__User_Files__Actions extends Web_Component {
+
+    async apply_css() {
+        this.add_css_rules(this.css_rules())
+    }
+
     load_attributes() {
         new CSS__Forms(this).apply_framework()
         this.api_invoke  = new API__Invoke()
@@ -17,16 +22,12 @@ export default class WebC__User_Files__Actions extends Web_Component {
         }
     }
 
-    connectedCallback() {
-        super.connectedCallback()
-        this.add_event_listeners()
-        this.render()
-    }
 
     add_event_listeners() {
         document.addEventListener('folder-selected', (e) => {
             this.current_folder = e.detail
             this.render()
+            this.add_event_handlers()
         })
     }
 
@@ -158,15 +159,15 @@ export default class WebC__User_Files__Actions extends Web_Component {
     }
 
 
-    render() {
+    html() {
         const container         = new Div({ class: 'actions-container' })
         const folder_info       = this.render_folder_info()
         const folder_form       = this.render_folder_form()
         const markdown_form     = this.render_markdown_form()
 
-        const show_rename_delete = this.current_folder.node_id &&  this.current_folder.name !== 'root'
+        this.show_rename_delete = this.current_folder.node_id &&  this.current_folder.name !== 'root'  // todo:add better way to track this
 
-        if (show_rename_delete) {
+        if (this.show_rename_delete) {
             const rename_form = this.render_rename_delete_form()
             const delete_btn  = this.render_delete_button()
             container.add_elements(folder_info, folder_form, markdown_form, rename_form, delete_btn)
@@ -174,9 +175,7 @@ export default class WebC__User_Files__Actions extends Web_Component {
             container.add_elements(folder_info, folder_form, markdown_form)
         }
 
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
-        this.add_event_handlers(show_rename_delete)
+        return container
     }
 
     // Render helper methods
@@ -226,7 +225,7 @@ export default class WebC__User_Files__Actions extends Web_Component {
         })
     }
 
-    add_event_handlers(show_rename_delete) {
+    add_event_handlers() {
         this.query_selector('.new-folder-btn').addEventListener('click', async () => {                           // Add folder handler
             const input = this.query_selector('.new-folder-input')
             const name = input.value.trim()
@@ -244,7 +243,7 @@ export default class WebC__User_Files__Actions extends Web_Component {
         })
 
         // Conditional handlers for rename/delete
-        if (show_rename_delete) {
+        if (this.show_rename_delete) {
             this.query_selector('.action-button.rename').addEventListener('click', async () => {
                 const input = this.query_selector('.rename-input')
                 const new_name = input.value.trim()

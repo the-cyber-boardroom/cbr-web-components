@@ -14,12 +14,6 @@ export default class WebC__System__Prompt extends Web_Component {
         this.content = this.getAttribute('content') || '';
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this.build();
-        this.add_event_listeners();
-    }
-
     add_event_listeners() {
         const toggle = this.shadowRoot.querySelector('.prompt-header');
         if (toggle) {
@@ -40,7 +34,11 @@ export default class WebC__System__Prompt extends Web_Component {
         }
     }
 
-    build() {
+    async apply_css() {
+        this.add_css_rules (this.css_rules());
+    }
+
+    html() {
         const container = new Div({ class: 'system-prompt-container' });
 
         const header  = new Div({ class: 'prompt-header' });
@@ -50,8 +48,7 @@ export default class WebC__System__Prompt extends Web_Component {
         header   .add_elements(toggle, summary);
         container.add_elements(header, content);
 
-        this.set_inner_html(container.html());
-        this.add_css_rules (this.css_rules());
+        return container
     }
 
     calculate_size(content) {

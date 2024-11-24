@@ -22,16 +22,16 @@ export default class WebC__Chat_Message extends Web_Component {
         this.clear_message = this.clear_message.bind(this);
         this.edit_mode     = false
 
-        window.message = this               // todo: remove once confirmed that this is not being used by one of the MVPs
     }
-    connectedCallback() {
-        this.build()
+    apply_css() {
+        this.add_css_rules (this.css_messages())
     }
 
-    build() {
+    load_attributes() {
         this.type = this.attributes.type?.value
-        this.add_css_rules (this.css_messages())
-        this.set_inner_html(this.html())
+    }
+
+    add_event_listeners() {
         this.style.display = 'inherit'              // need to add this so that align-self works ('contents' seems a better value, but 'inherit'
         if (this.edit_mode && this.type !== 'initial') {
             this.shadowRoot.querySelector("#edit_button" ).addEventListener('click', this.edit_message )

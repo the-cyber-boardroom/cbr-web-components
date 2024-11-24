@@ -20,17 +20,12 @@ export default class CBR__Route__Handler {
     }
 
     async handle_navigation_click(event) {
-        const path = event.composedPath();
-        const link = path.find(el => el.tagName === 'A');
+        const link = this.find_link_element(event)
 
-        if (link && link.href.startsWith(window.location.origin)) {
-            if (link.href.includes('/web/') || link.href.includes('/athena/index#' )) {           // don't intercept links to other pages
-                return
-            }
-            event.preventDefault()
-            const path = link.href.replace(window.location.origin, '')
-            await this.navigate(path)
-        }
+        if (!this.should_handle_link(link)) { return }
+
+        event.preventDefault()
+        await this.process_link(link)
     }
 
     async handle_route(path) {
@@ -61,11 +56,92 @@ export default class CBR__Route__Handler {
         }
     }
 
+    find_link_element(event) {
+        const path = event.composedPath()
+        return path.find(el => el.tagName === 'A')
+    }
+
+    should_handle_link(link) {
+        if (!link) { return false }
+
+        const base_url = window.location.origin + this.base_path
+        return link.href.startsWith(base_url)
+    }
+
+    async process_link(link) {
+        const target_type     = link.getAttribute('data-target-type'   )
+        const component_path  = link.getAttribute('data-component-path')
+        const navigation_path = this.extract_navigation_path(link)
+
+        this.update_browser_path(navigation_path)
+
+        switch (target_type) {
+            case 'web_component':
+                const component_name = link.getAttribute('data-component')
+                if (component_name) {
+                    await this.load_component(component_name, component_path)
+                    return
+                }
+                console.error('Web component target specified but no component name found')
+                break
+
+            case 'link':
+                await this.navigate(navigation_path)
+                break
+
+            default:
+                console.warn(`Unknown target type: ${target_type}, defaulting to link navigation`)
+                await this.navigate(navigation_path)
+        }
+
+    }
+    extract_navigation_path(link) {
+        const base_url = window.location.origin + this.base_path
+        return link.href.replace(base_url, '')
+    }
+
     async navigate(path) {
-        window.history.pushState({}, '', path)
         await this.handle_route(path)
     }
 
+    async load_component(component_name, component_path) {
+        const contentEl = this.component.query_selector('#content')
+        if (!contentEl) return
+
+        try {
+            // First import the module (this executes the .define())
+            const base_path     = '/web_components/js/cbr/web_components/'
+            const path         = `${base_path}${component_path}${component_name}.mjs`
+            const module       = await import(path)
+
+            // Clear existing content
+            contentEl.innerHTML = ''
+
+            // Convert WebC class name to kebab-case for HTML element
+            const tag_name     = component_name.replace(/__/g, '-')
+                                               .replace(/_/g, '-')
+                                               .toLowerCase()
+                                               .replace(/-+/g, '-')
+            // Create and add the web component
+            const component = document.createElement(tag_name)
+            contentEl.appendChild(component)
+
+            // Update URL without triggering navigation
+            const route_path = component_name.replace(/^WebC__/, '')
+                                          .split('__')
+                                          .map(part => part.toLowerCase())
+                                          .join('/')
+            //window.history.pushState({}, '', `${this.base_path}/${route_path}`)
+
+        } catch (error) {
+            console.error('Error loading component:', error)
+            contentEl.innerHTML = '<div class="content-error">Error loading component. Please try again.</div>'
+        }
+    }
+
+    update_browser_path(path) {
+        window.history.pushState({}, '', `${this.base_path}${path}`)
+    }
     set_base_path(base_path) {
         this.base_path = base_path
     }

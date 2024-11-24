@@ -16,16 +16,17 @@ export default class Raw_Html extends Tag {
         return this
     }
 
-    inner_html(depth    ) {                              // todo: need to add support for indent in inner_html
-        if (this.raw_html === '') {
-            return ''
-        }
-        else {
-            const indent       = ' '.repeat((depth + 1) * 4);
-            const indentedHtml = this.raw_html.split('\n')                                      // Split the raw HTML into lines, add the indent to each line, and join them back
-                                              .map(line => indent + line)
-                                              .join('\n');
-            return indentedHtml + '\n'; // Ensure the result ends with a newline for better formatting
+    inner_html(depth) { // todo: need to add support for indent in inner_html
+
+        if (typeof this.raw_html !== 'string' || this.raw_html.trim() === '') {                         // Ensure raw_html is a string and handle null or empty cases
+            return '';
+        } else {
+            const indent = ' '.repeat((depth + 1) * 4);
+            const indentedHtml = this.raw_html.split('\n')                                              // Split the raw HTML into lines
+                                              .map(line => indent + line)                        // Add the indent to each line
+                                              .join('\n');                                              // Join them back with newlines
+            return indentedHtml + '\n';                                                                 // Ensure the result ends with a newline for better formatting
         }
     }
+
 }
