@@ -29,9 +29,9 @@ export default class WebC__Component__Tester extends Web_Component {
                              { label: 'Document Assistant' , path: 'cbr/document-assistant/WebC__Document__Assistant.mjs'      },
                              { label: 'User Files'         , path: 'cbr/file-system/WebC__User_Files.mjs'                   },
                              { label: 'User Session'       , path: 'cbr/session/WebC__CBR__User_Session.mjs'                   },
-                             { label: 'Athena Examples'    , path: 'cbr/web_components/WebC__Athena__Examples.mjs'             },
-                             { label: 'Athena Welcome'     , path: 'cbr/web_components/WebC__Athena__Welcome.mjs'              },
-                             { label: 'Past Chats Welcome' , path: 'cbr/web_components/WebC__PastChats__Welcome.mjs'           }]
+                             { label: 'Athena Examples'    , path: 'cbr/web-components/WebC__Athena__Examples.mjs'             },
+                             { label: 'Athena Welcome'     , path: 'cbr/web-components/WebC__Athena__Welcome.mjs'              },
+                             { label: 'Past Chats Welcome' , path: 'cbr/web-components/WebC__PastChats__Welcome.mjs'           }]
 
     apply_css() {
         this.add_css_rules(this.css_rules())

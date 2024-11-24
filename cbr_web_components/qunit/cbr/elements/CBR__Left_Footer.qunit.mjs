@@ -1,6 +1,6 @@
 import CBR__Left_Footer from '../../../js/cbr/elements/CBR__Left_Footer.mjs'
 
-const { module, test } = QUnit
+const { module, test , only} = QUnit
 
 module('CBR__Left_Footer', hooks => {
         test('creates correct HTML structure', assert => {
@@ -135,5 +135,18 @@ module('CBR__Left_Footer', hooks => {
         const text_version = div_version.elements[0]
         assert.equal(text_version.class   , 'version-text'                       , 'Version has correct class'    )
         assert.ok   (text_version.value.includes(version)                        , 'Version shows correct value'  )
+    })
+
+
+    test('constructor handles default values', assert => {
+        // Test with no parameters
+        const left_footer__empty = new CBR__Left_Footer()
+        assert.equal(left_footer__empty.version         , 'NA'                         , 'Sets default version when no params'     )
+        assert.ok   (left_footer__empty.class.includes('left-footer')                 , 'Sets default class when no params'       )
+
+        // Test with undefined values
+        const left_footer__undefined = new CBR__Left_Footer({ version: undefined })
+        assert.equal(left_footer__undefined.version     , 'NA'                         , 'Sets default version with undefined'     )
+        assert.ok   (left_footer__undefined.class.includes('left-footer')             , 'Sets default class with undefined'       )
     })
 })

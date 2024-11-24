@@ -110,7 +110,7 @@ export default class CBR__Route__Handler {
 
         try {
             // First import the module (this executes the .define())
-            const base_path     = '/web_components/js/cbr/web_components/'
+            const base_path     = '/web_components/js/cbr/web-components/'
             const path         = `${base_path}${component_path}${component_name}.mjs`
             const module       = await import(path)
 
