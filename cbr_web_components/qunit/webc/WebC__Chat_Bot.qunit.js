@@ -144,32 +144,32 @@ QUnit.module('WebC__Chat_Bot', function(hooks) {
     // })
 
     //test needs a fix to web_chat_bot.input getter which is using the .invoke legacy method
-    QUnit.skip('.hook_events',    async (assert) => {
-        if (typeof window.__karma__ !== 'undefined') {
-            assert.ok(true, 'Skipped in Karma environment');
-            return;
-        }
-        const target_div        = WebC__Target_Div.add_to_body().build({width:"50%"})
-        const web_chat_bot      = target_div.append_child(WebC__Chat_Bot)
-        await web_chat_bot.wait_for__component_ready()
-        const message_to_send   = 'an sent message'
-
-        const received_message  = 'Hi how can I help'
-        const keyevent           = new KeyboardEvent('keydown')
-        keyevent._key ='Enter'          // todo: replace with proper event dispatch
-
-        web_chat_bot.messages.add_message_received(received_message)
-
-        web_chat_bot.input.dispatchEvent(keyevent)
-
-        assert.equal(web_chat_bot.messages.childNodes.length, 3)
-        assert.equal(web_chat_bot.messages.childNodes[0].data    , '\n    ')
-        assert.equal(web_chat_bot.messages.childNodes[0].nodeName, '#text')
-        assert.equal(web_chat_bot.messages.childNodes[1].message(), received_message)
-        assert.equal(web_chat_bot.messages.childNodes[2].message(), message_to_send)
-
-        target_div.remove()
-    })
+    // QUnit.skip('.hook_events',    async (assert) => {
+    //     if (typeof window.__karma__ !== 'undefined') {
+    //         assert.ok(true, 'Skipped in Karma environment');
+    //         return;
+    //     }
+    //     const target_div        = WebC__Target_Div.add_to_body().build({width:"50%"})
+    //     const web_chat_bot      = target_div.append_child(WebC__Chat_Bot)
+    //     await web_chat_bot.wait_for__component_ready()
+    //     const message_to_send   = 'an sent message'
+    //
+    //     const received_message  = 'Hi how can I help'
+    //     const keyevent           = new KeyboardEvent('keydown')
+    //     keyevent._key ='Enter'          // todo: replace with proper event dispatch
+    //
+    //     web_chat_bot.messages.add_message_received(received_message)
+    //
+    //     web_chat_bot.input.dispatchEvent(keyevent)
+    //
+    //     assert.equal(web_chat_bot.messages.childNodes.length, 3)
+    //     assert.equal(web_chat_bot.messages.childNodes[0].data    , '\n    ')
+    //     assert.equal(web_chat_bot.messages.childNodes[0].nodeName, '#text')
+    //     assert.equal(web_chat_bot.messages.childNodes[1].message(), received_message)
+    //     assert.equal(web_chat_bot.messages.childNodes[2].message(), message_to_send)
+    //
+    //     target_div.remove()
+    // })
 
     QUnit.test('main UI workflow',   (assert) => {
         const target_div        = WebC__Target_Div.add_to_body().build({width:"50%"})

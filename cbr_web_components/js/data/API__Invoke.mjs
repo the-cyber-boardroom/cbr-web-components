@@ -1,13 +1,11 @@
 export default class API__Invoke {
     constructor(channel) {
         this.channel               = channel || this.random_id('api_invoke_')
-        this.mock_responses        = {}
         this.on_error_return_value = null
     }
 
     // Method to invoke the API asynchronously using fetch
     async invoke_api(api_path, method = 'GET', data = null, auth_header = null) {
-
         const url     = `${api_path}`;
         const options = { method,  headers: { 'Content-Type': 'application/json' }};
 
@@ -15,9 +13,6 @@ export default class API__Invoke {
         if (data && (method === 'POST' || method === 'PUT')) { options.body = JSON.stringify(data);            }
 
         try {
-            if (this.mock_responses && this.mock_responses[api_path]) {
-                return this.mock_responses[api_path]
-            }
 
             const response = await fetch(url, options);
 
@@ -31,10 +26,6 @@ export default class API__Invoke {
             console.error('Error invoking API:', error, api_path);
             throw error;
         }
-    }
-
-    set_mock_response(path, response) {
-        this.mock_responses[path] = response;
     }
 
     // utils methods

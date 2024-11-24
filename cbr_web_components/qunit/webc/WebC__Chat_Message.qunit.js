@@ -110,6 +110,7 @@ QUnit.module('WebC__Chat_Message', function(hooks) {
         const div_setup = {top: "200px",width:"100px"}
         const target_div        = WebC__Target_Div.add_to_body().build(div_setup)
         const web_chat_messages = target_div.append_child(WebC__Chat_Messages)
+        web_chat_messages.wait_for__component_ready()
         web_chat_messages.show_sent_messages = true
 
         // adding full messages

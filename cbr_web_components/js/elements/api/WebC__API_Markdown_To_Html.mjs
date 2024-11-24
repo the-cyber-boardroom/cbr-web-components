@@ -29,11 +29,10 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
         this.markdown_metadata                 = null
         this.markdown_html                     = null
         this.api_invoke                        = new API__Invoke()
-        this.api_invoke.mock_responses         = mock_responses
         this.api_invoke.on_error_return_value  = WebC__API_Markdown_To_Html.on_error_return_value
         await this.load_html_content_and_metadata()
 
-        this.load_libraries__css               = new Load_Libraries__CSS({target:this, mock_responses:mock_responses})      // todo: legacy, not needed anymore in the new pure WebC model
+        this.load_libraries__css               = new Load_Libraries__CSS({target:this})      // todo: legacy, not needed anymore in the new pure WebC model
     }
 
     async component_ready() {
@@ -122,8 +121,7 @@ export default class WebC__API_Markdown_To_Html extends Web_Component {
 
     async load_html_content_and_metadata() {
         if (!this.content_path) { return }
-        const method           = 'get'
-        //const target_url       = WebC__API_Markdown_To_Html.url__api_markdown_file_to_html_and_metadata + this.content_path
+        const method           = 'GET'
         const  target_url      = this.resolve_target_url()
         const html_and_metadata = await this.api_invoke.invoke_api(target_url, method)
         this.markdown_html     = html_and_metadata.html
