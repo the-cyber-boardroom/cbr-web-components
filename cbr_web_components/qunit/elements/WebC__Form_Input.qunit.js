@@ -14,11 +14,12 @@ QUnit.module('WebC__Form_Input', function(hooks) {
     let channel
     let webc_id
 
-    hooks.beforeEach((assert) => {
+    hooks.beforeEach(async (assert) => {
         channel                 = 'qunit_webc_form_input'
         target_div_setup        = { right:"50px", top:"250px", width: "500px", height:"200px"}
         target_div              = WebC__Target_Div.add_to_body().build(target_div_setup)
         webc_form_input         = target_div.append_child(WebC__Form_Input, {channel:channel})
+        await webc_form_input.wait_for__component_ready()
         events_utils            = webc_form_input.events_utils
         text_area               = webc_form_input.text_area
         //target_div.shadow_root().querySelector('.target_div').style.border = '0px'

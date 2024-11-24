@@ -3,6 +3,8 @@ import Tag           from "./Tag.mjs";
 
 export default class Web_Component extends HTMLElement {
 
+    EVENT_NAME__COMPONENT_READY = 'webc::component-ready'
+
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
@@ -74,6 +76,8 @@ export default class Web_Component extends HTMLElement {
 
               this.channels.push(this.channel)                  // todo: legacy - review usage and see if the current patterns can handle this requirement better
               this.add_event_listeners__web_component()         // todo: legacy - to remove, but first remove dependency from  WebC__Chat_Bot
+
+        this.raise_event(this.EVENT_NAME__COMPONENT_READY)
     }
 
     disconnectedCallback() {
@@ -161,6 +165,9 @@ export default class Web_Component extends HTMLElement {
             const on_event         = () => { clearTimeout(timeout_function); resolve(); }
             this.addEventListener(event_name, on_event, { once: true });
         });
+    }
+    async wait_for__component_ready(timeout) {
+        await this.wait_for_event(this.EVENT_NAME__COMPONENT_READY, timeout)
     }
 
     // other methods // todo organise these methods in a logical way

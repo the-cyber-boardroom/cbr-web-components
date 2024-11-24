@@ -9,9 +9,10 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
     let target_div
     let channel     = 'an_channel'
 
-    hooks.beforeEach(() => {
+    hooks.beforeEach(async () => {
         target_div = WebC__Target_Div.add_to_body().build({width: "50%"})
         webc_chat_input = target_div.append_child(WebC__Chat_Input, {channel:channel})
+        await webc_chat_input.wait_for__component_ready()
     });
 
     hooks.afterEach(() => {

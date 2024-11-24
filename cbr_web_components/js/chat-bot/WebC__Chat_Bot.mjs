@@ -124,6 +124,7 @@ export default class WebC__Chat_Bot extends Web_Component {
         return div_chat_header
     }
 
+    //todo : refactor this to use use add_web_components (and double check if we still need this class)
     div_chatbot_ui() {
 
         const tag = new Tag()

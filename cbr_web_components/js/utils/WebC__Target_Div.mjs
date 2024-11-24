@@ -5,21 +5,24 @@ import Web_Component from "../core/Web_Component.mjs"
 export default class WebC__Target_Div extends Web_Component {
     constructor() {
         super();
-        this.target_div_id  = null
-        this.target_element = null
     }
     // properties
-    get inner_html()      { return this.target_element.innerHTML  }
-    set inner_html(value) { this.target_element.innerHTML = value }
+    // get inner_html()      { return this.target_element.innerHTML  }
+    // set inner_html(value) { this.target_element.innerHTML = value }
 
     // methods
 
+    apply_css() {
+        this.add_css_rules (this.css_rules())
+    }
 
-    build({target_div_id='target_div_id', ...kwargs}={}) {
-        this.add_css_rules (this.css_rules(kwargs)       )
-        this.set_inner_html(this.html(target_div_id))
-        this.target_div_id  = target_div_id
-        this.target_element = this.shadow_root().querySelector(`#${this.target_div_id}`)
+    // todo: see if we need this with unique Ids for per target-div (at the momment we can get the div via .query_selector('.target_div') )
+    // get target_element() {
+    //     return this.shadow_root().querySelector(".target_div")  //(`#${this.target_div_id}`)
+    // }
+
+    build({...kwargs}={}) {      // todo: change to a different  method than build
+        this.add_css_rules (this.css_rules(kwargs))
         return this
     }
 

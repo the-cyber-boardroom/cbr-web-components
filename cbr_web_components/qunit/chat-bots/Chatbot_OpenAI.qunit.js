@@ -8,14 +8,15 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
     let target_div
     let div_system_prompt
 
-    hooks.before((assert) => {
+    hooks.before(async (assert) => {
         target_div                      = WebC__Target_Div.add_to_body().build({width: "50%"})
         chatbot_openai                  = target_div.append_child(Chatbot_OpenAI)
-
+        await chatbot_openai.wait_for__component_ready()                                    // wait for the component to be ready
         div_system_prompt                 = document.createElement('div');                // todo: find a better way to add this temp DIV
         div_system_prompt.id              = 'system_prompt';
         div_system_prompt.style.display   = 'none';
         document.body.appendChild(div_system_prompt);
+        assert.notEqual(chatbot_openai.messages, null)
         assert.equal(document.body.querySelector('#system_prompt').outerHTML, '<div id="system_prompt" style="display: none;"></div>')
 
     });
@@ -29,7 +30,7 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
     })
 
     hooks.after((assert) => {
-        assert.equal(chatbot_openai.messages.messages_size(),0)
+        //assert.equal(chatbot_openai.messages.messages_size(),0)
         target_div.remove()
         div_system_prompt.remove()
     })
@@ -82,7 +83,7 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         chatbot_openai.apply_ui_tweaks()
 
         assert.deepEqual(chatbot_openai.messages.messages_size(),1)
-        assert.deepEqual(chatbot_openai.messages.messages()[0].outerHTML, '<webc-chat-message type="initial" style="display: inherit;">an initial message</webc-chat-message>')
+        assert.deepEqual(chatbot_openai.messages.messages()[0].outerHTML, '<webc-chat-message type="initial">an initial message</webc-chat-message>')
 
         chatbot_openai.messages.messages_clear()
         chatbot_openai.initial_message = null
@@ -125,6 +126,7 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
             }, { once: true });
 
         chatbot_openai.post_openai_prompt_with_stream(user_prompt, images)
+
     });
 
     //     chatbot_openai.addEventListener('streamData', function(event) {

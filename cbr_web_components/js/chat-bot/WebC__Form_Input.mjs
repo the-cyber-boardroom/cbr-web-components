@@ -32,8 +32,10 @@ export default class WebC__Form_Input extends Web_Component {
     }
 
     remove_event_listeners() {
-        this.text_area.removeEventListener('input'  , this.on_input  )
-        this.text_area.removeEventListener('keydown', this.on_keydown)
+        if (this.text_area) {
+            this.text_area.removeEventListener('input', this.on_input)
+            this.text_area.removeEventListener('keydown', this.on_keydown)
+        }
     }
 
     // methods

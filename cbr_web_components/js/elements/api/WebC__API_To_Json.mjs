@@ -9,18 +9,22 @@ export default class WebC__API_To_Json extends Web_Component {
         super();
     }
 
-    async connectedCallback() {
-        this.setup()
-        //super.connectedCallback()
-        this.load_attributes()
+    async apply_css() {
         await this.text_highlight.load_css()
         await this.text_highlight.load_highlight_js()
-        await this.build()
-        this.raise_event('build-complete')
     }
 
+    // async connectedCallback() {
+    //     this.setup()
+    //     //super.connectedCallback()
+    //     this.load_attributes()
+    //     await this.text_highlight.load_css()
+    //     await this.text_highlight.load_highlight_js()
+    //     await this.build()
+    //     this.raise_event('build-complete')
+    // }
+
     load_attributes() {
-        super.load_attributes()
         this.api_path  = this.getAttribute('api_path')
     }
 
@@ -28,18 +32,14 @@ export default class WebC__API_To_Json extends Web_Component {
         super.disconnectedCallback()
     }
 
-    setup() {
+    async load_data() {
         this.api_invoke                = new API__Invoke()
         this.text_highlight            = new Text_Highlight(this)
         this.api_invoke.mock_responses = JSON.parse(this.getAttribute('mock_responses'))
         this.use_api_path_as_title     = true
-        return this
+        this.api_data                  = await this.invoke_api_path()
     }
 
-    async build() {
-        let raw_html = await this.html()
-        this.set_inner_html(raw_html)
-    }
 
     async invoke_api_path() {
         const api_path = this.api_path
@@ -48,9 +48,8 @@ export default class WebC__API_To_Json extends Web_Component {
         return await this.api_invoke.invoke_api(api_path, method, data)
     }
 
-    async html () {
-        let api_data = await this.invoke_api_path()
-        let data_str = `${JSON.stringify(api_data, null, '    ')}`
+    html () {
+        let data_str = `${JSON.stringify(this.api_data, null, '    ')}`
         let formatted_html = this.text_highlight.format_text(data_str, 'json')
         let html_code = ''
         if (this.use_api_path_as_title) {
