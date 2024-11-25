@@ -50,7 +50,7 @@ export default class CBR__Route__Handler {
             wrapperDiv.raw_html   = content
             placeholder.innerHTML = wrapperDiv.html()
         } catch (error) {
-            console.error('Error loading content:', error)
+            //console.error('Error loading content:', error)
             wrapperDiv.value = '<div class="content-error">Error loading content. Please try again.</div>'          // todo: refactor to use Div
             placeholder.innerHTML = wrapperDiv.html()
         }
@@ -126,14 +126,8 @@ export default class CBR__Route__Handler {
             const component = document.createElement(tag_name)
             contentEl.appendChild(component)
 
-            // Update URL without triggering navigation
-            // const route_path = component_name.replace(/^WebC__/, '')
-            //                               .split('__')
-            //                               .map(part => part.toLowerCase())
-            //                               .join('/')
-
         } catch (error) {
-            console.error('Error loading component:', error)
+            //console.error('Error loading component:', error)
             contentEl.innerHTML = '<div class="content-error">Error loading component. Please try again.</div>'
         }
     }

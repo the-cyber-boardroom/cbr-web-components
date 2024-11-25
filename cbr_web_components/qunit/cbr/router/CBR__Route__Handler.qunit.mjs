@@ -113,6 +113,8 @@ module('CBR__Route__Handler', hooks => {
             link.href = test_case.href
             assert.equal(handler.should_handle_link(link), test_case.expected, test_case.desc)
         })
+        assert.equal(handler.should_handle_link(null), false, 'Handles null link')
+        assert.equal(handler.should_handle_link()    , false, 'Handles empty link')
     })
 
     test('handle_navigation_click processes internal links', async assert => {
@@ -215,5 +217,226 @@ module('CBR__Route__Handler', hooks => {
         // Assert
         const component = content_div.querySelector('webc-test-component')
         assert.ok(component, 'Component was created')
+    })
+
+    test('handle_route handles missing content element', async assert => {
+        // Arrange - simulate missing content element
+        const original_querySelector = mock_component.query_selector
+        mock_component.query_selector = () => null
+
+        // Act
+        await handler.handle_route('test/path')
+
+        // Assert
+        assert.ok(true, 'No error thrown when content element missing')
+
+        // Cleanup
+        mock_component.query_selector = original_querySelector
+    })
+
+    test('handle_route creates correct navigation classes', async assert => {
+        // Arrange
+        handler.base_path = '/en/site/'
+        const test_routes = [
+
+            { path: 'single'                        , expected: ['nav-single']                               },
+            { path: 'parent/child'                  , expected: ['nav-parent', 'nav-parent-child']           },
+            { path: 'a/very/deep/path'              , expected: ['nav-a', 'nav-a-very', 'nav-a-very-deep',
+                                                                 'nav-a-very-deep-path']                     },
+            { path: '/path/with/slashes/'           , expected: ['nav-path', 'nav-path-with',
+                                                                 'nav-path-with-slashes']                    },
+            { path: `${handler.base_path}with/base` , expected: ['nav-with', 'nav-with-base']                },]
+
+        for (const route of test_routes) {
+            // Act
+            await handler.handle_route(route.path)
+
+            // Assert
+            const content_wrapper = content_div.firstChild
+            assert.ok(content_wrapper.classList.contains('nav-content'), `Base nav-content class present for ${route.path}`)
+
+
+            route.expected.forEach(className => {
+                assert.ok(content_wrapper.classList.contains(className), `${className} present for ${route.path}`)
+            })
+        }
+    })
+
+    test('handle_navigation_click prevents default on valid links', async assert => {
+        // Arrange
+        const link = document.createElement('a')
+        link.href = window.location.origin + handler.base_path + 'test-path'
+        let default_prevented = false
+
+        const click_event = new MouseEvent('click', {
+            bubbles   : true          ,
+            cancelable: true          ,
+            composed  : true
+        })
+        click_event.preventDefault = () => { default_prevented = true }
+        click_event.composedPath = () => [link, document.body, document]
+
+        // Act
+        await handler.handle_navigation_click(click_event)
+
+        // Assert
+        assert.ok(default_prevented, 'Default event was prevented')
+    })
+
+    test('handle_navigation_click ignores invalid links', async assert => {
+        // Arrange
+        const external_link = document.createElement('a')
+        external_link.href = 'https://external-site.com'
+        let processed = false
+
+        const click_event = new MouseEvent('click', {
+            bubbles   : true              ,
+            cancelable: true              ,
+            composed  : true
+        })
+        click_event.composedPath = () => [external_link, document.body, document]
+
+        // Save original process_link
+        const original_process = handler.process_link
+        handler.process_link = () => { processed = true }
+
+        // Act
+        await handler.handle_navigation_click(click_event)
+
+        // Assert
+        assert.notOk(processed, 'Did not process external link')
+
+        // Cleanup
+        handler.process_link = original_process
+    })
+
+    test('handle_route handles fetch content errors', async assert => {
+        // Arrange
+        const original_fetch = mock_component.routeContent.fetch_content
+        mock_component.routeContent.fetch_content = async () => {
+            throw new Error('Fetch failed')
+        }
+
+        // Act
+        await handler.handle_route('error/path')
+
+        // Assert
+        assert.ok(content_div.innerHTML.includes('content-error'),
+                 'Shows error message on fetch failure')
+        assert.ok(content_div.innerHTML.includes('Error loading content'),
+                 'Shows user-friendly error message')
+
+        // Cleanup
+        mock_component.routeContent.fetch_content = original_fetch
+    })
+
+    test('process_link handles missing component name for web_component type', async assert => {
+        // Arrange
+        const link = document.createElement('a')
+        link.href = window.location.origin + '/test-component'
+        link.setAttribute('data-target-type', 'web_component')
+        // Deliberately not setting data-component attribute
+
+        const console_messages = []
+        const original_console_error = console.error
+        console.error = (msg) => console_messages.push(msg)
+
+        // Act
+        await handler.process_link(link)
+
+        // Assert
+        assert.ok(console_messages.includes('Web component target specified but no component name found'),
+                 'Logs correct error message')
+
+        // Cleanup
+        console.error = original_console_error
+    })
+
+    test('process_link handles link target type', async assert => {
+        // Arrange
+        const link = document.createElement('a')
+        link.href = window.location.origin + '/test-link'
+        link.setAttribute('data-target-type', 'link')
+
+        let navigated = false
+        const expected_path = 'test-link'
+        const original_navigate = handler.navigate
+        handler.navigate = async (path) => {
+            navigated = true
+            assert.equal(path, expected_path, 'Navigates to correct path')
+        }
+
+        // Act
+        await handler.process_link(link)
+
+        // Assert
+        assert.ok(navigated, 'Navigation was triggered')
+
+        // Cleanup
+        handler.navigate = original_navigate
+    })
+
+    test('process_link handles unknown target type using default case', async assert => {
+        // Arrange
+        const link = document.createElement('a')
+        link.href = window.location.origin + '/test-default'
+        link.setAttribute('data-target-type', 'unknown-type')
+
+        let navigated = false
+        const expected_path = 'test-default'
+        const original_navigate = handler.navigate
+        handler.navigate = async (path) => {
+            navigated = true
+            assert.equal(path, expected_path, 'Navigates to correct path')
+        }
+
+        // Act
+        await handler.process_link(link)
+
+        // Assert
+        assert.ok(navigated, 'Navigation was triggered for unknown type')
+
+        // Cleanup
+        handler.navigate = original_navigate
+    })
+
+    test('load_component handles missing content element', async assert => {
+        // Arrange
+        const original_querySelector = mock_component.query_selector
+        mock_component.query_selector = () => null
+        let component_created = false
+
+        // Mock document.createElement to track if it's called
+        const original_createElement = document.createElement
+        document.createElement = () => {
+            component_created = true
+            return original_createElement.call(document, 'div')
+        }
+
+        // Act
+        await handler.load_component('WebC__Test__Component', 'test/path/')
+
+        // Assert
+        assert.notOk(component_created, 'Component creation was skipped when content element missing')
+
+        // Cleanup
+        mock_component.query_selector = original_querySelector
+        document.createElement = original_createElement
+    })
+
+    test('load_component handles component loading error', async assert => {
+        // Arrange
+        const error_message = 'Failed to load module'
+        handler.import_module = async () => {
+            throw new Error(error_message)
+        }
+
+        const expected_error = '<div class="content-error">Error loading component. Please try again.</div>'
+
+        // Act
+        await handler.load_component('WebC__Test__Component', 'test/path/')
+
+        // Assert
+        assert.equal(content_div.innerHTML, expected_error, 'Shows error message when component loading fails')
     })
 })
