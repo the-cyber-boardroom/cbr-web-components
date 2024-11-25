@@ -7,7 +7,7 @@ import {MOCK_MENU_DATA,
         setup_mock_responses        } from '../../cbr/api/Mock_API__Data.mjs'
 
 if (typeof window.__karma__ !== 'undefined') {
-    console.log('Skipping QUnit module WebC__API__Side_Menu in Karma environment');
+    //console.log('Skipping QUnit module WebC__API__Side_Menu in Karma environment');
     QUnit.module.skip('WebC__API__Side_Menu', function(hooks) {
         // This module will be skipped entirely in Karma
     });

@@ -14,7 +14,6 @@ export default class CBR__Content__Loader {
             this._build_prod_url(page);
 
         const response = await this.fetch_url(url)
-
         if (!response.ok) {
             throw new Error(`Failed to load content | ${response.status} | ${url}`);
         }
@@ -22,6 +21,7 @@ export default class CBR__Content__Loader {
         return await response.json();
     }
 
+    /* istanbul ignore next */
     async fetch_url(url) {
         return await fetch(url)
     }

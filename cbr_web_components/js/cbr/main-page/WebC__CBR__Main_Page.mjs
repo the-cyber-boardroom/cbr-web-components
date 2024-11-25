@@ -13,7 +13,6 @@ import CBR__Top_Banner           from "../elements/CBR__Top_Banner.mjs"
 import CBR__Content__Placeholder from "../elements/CBR__Content__Placeholder.mjs"
 import CBR__Route__Handler       from "../router/CBR__Route__Handler.mjs"
 import CBR__Route__Content       from "../router/CBR__Route__Content.mjs"
-import CBR__Error__Boundary      from "../router/CBR__Error__Boundary.mjs";
 import API__Invoke               from "../../data/API__Invoke.mjs";
 import WebC__CBR__Left_Menu      from "../main-page/WebC__CBR__Left_Menu.mjs";
 import CBR_Events                from "../CBR_Events.mjs";
@@ -73,8 +72,6 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         this.add_css_rules(CBR__Top_Banner          .css_rules())
         this.add_css_rules(CBR__Left_Footer         .css_rules())
         this.add_css_rules(CBR__Content__Placeholder.css_rules())
-        this.add_css_rules(CBR__Error__Boundary     .css_rules())
-
     }
 
     async render() {

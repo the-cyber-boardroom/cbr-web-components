@@ -90,7 +90,7 @@ export default class CBR__Route__Handler {
                 break
 
             default:
-                console.warn(`Unknown target type: ${target_type}, defaulting to link navigation`)
+                //console.warn(`Unknown target type: ${target_type}, defaulting to link navigation`)
                 await this.navigate(navigation_path)
         }
 
@@ -111,8 +111,8 @@ export default class CBR__Route__Handler {
         try {
             // First import the module (this executes the .define())
             const base_path     = '/web_components/js/cbr/web-components/'
-            const path         = `${base_path}${component_path}${component_name}.mjs`
-            const module       = await import(path)
+            const path          = `${base_path}${component_path}${component_name}.mjs`
+            const module        = await this.import_module(path)
 
             // Clear existing content
             contentEl.innerHTML = ''
@@ -127,17 +127,21 @@ export default class CBR__Route__Handler {
             contentEl.appendChild(component)
 
             // Update URL without triggering navigation
-            const route_path = component_name.replace(/^WebC__/, '')
-                                          .split('__')
-                                          .map(part => part.toLowerCase())
-                                          .join('/')
-            //window.history.pushState({}, '', `${this.base_path}/${route_path}`)
+            // const route_path = component_name.replace(/^WebC__/, '')
+            //                               .split('__')
+            //                               .map(part => part.toLowerCase())
+            //                               .join('/')
 
         } catch (error) {
             console.error('Error loading component:', error)
             contentEl.innerHTML = '<div class="content-error">Error loading component. Please try again.</div>'
         }
     }
+
+    /* istanbul ignore next */
+    async import_module(path) {
+        return await import(path)
+}
 
     update_browser_path(path) {
         window.history.pushState({}, '', `${this.base_path}${path}`)
