@@ -43,15 +43,15 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
 
     remove_event_listeners() {
         this.removeEventListener  ('messageSent'   , this.on_message_sent)
-        window.removeEventListener('stop_stream' , this.on_stop_stream)
-        window.removeEventListener('select_model', this.on_select_model)
+        window.removeEventListener('stop_stream'  , this.on_stop_stream)
+        window.removeEventListener('select_model' , this.on_select_model)
     }
 
     add_event_listeners() {
         super.add_event_listeners()
         this.addEventListener  ('messageSent'   , this.on_message_sent )
-        window.addEventListener('stop_stream' , this.on_stop_stream  )
-        window.addEventListener('select_model', this.on_select_model )
+        window.addEventListener('stop_stream'   , this.on_stop_stream  )
+        window.addEventListener('select_model'  , this.on_select_model )
     }
 
     add_thread_id_ui_link() {

@@ -80,7 +80,7 @@ export default class WebC__Athena__Container extends Web_Component {
             )
             return content
         } catch (error) {
-            console.error('Error fetching Athena prompt:', error)
+            //console.error('Error fetching Athena prompt:', error)
             return ''
         }
     }

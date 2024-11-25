@@ -43,14 +43,32 @@ export default class WebC__Chat_Input extends Web_Component {
 
     add_event_listeners() {
         this.events_utils.events_receive.add_event_listener('keydown', this.channel, this.on_input_keydown)
-        this.events_utils.events_receive.add_event_listener('paste'  , this.channel, this.process_paste)
+        this.events_utils.events_receive.add_event_listener('paste'  , this.channel, this.process_paste    )
 
-        //this.input.addEventListener('keydown'        , (event) => this.on_input_keydown(event))
-        //this.input.addEventListener('paste'          , (event) => this.process_paste(event))
-        this.action_button.addEventListener('click'         , (event) => this.on_action_button(event))
-        this.clear_button.addEventListener ('click'         , (event) => this.on_clear_button(event))
-        window.addEventListener            ('promptSent'    , (event) => this.on_prompt_sent(event))
-        window.addEventListener            ('streamComplete', (event) => this.on_stream_complete(event))
+
+        this.bound_on_action_button   = this.on_action_button  .bind(this)                  // Create bound versions of handlers
+        this.bound_on_clear_button    = this.on_clear_button   .bind(this)                  // that we can reference later on the removeEventListener
+        this.bound_on_prompt_sent     = this.on_prompt_sent    .bind(this)
+        this.bound_on_stream_complete = this.on_stream_complete.bind(this)
+
+        this.action_button.addEventListener('click'         , this.bound_on_action_button  )    // Use bound handlers
+        this.clear_button.addEventListener ('click'         , this.bound_on_clear_button   )
+        window.addEventListener           ('promptSent'     , this.bound_on_prompt_sent    )
+        window.addEventListener           ('streamComplete' , this.bound_on_stream_complete)
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback()
+        this.remove_event_listeners()
+    }
+
+    remove_event_listeners() {
+        this.events_utils.events_receive.remove_all_event_listeners()
+
+        this.action_button.removeEventListener('click'         , this.bound_on_action_button  )    // Remove using same
+        this.clear_button.removeEventListener ('click'         , this.bound_on_clear_button   )    // bound references
+        window.removeEventListener           ('promptSent'     , this.bound_on_prompt_sent    )
+        window.removeEventListener           ('streamComplete' , this.bound_on_stream_complete)
     }
 
     async apply_css() {
