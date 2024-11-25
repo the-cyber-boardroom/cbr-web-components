@@ -1,4 +1,6 @@
-import { set_mock_response , Mock_API__Invoke} from './Mock_API__Invoke.mjs'
+import { set_mock_response , Mock_API__Invoke } from './Mock_API__Invoke.mjs'
+import CBR__Paths from "../../../js/cbr/CBR__Paths.mjs";
+export { set_mock_response                    }                                 // expose this function for the users of this module
 
 export const MOCK_FILE_ID    = 'test-file-123'
 export const MOCK_VERSION_ID = 'v1'
@@ -98,4 +100,9 @@ export function add_padding_to_string(input, padding = 4) {
         .split('\n')                 // Split string into lines
         .map(line => pad + line)     // Add padding to each line
         .join('\n');                 // Join lines back into a string
+}
+
+export function add_mock_markdown_path(path, content=MOCK_RAW_HTML, metadata=MOCK_MARKDOWN_METADATA) {
+    Mock_API__Invoke.apply_mock()
+    set_mock_response(`${CBR__Paths.API__MARKDOWN_RENDER}?path=${path}`, 'GET', { html: content, metadata: metadata })
 }
