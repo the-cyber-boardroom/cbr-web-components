@@ -1,3 +1,4 @@
+import {CBR__Paths} from "../../../js/cbr/CBR__Paths.mjs";
 import API__Markdown from '../../../js/cbr/api/API__Markdown.mjs'
 import { setup_mock_responses   ,
          MOCK_CONTENT_PATH      ,
@@ -17,7 +18,7 @@ module('API__Markdown', hooks => {
 
     test('get_markdown_content handles successful response', async assert => {
         // Act
-        const result = await api.get_markdown_content(MOCK_CONTENT_PATH)
+        const result = await api.get_data__markdown_page(MOCK_CONTENT_PATH)
 
         // Assert
         assert.equal(result.html.trim()           , MOCK_RAW_HTML.trim()    , 'Returns correct HTML'     )
@@ -27,7 +28,7 @@ module('API__Markdown', hooks => {
 
     test('get_markdown_content handles invalid path', async assert => {
         // Act
-        const result = await api.get_markdown_content('invalid/path.md')
+        const result = await api.get_data__markdown_page('invalid/path.md')
 
         // Assert
         assert.equal(result.html                  , '<p>Error loading content</p>', 'Returns error HTML'      )
@@ -37,21 +38,21 @@ module('API__Markdown', hooks => {
 
     test('static URL is correctly defined', assert => {
         // Assert
-        assert.equal(API__Markdown.url__markdown_render,
+        assert.equal(CBR__Paths.API__MARKDOWN_RENDER,
                     '/markdown/render/markdown-file-to-html-and-metadata',
                     'Has correct endpoint URL')
     })
 
     test('creates instance with API__Invoke', assert => {
         // Assert
-        assert.ok(api.api_invoke                 , 'Has API invoke instance' )
-        assert.equal(typeof api.get_markdown_content, 'function'             , 'Has content method'      )
+        assert.ok(api.api_invoke                       , 'Has API invoke instance' )
+        assert.equal(typeof api.get_data__markdown_page, 'function'             , 'Has content method'      )
     })
 
     test('maintains consistent response structure', async assert => {
         // Act
-        const success = await api.get_markdown_content(MOCK_CONTENT_PATH)
-        const failure = await api.get_markdown_content('invalid/path.md')
+        const success = await api.get_data__markdown_page(MOCK_CONTENT_PATH)
+        const failure = await api.get_data__markdown_page('invalid/path.md')
 
         // Assert
         assert.propEqual(Object.keys(success).sort(),

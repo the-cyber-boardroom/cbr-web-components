@@ -122,11 +122,16 @@ module('WebC__Athena__Config', hooks => {
     test('dispatches config update events', assert => {
         assert.expect(3)                                                                                                // Expecting 3 assertions
 
-        config.addEventListener('config-update', (event) => {                                                           // Setup event listener
+        function assert__config_update(event) {
             assert.equal(event.detail.channel                  , 'test-channel'   , 'Event includes channel'      )
             assert.equal(typeof event.detail.show_system_prompt, 'boolean'        , 'Event includes system prompt')
             assert.equal(typeof event.detail.edit_mode         , 'boolean'        , 'Event includes edit mode'    )
-        })
+
+            config.removeEventListener('config-update', assert__config_update);
+        }
+
+        config.addEventListener('config-update',assert__config_update   )                                               // Setup event listener
+
 
         const systemPromptToggle   = config.query_selector('#system-prompt-toggle')                                     // Trigger config update
         systemPromptToggle.checked = true

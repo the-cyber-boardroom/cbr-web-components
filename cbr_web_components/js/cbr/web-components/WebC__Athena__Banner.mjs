@@ -23,7 +23,7 @@ export default class WebC__Athena__Banner extends Web_Component {
     }
 
     async load_data() {
-        this.content      = await this.api_markdown.get_markdown_content(CBR__Paths.FILE__CONTENT__SITE__ATHENA__BANNER)
+        this.content      = await this.api_markdown.get_data__markdown_page(CBR__Paths.FILE__CONTENT__SITE__ATHENA__BANNER)
     }
 
     html() {

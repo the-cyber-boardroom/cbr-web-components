@@ -1,16 +1,16 @@
-import Web_Component    from '../../core/Web_Component.mjs';
+import Web_Component   from '../../core/Web_Component.mjs';
 import CSS__Grid       from '../../css/grid/CSS__Grid.mjs';
 import CSS__Typography from '../../css/CSS__Typography.mjs';
 import CSS__Cards      from '../../css/CSS__Cards.mjs';
-import API__Invoke     from '../../data/API__Invoke.mjs';
 import H               from '../../core/H.mjs';
 import Div             from '../../core/Div.mjs';
+import API__Markdown   from "../api/API__Markdown.mjs";
 
 export default class WebC__Athena__Examples extends Web_Component {
 
     constructor() {
         super();
-        this.api_invoke = new API__Invoke()
+        this.api_markdown = new API__Markdown()
     }
 
     async apply_css() {
@@ -21,7 +21,7 @@ export default class WebC__Athena__Examples extends Web_Component {
     }
 
     async load_data() {
-        this.content = await this.load_content()
+        this.content = await this.api_markdown.get_data__athena_examples()
     }
 
     load_attributes() {
@@ -29,15 +29,15 @@ export default class WebC__Athena__Examples extends Web_Component {
     }
 
     html() {
-        // Container with title
-        const container = new Div({class: 'm-1'})
+
+        const container = new Div({class: 'm-1'})                                                                       // Container with title
         const title     = new H({ level: 2,
-                                  value: this.content?.title || 'Prompt examples',
-                                  class: 'mb-4 text-center' })
+                                  value: this.content?.title ,
+                                  class: 'mb-4 text-center'  })
         container.add_element(title)
 
-        // Add each example as a card
-        this.content?.examples?.forEach(example => {const card = new Div({ class: 'card mb-3 example-card'})
+
+        this.content?.examples?.forEach(example => {const card = new Div({ class: 'card mb-3 example-card'})        // Add each example as a card
             const card_body = new Div({ class: 'card-body text-center',  value: example })
             card.add_element(card_body)
             container.add_element(card)
@@ -72,25 +72,6 @@ export default class WebC__Athena__Examples extends Web_Component {
                 images: []
             }
         })
-    }
-
-    async load_content() {
-        try {
-            const url = '/markdown/static_content/data-file?path=en/site/athena/questions.toml'
-            return await this.api_invoke.invoke_api(url)
-        } catch (error) {
-            console.error('Error loading examples:', error)
-            return {
-                title: 'Prompt examples',
-                examples: [
-                    'Hello, what do you know about me?',
-                    'What questions should I ask my CISO?',
-                    'What is DORA?',
-                    'What are my legal responsibilities?',
-                    'What is the best way to learn more about cyber security?'
-                ]
-            }
-        }
     }
 
     css_rules() {
