@@ -3,7 +3,6 @@ import Web_Component                from "../../../js/core/Web_Component.mjs";
 import API__Invoke                  from "../../../js/data/API__Invoke.mjs";
 import WebC__API__Side_Menu         from "../../../js/elements/api/WebC__API__Side_Menu.mjs";
 import WebC__API_Markdown_To_Html   from "../../../js/elements/api/WebC__API_Markdown_To_Html.mjs";
-import Load_Libraries__CSS          from "../../../js/utils/Load_Libraries__CSS.mjs";
 import {MOCK_MENU_DATA,
         setup_mock_responses        } from '../../cbr/api/Mock_API__Data.mjs'
 
@@ -29,23 +28,6 @@ QUnit.module('WebC__API__Side_Menu', function(hooks) {
         webc__api_side_menu.remove()
         target_div         .remove()
     })
-
-    // function setup_mock_responses() {
-    //
-    //     const url__api__data_file = WebC__API__Side_Menu.url__api__data_file + WebC__API__Side_Menu.data_file__default_menu
-    //     set_mock_response(url__api__data_file, 'GET', expected_menu_data)               // Setup menu data response
-    //
-    //     //const url__css = Load_Libraries__CSS.url__css__material_design_icons
-    //     //set_mock_response(url__css, 'GET', '.simple {css : "code"} ')                   // Setup CSS response
-    // }
-
-    // function api_mock_data() {
-    //     const url__css__material_design_icons              = Load_Libraries__CSS.url__css__material_design_icons
-    //
-    //     const  url__api__data_file = WebC__API__Side_Menu.url__api__data_file + WebC__API__Side_Menu.data_file__default_menu
-    //     return { [url__api__data_file            ] : expected_menu_data      ,
-    //              [url__css__material_design_icons] : '.simple {css : "code"} ' }
-    // }
 
     QUnit.test('.constructor', (assert) => {
         const  url__api__data_file = WebC__API__Side_Menu.url__api__data_file + WebC__API__Side_Menu.data_file__default_menu

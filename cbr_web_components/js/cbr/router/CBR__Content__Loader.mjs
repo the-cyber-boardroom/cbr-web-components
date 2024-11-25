@@ -9,22 +9,21 @@ export default class CBR__Content__Loader {
     }
 
     async load_content(page) {
-        try {
-            const url = this.dev_mode ?
-                this._build_dev_url(page) :
-                this._build_prod_url(page);
+        const url = this.dev_mode ?
+            this._build_dev_url(page) :
+            this._build_prod_url(page);
 
-            const response = await fetch(url);
+        const response = await this.fetch_url(url)
 
-            if (!response.ok) {
-                throw new Error(`Failed to load content: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error('Content loading error:', error);
-            throw new Error(`Failed to load content for section: ${section}`);
+        if (!response.ok) {
+            throw new Error(`Failed to load content | ${response.status} | ${url}`);
         }
+
+        return await response.json();
+    }
+
+    async fetch_url(url) {
+        return await fetch(url)
     }
 
     _build_prod_url(page) {
