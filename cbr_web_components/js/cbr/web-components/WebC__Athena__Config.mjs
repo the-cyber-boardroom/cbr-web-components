@@ -4,7 +4,6 @@ import CSS__Forms       from '../../css/CSS__Forms.mjs';
 import CSS__Typography  from '../../css/CSS__Typography.mjs';
 import Div              from '../../core/Div.mjs';
 import H                from '../../core/H.mjs';
-import Raw_Html         from "../../core/Raw_Html.mjs";
 import CSS__Grid from "../../css/grid/CSS__Grid.mjs";
 
 export default class WebC__Athena__Config extends Web_Component {
@@ -21,72 +20,64 @@ export default class WebC__Athena__Config extends Web_Component {
     }
 
     add_event_listeners() {
-        this.shadowRoot.querySelector('#system-prompt-toggle')
-            .addEventListener('change', this.handle_system_prompt_change.bind(this))
-
-        this.shadowRoot.querySelector('#edit-mode-toggle')
-            .addEventListener('change', this.handle_edit_mode_change.bind(this))
+        this.add_event__on('change', '#system-prompt-toggle', this.handle_system_prompt_change)
+        this.add_event__on('change', '#edit-mode-toggle'    , this.handle_edit_mode_change    )
     }
 
-    handle_system_prompt_change(event) {
-        const show_system_prompt = event.target.checked
-        localStorage.setItem('athena_show_system_prompt', show_system_prompt)
+    handle_system_prompt_change({event}) {
+        localStorage.setItem('athena_show_system_prompt', event.target.checked)
         this.dispatch_config_update()
     }
 
-    handle_edit_mode_change(event) {
-        const edit_mode = event.target.checked
-        localStorage.setItem('athena_edit_mode', edit_mode)
+    handle_edit_mode_change({event}) {
+        localStorage.setItem('athena_edit_mode', event.target.checked)
         this.dispatch_config_update()
     }
 
     dispatch_config_update() {
-        const event = new CustomEvent('config-update', {
-            bubbles: true,
-            composed: true,
-            detail: {
-                channel: this.channel,
-                show_system_prompt: localStorage.getItem('athena_show_system_prompt') === 'true',
-                edit_mode: localStorage.getItem('athena_edit_mode') === 'true'
-            }
-        })
-        this.dispatchEvent(event)
+        this.raise_event_global('config-update', { channel           : this.channel                                                 ,
+                                                   show_system_prompt: localStorage.getItem('athena_show_system_prompt') === 'true' ,
+                                                   edit_mode         : localStorage.getItem('athena_edit_mode'         ) === 'true' })
     }
 
     html() {
-        const card       = new Div({ class: 'card m-1 bg-light-cyan' })
-        const body       = new Div({ class: 'card-body' })
-        const title      = new H({ level: 3, class: 'card-title', value: 'Configuration' })
-        const form       = new Raw_Html({ class: 'form-group' })
+        const card                 = new Div({ class: 'card m-1 bg-light-cyan' })
+        const body                 = new Div({ class: 'card-body' })
+        const title                = new H  ({ level: 3, class: 'card-title', value: 'Configuration' })
+        const form                 = new Div({ class: 'form-group' })
 
-        const system_prompt_toggle = `
-            <div class="mb-3">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="system-prompt-toggle"
-                           ${this.show_system_prompt ? 'checked' : ''}>
-                    <label class="form-check-label" for="system-prompt-toggle">
-                        Show System Prompt
-                    </label>
-                </div>
-            </div>`
+        const system_prompt_toggle = this.create_form_switch({ id       : 'system-prompt-toggle'  ,
+                                                               label    : 'Show System Prompt'    ,
+                                                               checked  : this.show_system_prompt })
 
-        const edit_mode_toggle = `
-            <div class="mb-3">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="edit-mode-toggle"
-                           ${this.edit_mode ? 'checked' : ''}>
-                    <label class="form-check-label" for="edit-mode-toggle">
-                        Edit Mode
-                    </label>
-                </div>
-            </div>`
+        const edit_mode_toggle     = this.create_form_switch({ id       : 'edit-mode-toggle'      ,
+                                                               label    : 'Edit Mode'             ,
+                                                               checked  : this.edit_mode          })
 
-        form.raw_html = system_prompt_toggle + edit_mode_toggle
-
-        body      .add_elements(title, form)
-        card      .add_element(body)
+        form.add_elements(system_prompt_toggle, edit_mode_toggle)
+        body.add_elements(title, form)
+        card.add_element (body)
 
         return card
+    }
+
+    create_form_switch({ id, label, checked }) {
+        const container           = new Div({ class   : 'mb-3'                   })
+        const switch_container    = new Div({ class   : 'form-check form-switch' })
+        const toggle_input        = new Div({ tag     : 'input'                  ,
+                                              class   : 'form-check-input'       ,
+                                              type    : 'checkbox'               ,
+                                              id      : id                       })
+        if (checked)
+            toggle_input.attributes.checked = 'checked'
+        const toggle_label        = new Div({ tag     : 'label'                  ,
+                                              class   : 'form-check-label'       ,
+                                              value   : label                    ,
+                                              for     : id                       })
+
+        switch_container.add_elements(toggle_input, toggle_label)
+        container      .add_element (switch_container)
+        return container
     }
 }
 

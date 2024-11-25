@@ -4,8 +4,8 @@ import WebC__Athena__Banner from '../../../js/cbr/web-components/WebC__Athena__B
 import CBR__Paths           from "../../../js/cbr/CBR__Paths.mjs";
 
 import {
-    setup_mock_responses, set_mock_response, add_padding_to_string, add_mock_markdown_path ,
-    MOCK_RAW_HTML, MOCK_MARKDOWN_METADATA, MOCK_MARKDOWN_RESPONSE
+    add_padding_to_string, add_mock_markdown_path ,
+    MOCK_RAW_HTML, MOCK_MARKDOWN_METADATA
 } from '../api/Mock_API__Data.mjs'
 
 
