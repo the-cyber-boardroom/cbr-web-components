@@ -24,8 +24,10 @@ QUnit.module('Text_Highlight.qunit', function(hooks) {
     QUnit.test('.load_css()', async (assert)=> {
         if (typeof window.__karma__ !== 'undefined') {
             assert.ok(true, 'Skipped in Karma environment');
+            aaaa.bb()
             return;
         }
+        ccccc.bb()
         let css_signature = 'Description: Original highlight.js style'
 
         assert.deepEqual(text_highlight.css_loaded, false)
