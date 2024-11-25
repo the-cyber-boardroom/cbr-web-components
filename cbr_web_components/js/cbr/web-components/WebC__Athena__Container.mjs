@@ -66,7 +66,7 @@ export default class WebC__Athena__Container extends Web_Component {
         try {
             return await this.api_invoke.invoke_api('/api/user-data/user/user-profile', 'GET')
         } catch (error) {
-            console.error('Error fetching user data:', error)
+            //console.error('Error fetching user data:', error)
             return null
         }
     }

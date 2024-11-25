@@ -17,19 +17,28 @@ export class Mock_Fetch {
     }
 
     async fetch_url(url) {
-        if (this.responses.has(url)) {
-            const response = this.responses.get(url)
-            return {
-                ok     : response.status === 200           ,
-                status : response.status || 200            ,
-                json   : async () => response.data
-            }
+        if (!this.responses.has(url)) {
+            throw new Error(`No mock response set for URL: ${url}`)
         }
-        throw new Error(`No mock response set for URL: ${url}`)
+
+        const response = this.responses.get(url)
+        return {
+            ok     : response.status === 200   ,
+            status : response.status || 200    ,
+            json   : async () => response.data ,
+            body   : response.body             ,
+            headers: response.headers || {}
+        }
     }
 
     set_response(url, data, status = 200) {
         this.responses.set(url, { data, status })
+    }
+
+    set_stream_response(url, chunks, status = 200) {
+        this.responses.set(url, { ok: status === 200              ,
+                                  status                          ,
+                                  body: new StreamResponse(chunks)});
     }
 }
 
@@ -37,4 +46,26 @@ export const mock = new Mock_Fetch()                                    // Singl
 
 export function set_mock_response(url, data, status = 200) {           // Helper function
     mock.set_response(url, data, status)
+}
+
+class StreamResponse {
+    constructor(chunks) {
+        this.chunks = Array.isArray(chunks) ? chunks : [chunks];
+        this.encoder = new TextEncoder();
+    }
+
+    getReader() {
+        let index = 0;
+        return {
+            read: async () => {
+                if (index >= this.chunks.length) {
+                    return { done: true };
+                }
+                return {
+                    value: this.encoder.encode(this.chunks[index++]),
+                    done: false
+                };
+            }
+        };
+    }
 }

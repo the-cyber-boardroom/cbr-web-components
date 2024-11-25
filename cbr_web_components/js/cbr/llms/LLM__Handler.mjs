@@ -4,7 +4,7 @@ export default class LLM__Handler {
         this.default_platform = config.platform || 'Groq (Free)'
         this.default_provider = config.provider || '1. Meta'
         this.default_model    = config.model    || 'llama-3.1-70b-versatile'
-        this.api_path        = config.api_path || '/api/llms/chat/completion'
+        this.api_path         = config.api_path || '/api/llms/chat/completion'
     }
 
     create_payload(user_prompt, system_prompts = [], config = {}) {
@@ -25,15 +25,18 @@ export default class LLM__Handler {
         }
     }
 
+    async fetch_url(path, payload) {
+        return await fetch(path, {
+            method  : 'POST',
+            headers : { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body    : JSON.stringify(payload)
+        })
+    }
     async stream_response(user_prompt, system_prompts = [], callbacks = {}, config = {}) {
         const payload = this.create_payload(user_prompt, system_prompts, config)
 
         try {
-            const response = await fetch(this.api_path, {
-                method  : 'POST',
-                headers : { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                body    : JSON.stringify(payload)
-            })
+            const response = await this.fetch_url(this.api_path, payload)
 
             const reader  = response.body.getReader()
             const decoder = new TextDecoder('utf-8')
@@ -58,7 +61,7 @@ export default class LLM__Handler {
 
             return message
         } catch (error) {
-            console.error('Error in LLM stream:', error)
+            //console.error('Error in LLM stream:', error)
             if (callbacks.onError) {
                 callbacks.onError(error)
             }
