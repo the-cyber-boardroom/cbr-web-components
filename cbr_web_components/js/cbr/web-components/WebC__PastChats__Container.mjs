@@ -38,13 +38,16 @@ export default class WebC__PastChats__Container extends Web_Component {
     async load_chats() {
         try {
             const response = await this.api_invoke.invoke_api('/api/user-data/chats/chats', 'GET')
-            this.chats = Object.entries(response.saved_chats || {}).map(([id, chat]) => ({
+            const saved_chats = response?.saved_chats && typeof response.saved_chats === 'object' && !Array.isArray(response.saved_chats)
+                                    ? response.saved_chats
+                                    : {}
+            this.chats = Object.entries(saved_chats).map(([id, chat]) => ({
                 id,
                 ...chat
             })).sort((a, b) => b.timestamp - a.timestamp)
             this.render()
         } catch (error) {
-            console.error('Error loading chats:', error)
+            //console.error('Error loading chats:', error)
             this.chats = []
         }
     }
@@ -80,7 +83,7 @@ export default class WebC__PastChats__Container extends Web_Component {
     }
 
     create_action_links(chat) {
-        if (!chat.chat_id) return new Div()
+        if (!chat?.chat_id) return new Div()
 
         const container  = new Div({ class: 'action-links' })
         const view_link  = new A  ({ value: 'view' ,  href: `/web/chat/view/${chat.chat_path}`      ,  target: '_blank' }) // View link
@@ -114,11 +117,11 @@ export default class WebC__PastChats__Container extends Web_Component {
         if (this.chats && this.chats.length > 0) {
             this.chats.forEach(chat => {
                 const row = new TR().add_elements(new TD({ value: this.format_date_time(chat.date, chat.time) }),
-                                                  new TD({ value: chat.last_user_prompt || '-'                }),
-                                                  new TD({ value: chat.history_size     || '1'                }),
+                                                  new TD({ value: chat.last_user_prompt                       }),
+                                                  new TD({ value: chat.history_size                           }),
                                                   new TD({ value: this.format_size(chat.prompts_size)         }),
                                                   new TD({ value: this.format_size(chat.responses_size)       }),
-                                                  new TD().add_element(this.create_action_links(chat)          ))
+                                                  new TD().add_element(this.create_action_links(chat)         ))
                 tbody.add_element(row)
             })
         } else {
