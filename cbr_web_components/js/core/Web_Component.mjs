@@ -63,21 +63,26 @@ export default class Web_Component extends HTMLElement {
     // instance - connection and usually overridden methods
 
     async connectedCallback() {                        // todo see if any other methods should be async (of I should make them all async)
-              this.load_attributes    ()               // start by loading any attributes provided
-        await this.apply_css          ()               // then apply css to the current dom
+        try {
+                  this.load_attributes    ()               // start by loading any attributes provided
+            await this.apply_css          ()               // then apply css to the current dom
 
-        await this.load_data          ()               // then load any data required
-              this.render             ()               // then render the core html elements (i.e. assign the inner_html)
-        await this.add_web_components ()               // then add the web components that need the live dom to exist
-              this.add_event_listeners()               // then add the event listeners
-              this.add_event_handlers ()               // then add the event handlers
-        await this.final_ui_changes()                  // use when needing to make final changes to the UI
-        await this.component_ready()                   // use when needing to run code when the component is ready
+            await this.load_data          ()               // then load any data required
+                  this.render             ()               // then render the core html elements (i.e. assign the inner_html)
+            await this.add_web_components ()               // then add the web components that need the live dom to exist
+                  this.add_event_listeners()               // then add the event listeners
+                  this.add_event_handlers ()               // then add the event handlers
+            await this.final_ui_changes()                  // use when needing to make final changes to the UI
+            await this.component_ready()                   // use when needing to run code when the component is ready
 
-              this.channels.push(this.channel)                  // todo: legacy - review usage and see if the current patterns can handle this requirement better
-              this.add_event_listeners__web_component()         // todo: legacy - to remove, but first remove dependency from  WebC__Chat_Bot
+                  this.channels.push(this.channel)                  // todo: legacy - review usage and see if the current patterns can handle this requirement better
+                  this.add_event_listeners__web_component()         // todo: legacy - to remove, but first remove dependency from  WebC__Chat_Bot
 
-        this.raise_event(this.EVENT_NAME__COMPONENT_READY)
+            this.raise_event(this.EVENT_NAME__COMPONENT_READY)
+        } catch (error) {
+            console.error('Error in connectedCallback:', error);
+            throw new Error(`connectedCallback failed: ${error.message}`);
+        }
     }
 
     disconnectedCallback() {
@@ -157,7 +162,8 @@ export default class Web_Component extends HTMLElement {
 
     async wait_for_event(event_name, timeout) {
         const timeout_value = timeout || 100
-        const timeout_message = `${event_name} event did not fire within the expected timeout value: ${timeout_value}ms.`
+        const current_class = this.constructor.name; // Get the name of the current class
+        const timeout_message = `[${current_class}] ${event_name} event did not fire within the expected timeout value: ${timeout_value}ms.`;
 
         await new Promise((resolve, reject) => {
             const on_timeout       = () => { reject(new Error(timeout_message)); }
