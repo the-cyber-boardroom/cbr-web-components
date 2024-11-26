@@ -28,11 +28,13 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         this.add_css_rules(this.css_rules())
     }
 
+
     add_event_listeners() {
-        document.addEventListener('file-selected', async (e) => {
-            this.current_file = e.detail
-            await this.render_file_viewer()
-        })
+        document.addEventListener('file-selected', this.handle__on_file_selected);
+    }
+
+    remove_event_listeners() {
+        document.removeEventListener('file-selected', this.handle__on_file_selected);
     }
 
     add_event_handlers() {
@@ -111,6 +113,12 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             this.show_error_viewer()
         }
     }
+    // event handling
+
+    handle__on_file_selected = async (e) => {
+        this.current_file = e.detail;
+        await this.render_file_viewer();
+    };
 
     // main methods
     async render_file_viewer() {

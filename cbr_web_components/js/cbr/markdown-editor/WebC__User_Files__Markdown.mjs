@@ -24,8 +24,8 @@ export default class WebC__User_Files__Markdown extends Web_Component {
         this.add_window_event_listener(CBR_Events.CBR__FILE__SHOW_HISTORY, this.on_show_history)
         this.add_window_event_listener(CBR_Events.CBR__FILE__HIDE_HISTORY, this.on_hide_history)
         this.add_window_event_listener(CBR_Events.CBR__FILE__CANCEL      , this.on_file_cancel)
-
     }
+
 
     add_web_components() {
         const params_versions = { file_id: this.file_id }

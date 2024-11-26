@@ -86,7 +86,8 @@ export default class Web_Component extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this.remove_window_event_listeners()
+        this.remove_window_event_listeners()                        // remove the events added via add_window_event_listener and add_event__on
+        this.remove_event_listeners()                               // in case the parent component has extra events to remove
         this.remove_event_listeners__webc_component()              // todo: legacy - to remove
 
     }
