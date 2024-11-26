@@ -64,7 +64,6 @@ export default class WebC__Chat_Input extends Web_Component {
 
     remove_event_listeners() {
         this.events_utils.events_receive.remove_all_event_listeners()
-
         this.action_button.removeEventListener('click'         , this.bound_on_action_button  )    // Remove using same
         this.clear_button.removeEventListener ('click'         , this.bound_on_clear_button   )    // bound references
         window.removeEventListener           ('promptSent'     , this.bound_on_prompt_sent    )

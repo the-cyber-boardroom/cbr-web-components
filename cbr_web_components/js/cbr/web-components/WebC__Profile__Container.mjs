@@ -12,26 +12,60 @@ import Label           from '../../core/Label.mjs';
 import Textarea        from '../../core/Textarea.mjs';
 import Button          from '../../core/Button.mjs';
 import H               from '../../core/H.mjs';
+import API__Web__Forms from "../api/API__Web__Forms.mjs";
+import Chatbot_OpenAI from "../../chat-bot/Chatbot_OpenAI.mjs";
 
 export default class WebC__Profile__Container extends Web_Component {
-    load_attributes() {
+    constructor() {
+        super();
+        this.api_invoke      = new API__Invoke()
+        this.api_web_forms  = new API__Web__Forms()
+    }
+
+    apply_css () {
         new CSS__Grid      (this).apply_framework()
         new CSS__Typography(this).apply_framework()
         new CSS__Forms     (this).apply_framework()
         new CSS__Cards     (this).apply_framework()
-        this.api_invoke = new API__Invoke()
+    }
+
+    load_attributes() {
+        super.load_attributes();
         this.channel = `profile_${this.random_id()}`
     }
 
-    async connectedCallback() {
-        super.connectedCallback()
+    async load_data() {
         await this.load_profile()
-        this.add_event_listeners()
     }
 
+
     add_event_listeners() {
-        this.shadowRoot.addEventListener('submit', this.handle_form_submit.bind(this))
+        this.handle_form_submit    = this.handle_form_submit.bind(this);
+
+        this.shadowRoot.addEventListener('submit', this.handle_form_submit)
         //this.shadowRoot.addEventListener('input', this.handle_form_change.bind(this))
+    }
+
+    add_web_components() {
+        this.add_web_component_to('.chat-container', Chatbot_OpenAI, {
+            channel           : this.channel                   ,
+            edit_mode        : 'false'                        ,
+            name             : 'Profile Assistant'             ,
+            url              : '/api/open_ai/prompt_with_system__stream',
+            initial_message  : "I'm your profile assistant. Try updating your profile and I'll adjust my responses to match your preferences and role.",
+            initial_prompt   : 'Hi, what do you know about me?',
+            show_system_prompt: 'true'                         ,
+            system_prompt    : this.create_profile_prompt()
+        })
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback()
+        this.remove_event_listeners()
+    }
+
+    remove_event_listeners() {
+        this.shadowRoot.removeEventListener('submit', this.handle_form_submit)
     }
 
     async load_profile() {
@@ -40,34 +74,20 @@ export default class WebC__Profile__Container extends Web_Component {
             this.current_profile = profile
             this.render()
         } catch (error) {
-            console.error('Error loading profile:', error)
+            //console.error('Error loading profile:', error)
         }
     }
 
     async handle_form_submit(event) {
-        event.preventDefault();
-        const form = event.target;
-        const form_data = new FormData(form);
-
-        // Convert FormData to URL-encoded string
-        const urlEncodedData = new URLSearchParams(form_data).toString();
+        event.preventDefault()
+        const form = event.target
+        const form_data = new FormData(form)
 
         try {
-            const response = await fetch('/web/user/profile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: urlEncodedData
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            this.notify_chatbot_profile_updated();
+            await this.api_web_forms.submit_form(form_data, '/web/user/profile')
+            this.notify_chatbot_profile_updated()
         } catch (error) {
-            console.error('Error updating profile:', error);
+            //console.error('Error updating profile:', error)
         }
     }
 
@@ -92,8 +112,15 @@ export default class WebC__Profile__Container extends Web_Component {
             }
         })
         this.dispatchEvent(event)
+        this.reload_page()
+    }
+
+    /* istanbul ignore next */
+    reload_page() {
         document.location.reload()
     }
+
+
 
     create_form() {
         const form = new Form({ class: 'card' })
@@ -161,7 +188,8 @@ export default class WebC__Profile__Container extends Web_Component {
         return form
     }
 
-    render() {
+
+    html() {
         const layout = new Layout({
             id: 'profile-page',
             class: 'h-100pc d-flex flex-column'
@@ -174,21 +202,13 @@ export default class WebC__Profile__Container extends Web_Component {
         const col_form = row_content.add_col({ class: 'col-6 m-1' })
         col_form.add_element(this.create_form())
 
-        // Chat column (right side)
-        row_content.add_col({ class: 'col-5 m-1' })
-            .add_tag({
-                tag: 'chatbot-openai',
-                channel: this.channel,
-                edit_mode: 'false',
-                name: 'Profile Assistant',
-                url: '/api/open_ai/prompt_with_system__stream',
-                initial_message: "I'm your profile assistant. Try updating your profile and I'll adjust my responses to match your preferences and role.",
-                initial_prompt : 'Hi, what do you know about me?',
-                show_system_prompt: 'true',
-                system_prompt: this.create_profile_prompt()
-            })
-        this.set_inner_html(layout.html())
+        const col_chat = row_content.add_col({ class: 'col-5 m-1' })
+        const div_chat = new Div({ class: 'chat-container' })
+        col_chat.add_element(div_chat)
+
+        return layout
     }
+
 
     create_profile_prompt() {
 

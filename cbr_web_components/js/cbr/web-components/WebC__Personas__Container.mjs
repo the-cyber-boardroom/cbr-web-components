@@ -12,22 +12,24 @@ import CBR__Session__Event__Handler from "../session/CBR__Session__Event__Handle
 
 export default class WebC__Personas__Container extends Web_Component {
 
-    async connectedCallback() {
+    constructor() {
+        super();
         this.api_invoke    = new API__Invoke()
         this.event_handler = new CBR__Session__Event__Handler()
+    }
+    apply_css() {
         new CSS__Grid      (this).apply_framework()
         new CSS__Typography(this).apply_framework()
         new CSS__Cards     (this).apply_framework()
         new CSS__Buttons   (this).apply_framework()
-
-        await this.load_personas()
-        super.connectedCallback()
-        this.setup_event_listeners()
     }
 
-    setup_event_listeners() {
-        // Handle login button clicks
-        this.shadowRoot.addEventListener('click', async (event) => {
+    async load_data() {
+        await this.load_personas()
+    }
+
+    add_event_listeners() {
+        this.shadowRoot.addEventListener('click', async (event) => {                // Handle login button clicks
             if (event.target.matches('.login-button')) {
                 const persona_id = event.target.dataset.guestId
                 this.event_handler.dispatch(
@@ -76,7 +78,7 @@ export default class WebC__Personas__Container extends Web_Component {
             this.personas = personas
             //this.render()
         } catch (error) {
-            console.error('Error loading personas:', error)
+            //console.error('Error loading personas:', error)
         }
     }
 
@@ -84,13 +86,13 @@ export default class WebC__Personas__Container extends Web_Component {
         if (event.target.matches('.login-button')) {
             const guest_id = event.target.dataset.guestId                           // todo refactor this into a separate class and make it event driven
             const path = `/api/user-session/guest/login-as-persona?persona_id=${guest_id}`
-            try {
-                await this.api_invoke.invoke_api(path, 'POST')
-                window.location.href = '/webc/cbr-webc-dev/personas/index'
-            } catch (error) {
-                console.error('Error logging in as guest:', error)
-            }
+            await this.api_invoke.invoke_api(path, 'POST')
+                await this.navigate_to_personas_page()
         }
+    }
+     /* istanbul ignore next */
+    async navigate_to_personas_page() {
+        window.location.href = '/webc/cbr-webc-dev/personas/index'
     }
 
     create_persona_card(guest_id, persona) {
