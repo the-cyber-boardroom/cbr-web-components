@@ -17,8 +17,7 @@ export default class WebC__User_Files__Markdown extends Web_Component {
     }
 
     component_ready() {
-        this.raise_file_load_event()
-        this.raise_event_global(CBR_Events.CBR__FILE__SHOW_HISTORY)
+        this.raise_event_global(CBR_Events.CBR__FILE__SHOW_HISTORY)                         // todo: see if this is the best place to raise this event
     }
 
     add_event_listeners() {
@@ -46,12 +45,6 @@ export default class WebC__User_Files__Markdown extends Web_Component {
 
     on_hide_history(){
         this.query_selector('.versions-container').hide()
-    }
-
-    raise_file_load_event() {
-        if (this.file_id) {
-            this.raise_event_global(CBR_Events.CBR__FILE__LOAD, {file_id: this.file_id})
-        }
     }
 
     // API Calls

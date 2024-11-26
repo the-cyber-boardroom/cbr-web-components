@@ -103,16 +103,26 @@ export default class Web_Component extends HTMLElement {
         }
         this.set_inner_html(html)               // first set the html
     }
+    async refresh_ui() {
+              this.remove_event_handlers   ()                    // Remove existing event handlers
+              this.render                  ()                    // Re-render the component's HTML
+        await this.add_web_components()                    // Re-add any child web components
+              this.add_event_handlers      ()                    // Re-attach event handlers
+        await this.final_ui_changes  ()                    // Apply any final UI adjustments
+        await this.component_ready()
+              this.raise_event__component_ready()
+    }
 
-    async apply_css           () {}                   // override to apply css to the current dom
-    async load_data           () {}                   // override to trigger the load any data required
-          html                () {}                   // override to return the html of the component
-          add_event_listeners () {}                   // override to set the DOM event listeners
-          add_event_handlers  () {}                   // override to set the event handlers
-    async add_web_components  () {}                   // override to add web components to the current component
-    async final_ui_changes    () {}                   // override to make final changes to the UI
-    async component_ready     () {}                   // override to run code when the component is ready
-
+    async apply_css             () {}                   // override to apply css to the current dom
+    async load_data             () {}                   // override to trigger the load any data required
+          html                  () {}                   // override to return the html of the component
+          add_event_listeners   () {}                   // override to set the DOM event listeners
+          add_event_handlers    () {}                   // override to set the event handlers
+    async add_web_components    () {}                   // override to add web components to the current component
+    async final_ui_changes      () {}                   // override to make final changes to the UI
+    async component_ready       () {}                   // override to run code when the component is ready
+          remove_event_handlers () {}                   // override to remove event handlers
+          remove_event_listeners() {}                   // override to remove event listeners
     // EVENT helper methods
 
     add_window_event_listener(eventType, listener) {
@@ -158,6 +168,10 @@ export default class Web_Component extends HTMLElement {
         const custom_event = new CustomEvent(event_name, options)
         this.dispatchEvent(custom_event);
         return custom_event
+    }
+
+    raise_event__component_ready() {
+        this.raise_event(this.EVENT_NAME__COMPONENT_READY)
     }
 
     async wait_for_event(event_name, timeout) {
@@ -383,6 +397,12 @@ export default class Web_Component extends HTMLElement {
                 }
             }
         }
+    }
+
+    console_log__caller(index=3){
+        const err = new Error();
+        const stack = err.stack.split('\n');
+        console.log(stack[index]);
     }
     // instance methods
 }

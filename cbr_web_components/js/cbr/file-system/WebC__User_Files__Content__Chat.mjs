@@ -5,7 +5,6 @@ import CSS__Buttons  from '../../css/CSS__Buttons.mjs'
 import API__Invoke   from '../../data/API__Invoke.mjs'
 import Div           from '../../core/Div.mjs'
 import Button        from '../../core/Button.mjs'
-import Raw_Html      from '../../core/Raw_Html.mjs'
 
 export default class WebC__User_Files__Content__Chat extends Web_Component {
 
@@ -24,40 +23,24 @@ export default class WebC__User_Files__Content__Chat extends Web_Component {
     }
 
     async load_data() {
-        await this.load_file_data()
+        const path         = `/api/user-data/files/file-contents?file_id=${this.file_id}`
+        const response     = await this.api_invoke.invoke_api(path)
+        this.file_data     = response.data.file_data
+        this.file_summary  = JSON.parse(response.data.file_summary)
+        this.content_bytes = response.data.file_bytes__base64
+        const decoded      = atob(this.content_bytes)                                                            // Decode content for chat context
+        this.content       = new TextDecoder().decode(new Uint8Array([...decoded].map(c => c.charCodeAt(0))))
     }
 
-    async load_file_data() {
-        try {
-            const path         = `/api/user-data/files/file-contents?file_id=${this.file_id}`
-            const response     = await this.api_invoke.invoke_api(path)
-            this.file_data     = response.data.file_data
-            this.file_summary  = JSON.parse(response.data.file_summary)
-            this.content_bytes = response.data.file_bytes__base64
-            const decoded      = atob(this.content_bytes)                                                            // Decode content for chat context
-            this.content       = new TextDecoder().decode(new Uint8Array([...decoded].map(c => c.charCodeAt(0))))
-        } catch (error) {
-            console.error('Error loading file:', error)
-            this.show_error(error.message)
-        }
-    }
-
-    toggle_chat_mode() {
+    toggle_chat_mode = async () => {
         this.chat_mode = this.chat_mode === 'content' ? 'summary' : 'content'
-        this.render()
-    }
-
-    show_error(message) {
-        const error_div = this.query_selector('.error-message')
-        if (error_div) {
-            error_div.textContent = message
-        }
+        await this.refresh_ui()
     }
 
     render_toolbar() {
-        const toolbar = new Div({ class: 'chat-toolbar' })
-
-        const mode_btn = new Button({class: `btn ${this.chat_mode === 'content' ? 'btn-primary' : 'btn-outline-primary'}`,
+        const toolbar   = new Div({ class: 'chat-toolbar' })
+        const btn_class = this.chat_mode === 'content' ? 'btn-primary' : 'btn-outline-primary'
+        const mode_btn  = new Button({class: `btn ${btn_class} mode-btn`,
                                      value: `Chat with ${this.chat_mode === 'content' ? 'Summary' : 'Content'}`})
 
         toolbar.add_element(mode_btn)
@@ -80,6 +63,7 @@ export default class WebC__User_Files__Content__Chat extends Web_Component {
     }
 
     get_system_prompt() {
+
         if (this.chat_mode === 'content') {
             return `You are a helpful assistant discussing a file's content. Here is the file content:
                 ${this.content}
@@ -95,18 +79,23 @@ export default class WebC__User_Files__Content__Chat extends Web_Component {
 
     html() {
         const container = new Div({ class: 'content-chat-container' })
-        const error_msg = new Div({ class: 'error-message' })
 
-        container.add_elements(this.render_toolbar(),  error_msg,  this.render_chat() )
+        container.add_elements(this.render_toolbar(), this.render_chat() )
 
         return container
     }
 
     add_event_handlers() {
-
         const mode_btn = this.query_selector('.chat-toolbar .btn')                          // Mode toggle button
         if (mode_btn) {
-            mode_btn.addEventListener('click', () => this.toggle_chat_mode())
+            mode_btn.addEventListener('click', this.toggle_chat_mode)
+        }
+    }
+
+    remove_event_handlers() {
+        const mode_btn = this.query_selector('.chat-toolbar .btn');
+        if (mode_btn) {
+            mode_btn.removeEventListener('click', this.toggle_chat_mode);
         }
     }
 

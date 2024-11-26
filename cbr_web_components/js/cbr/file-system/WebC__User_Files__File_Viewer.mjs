@@ -1,37 +1,36 @@
-import Web_Component                      from '../../core/Web_Component.mjs'
-import CSS__Cards                         from '../../css/CSS__Cards.mjs'
-import CSS__Forms                         from '../../css/CSS__Forms.mjs'
-import CSS__Icons                         from '../../css/icons/CSS__Icons.mjs'
-import API__Invoke                        from '../../data/API__Invoke.mjs'
-import Div                                from '../../core/Div.mjs'
-import Img                                from '../../core/Img.mjs'
-import Button                             from '../../core/Button.mjs'
-import Raw_Html                           from "../../core/Raw_Html.mjs";
-import CSS__Buttons                       from "../../css/CSS__Buttons.mjs";
+import CBR_Events                 from "../CBR_Events.mjs";
+import Web_Component              from '../../core/Web_Component.mjs'
+import CSS__Cards                 from '../../css/CSS__Cards.mjs'
+import CSS__Forms                 from '../../css/CSS__Forms.mjs'
+import CSS__Icons                 from '../../css/icons/CSS__Icons.mjs'
+import API__Invoke                from '../../data/API__Invoke.mjs'
+import Div                        from '../../core/Div.mjs'
+import Img                        from '../../core/Img.mjs'
+import Button                     from '../../core/Button.mjs'
+import Raw_Html                   from "../../core/Raw_Html.mjs";
+import CSS__Buttons               from "../../css/CSS__Buttons.mjs";
 import WebC__User_Files__Markdown from "../markdown-editor/WebC__User_Files__Markdown.mjs";
 
 export default class WebC__User_Files__File_Viewer extends Web_Component {
-    load_attributes() {
-        new CSS__Buttons  (this).apply_framework()
-        new CSS__Cards    (this).apply_framework()
-        new CSS__Forms    (this).apply_framework()
-        new CSS__Icons    (this).apply_framework()
+
+    constructor() {
+        super();
         this.api_invoke   = new API__Invoke()
         this.current_file = null
         this.current_view = 'content'
     }
 
-    connectedCallback() {
-        //super.connectedCallback()
-        this.load_attributes()
-        this.build()
-        this.add_event_listeners()
+    async apply_css() {
+        new CSS__Buttons  (this).apply_framework()
+        new CSS__Cards    (this).apply_framework()
+        new CSS__Forms    (this).apply_framework()
+        new CSS__Icons    (this).apply_framework()
+        this.add_css_rules(this.css_rules())
     }
 
     add_event_listeners() {
         document.addEventListener('file-selected', async (e) => {
             this.current_file = e.detail
-            await this.load_file_data()
             await this.render_file_viewer()
         })
     }
@@ -69,7 +68,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         }
     }
 
-    add_web_components() {
+    async add_web_components() {
         if (!this.file_bytes__base64) return
 
         try {
@@ -93,7 +92,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
                 case '.xlsx':
                 case '.ppt':
                 case '.pptx':
-                    this.add_document_viewer(content_container)
+                    await this.add_document_viewer(content_container)
                     break
                 case '.jpg':
                 case '.jpeg':
@@ -111,6 +110,15 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             console.error('Error processing file:', error)
             this.show_error_viewer()
         }
+    }
+
+    // main methods
+    async render_file_viewer() {
+        this.render()
+        await this.add_web_components()
+        await this.add_event_listeners()
+        await this.load_file_data()
+        this.raise_file_load_event()
     }
 
     add_markdown_editor(host_element) {
@@ -228,7 +236,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         await this.api_invoke.invoke_api(path, 'POST')
 
         button.innerHTML = '...reloading data'
-        await this.load_file_data()
+        //await this.load_file_data()
         await this.render_file_viewer()
         button.innerHTML = '...all done'
 
@@ -251,15 +259,17 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         }
     }
 
-    async on_current_file__create_download(button) {
+    async on_current_file__create_download() {
         if (!this.current_file?.node_id) {
             return
         }
         const file_id        = this.current_file.node_id
         const path           = `/api/user-data/files/file-download?file_id=${file_id}`
+        this.reload_window_location(path)
+    }
+
+    reload_window_location(path) {
         window.location.href = path;
-        // const file_contents = await this.api_invoke.invoke_api(path, 'POST')
-        // console.log(file_contents)
     }
 
     async on_current_file__rename() {
@@ -272,12 +282,18 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
                 this.raise_refresh_event()
 
-                await this.load_file_data    ()
+                //await this.load_file_data    ()
                 await this.render_file_viewer()
             } catch (error) {
                 console.error('Error renaming file:', error)
                 this.show_error_message('Failed to rename file')
             }
+        }
+    }
+
+    raise_file_load_event() {
+        if (this.current_file.node_id) {
+            this.raise_event_global(CBR_Events.CBR__FILE__LOAD, {file_id: this.current_file.node_id})
         }
     }
 
@@ -476,7 +492,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         return tabs
     }
 
-    render_file_viewer() {
+    html() {
         const container = new Div({ class: 'viewer-container' })
 
         if (!this.current_file || !this.file_data) {
@@ -530,12 +546,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             container.add_elements(header, tabs, content_view, chat_view, status)
         }
 
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
-
-        this.add_web_components()
-        this.add_event_handlers()
-
+        return container
     }
 
     render_file_actions() {
@@ -548,10 +559,6 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
         actions.add_elements(rename_btn, summary_btn, download_btn, delete_btn)
         return actions
-    }
-
-    build() {
-        this.render_file_viewer()
     }
 
 

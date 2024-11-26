@@ -4,7 +4,7 @@ import WebC__Profile__Container  from '../../../js/cbr/web-components/WebC__Prof
 import { setup_mock_responses,
          set_mock_response }     from '../api/Mock_API__Data.mjs'
 
-const { module, test , only } = QUnit
+const { module, test } = QUnit
 
 const MOCK_PROFILE = {
     first_name              : 'John'                                ,
@@ -22,7 +22,7 @@ module('WebC__Profile__Container', hooks => {
     let target_div
     let container
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         setup_mock_responses()
         set_mock_response('/api/user-data/user/user-profile', 'GET', MOCK_PROFILE)
 
@@ -31,7 +31,7 @@ module('WebC__Profile__Container', hooks => {
         await container.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         container .remove()
         target_div.remove()
     })
@@ -104,11 +104,14 @@ module('WebC__Profile__Container', hooks => {
         // Save original reload method
         const original_reload = container.reload_page
 
-        // Setup event listener
-        container.addEventListener('profile-update', (event) => {
+        // Define the event listener function
+        const profileUpdateListener = (event) => {
             assert.equal(event.detail.channel      , container.channel          , 'Correct channel'         )
             assert.deepEqual(event.detail.profile  , container.current_profile  , 'Includes profile data'   )
-        })
+        }
+
+        // Setup event listener
+        container.addEventListener('profile-update', profileUpdateListener)
 
         // Mock reload method
         container.reload_page = () => {
@@ -120,6 +123,8 @@ module('WebC__Profile__Container', hooks => {
 
         assert.ok(reload_called                                                 , 'Reloads page'            )
 
+        // Remove the event listener
+        container.removeEventListener('profile-update', profileUpdateListener)
         // Restore original method
         container.reload_page = original_reload
     })

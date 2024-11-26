@@ -23,7 +23,7 @@ export class Mock_API__Invoke {
         }
     }
 
-    async invoke_api(url, method) {
+    async invoke_api(url, method='GET') {
         const key = `${method}:${url}`
         if (this.responses.has(key)) {
             const response = this.responses.get(key)
