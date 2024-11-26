@@ -49,17 +49,14 @@ export default class WebC__User_Files__Actions extends Web_Component {
             filename = filename + '.md'
         }
 
-        try {
-            const file_content = '# New Document\n\nEnter your markdown content here...'
-            await this.api_invoke.invoke_api('/api/user-data/files/add-file', 'POST', {
-                file_name         : filename,
-                file_bytes__base64: btoa(file_content),
-                folder_id         : this.current_folder.node_id || ''
-            })
-            this.raise_refresh_event()
-        } catch (error) {
-            console.error('Error creating markdown file:', error)
-        }
+
+        const file_content = '# New Document\n\nEnter your markdown content here...'
+        await this.api_invoke.invoke_api('/api/user-data/files/add-file', 'POST', {
+            file_name         : filename,
+            file_bytes__base64: btoa(file_content),
+            folder_id         : this.current_folder.node_id || ''
+        })
+        this.raise_refresh_event()
     }
 
     async delete_current_folder() {
@@ -71,7 +68,7 @@ export default class WebC__User_Files__Actions extends Web_Component {
         if (confirm(`Are you sure you want to delete folder "${this.current_folder.name}"?`)) {
             try {
                 const path = `/api/user-data/files/delete-folder?folder_id=${this.current_folder.node_id}`
-                await this.api_invoke.invoke_api(path, 'DELETE',)
+                await this.api_invoke.invoke_api(path, 'DELETE')
                 this.raise_refresh_event()
             } catch (error) {
                 console.error('Error deleting folder:', error)
