@@ -18,6 +18,22 @@ HTMLElement.prototype.hide = function() {                           // Hides ele
     return this
 };
 
+HTMLElement.prototype.is_disabled = function() {
+    return !this.is_enabled();
+};
+
+HTMLElement.prototype.is_enabled = function() {
+    return !this.hasAttribute('disabled');
+};
+
+HTMLElement.prototype.is_hidden = function() {
+    return window.getComputedStyle(this).display === 'none';
+};
+
+HTMLElement.prototype.is_visible = function() {
+    return !this.is_hidden();
+};
+
 HTMLElement.prototype.remove_class = function(...classNames) {      // Removes class from current element
     this.classList.remove(...classNames);
     return this
