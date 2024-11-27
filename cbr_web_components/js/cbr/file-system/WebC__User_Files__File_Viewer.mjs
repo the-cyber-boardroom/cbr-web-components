@@ -339,11 +339,12 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         }
     }
 
-    clear_viewer() {
+    async clear_viewer() {
         this.current_file       = null
         this.file_data          = null
         this.file_bytes__base64 = null
-        this.render_file_viewer()
+        this.current_view       = 'content'
+        await this.refresh_ui()
     }
 
 
