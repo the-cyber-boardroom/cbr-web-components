@@ -18,7 +18,7 @@ const MOCK_FOLDER_DATA = {
 
 const MOCK_FOLDER_SUMMARY = '## Folder Contents\n- Important documents\n- Project files'
 
-module.only('WebC__User_Files__Folder_Viewer', hooks => {
+module('WebC__User_Files__Folder_Viewer', hooks => {
     let target_div
     let folder_viewer
     let original_marked
