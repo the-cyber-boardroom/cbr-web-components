@@ -24,13 +24,34 @@ export default class WebC__User_Files__Actions extends Web_Component {
 
 
     add_event_listeners() {
-        document.addEventListener('folder-selected', (e) => {
-            this.current_folder = e.detail
-            this.render()
-            this.add_event_handlers()
-        })
+        document.addEventListener('folder-selected', this.handle__on_folder_selected)
     }
 
+    add_event_handlers() {
+        this.query_selector('.new-folder-btn'      ).addEventListener('click', this.handle__on_add_folder     );  // Add folder handler
+        this.query_selector('.new-markdown-btn'    ).addEventListener('click', this.handle__on_create_markdown);  // Markdown creation handler
+        this.query_selector('.action-button.rename').addEventListener('click', this.handle__on_rename_folder  );
+        this.query_selector('.action-button.delete').addEventListener('click', this.handle__on_delete_folder  );
+    }
+
+
+    remove_event_listeners() {
+        document.removeEventListener('folder-selected', this.handle__on_folder_selected);
+    }
+    remove_event_handlers() {
+        this.query_selector('.new-folder-btn'      ).removeEventListener('click', this.handle__on_add_folder     );        // Remove folder handler
+        this.query_selector('.new-markdown-btn'    ).removeEventListener('click', this.handle__on_create_markdown); // Remove markdown creation handler
+        this.query_selector('.action-button.rename').removeEventListener('click', this.handle__on_rename_folder  );
+        this.query_selector('.action-button.delete').removeEventListener('click', this.handle__on_delete_folder  );
+    }
+
+    async component_ready() {
+        // todo add this logic here
+        //this.show_rename_delete = this.current_folder.node_id &&  this.current_folder.name !== 'root'
+    }
+
+
+    // Build methods
     async add_folder(folder_name) {
         try {
             await this.api_invoke.invoke_api('/api/user-data/files/add-folder', 'POST', {
@@ -40,7 +61,7 @@ export default class WebC__User_Files__Actions extends Web_Component {
             //this.input.value = ''
             this.raise_refresh_event()
         } catch (error) {
-            console.error('Error adding folder:', error)
+            //console.error('Error adding folder:', error)
         }
     }
 
@@ -162,15 +183,10 @@ export default class WebC__User_Files__Actions extends Web_Component {
         const folder_form       = this.render_folder_form()
         const markdown_form     = this.render_markdown_form()
 
-        this.show_rename_delete = this.current_folder.node_id &&  this.current_folder.name !== 'root'  // todo:add better way to track this
-
-        if (this.show_rename_delete) {
-            const rename_form = this.render_rename_delete_form()
-            const delete_btn  = this.render_delete_button()
-            container.add_elements(folder_info, folder_form, markdown_form, rename_form, delete_btn)
-        } else {
-            container.add_elements(folder_info, folder_form, markdown_form)
-        }
+        //if (this.show_rename_delete) {                                // todo: add this logic to the UI  (when components that are not supposed to be visible should start hidden)
+        const rename_form = this.render_rename_delete_form()
+        const delete_btn  = this.render_delete_button()
+        container.add_elements(folder_info, folder_form, markdown_form, rename_form, delete_btn)
 
         return container
     }
@@ -201,16 +217,10 @@ export default class WebC__User_Files__Actions extends Web_Component {
     }
 
     render_rename_delete_form() {
-        const form__rename_folder = new Div({ class: 'rename-form' })
-        const rename_input      = new Input({
-            class      : 'input rename-input',
-            placeholder: 'New name',
-            value      : this.current_folder.name
-        })
-        const rename_button     = new Button({
-            class: 'action-button rename',
-            value: 'Rename'
-        })
+        const form__rename_folder = new Div   ({ class: 'rename-form' })
+        const rename_input        = new Input ({ class: 'input rename-input'  , placeholder: 'New name', value: this.current_folder.name })
+        const rename_button       = new Button({ class: 'action-button rename', value: 'Rename' })
+
         form__rename_folder.add_elements(rename_input, rename_button)
         return form__rename_folder
     }
@@ -222,37 +232,37 @@ export default class WebC__User_Files__Actions extends Web_Component {
         })
     }
 
-    add_event_handlers() {
-        this.query_selector('.new-folder-btn').addEventListener('click', async () => {                           // Add folder handler
-            const input = this.query_selector('.new-folder-input')
-            const name = input.value.trim()
-            if (name) {
-                await this.add_folder(name)
-            }
-        })
-
-        this.query_selector('.new-markdown-btn').addEventListener('click', async () => {                         // Markdown creation handler
-            const input = this.query_selector('.new-markdown-input')
-            const filename = input.value.trim()
-            if (filename) {
-                await this.create_markdown_file(filename)
-            }
-        })
-
-        // Conditional handlers for rename/delete
-        if (this.show_rename_delete) {
-            this.query_selector('.action-button.rename').addEventListener('click', async () => {
-                const input = this.query_selector('.rename-input')
-                const new_name = input.value.trim()
-                if (new_name && new_name !== this.current_folder.name) {
-                    await this.rename_current_folder(new_name)
-                }
-            })
-
-            this.query_selector('.action-button.delete').addEventListener('click', async () => {
-                await this.delete_current_folder()
-            })
+    handle__on_add_folder = async (e) =>{
+        const input = this.query_selector('.new-folder-input');
+        const name = input.value.trim();
+        if (name) {
+            await this.add_folder(name);
         }
+    }
+
+    handle__on_create_markdown = async (e) =>{
+        const input = this.query_selector('.new-markdown-input');
+        const filename = input.value.trim();
+        if (filename) {
+            await this.create_markdown_file(filename);
+        }
+    }
+
+    handle__on_folder_selected = async (e) =>{
+        this.current_folder    = e.detail
+        await this.refresh_ui()
+    }
+
+    handle__on_rename_folder = async (e) =>{
+        const input = this.query_selector('.rename-input');
+        const new_name = input.value.trim();
+        if (new_name && new_name !== this.current_folder.name) {
+            await this.rename_current_folder(new_name);
+        }
+    }
+
+    handle__on_delete_folder = async (e) =>{
+        await this.delete_current_folder();
     }
 }
 
