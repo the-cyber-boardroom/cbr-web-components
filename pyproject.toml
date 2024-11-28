@@ -1,6 +1,6 @@
 [tool.poetry]
 name        = "cbr_web_components"
-version     = "v0.12.123"
+version     = "v0.12.124"
 description = "CBR - Web Components"
 authors     = ["Dinis Cruz <dinis.cruz@owasp.org>"]
 license     = "MIT"
