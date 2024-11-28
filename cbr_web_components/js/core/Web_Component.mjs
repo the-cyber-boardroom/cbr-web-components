@@ -136,14 +136,17 @@ export default class Web_Component extends HTMLElement {
 
     add_event__on(event_type, selector, callback, params = {}) {
         const element        = this.query_selector(selector);                                            // Find the element using the selector
-        const bound_listener = (event) => callback.call(this, { ...params, event });                    // Create a bound listener that wraps the callback with params
-
-        element.addEventListener(event_type, bound_listener);                                              // Attach the click event listener
-        this.window_event_listeners.push({ eventType: event_type,  element,  listener: bound_listener, }); // Store the listener for cleanup
+        this.add_event__to_element__on(event_type, element, callback, params);                           // Add the event listener to the element
     }
-
+    
     add_event__on_click(selector, callback, params = {}) {
         this.add_event__on('click', selector, callback, params);
+    }
+
+    add_event__to_element__on(event_type, element, callback, params = {}) {
+        const bound_listener = (event) => callback.call(this, { ...params, event });                       // Create a bound listener that wraps the callback with params
+        element.addEventListener(event_type, bound_listener);                                              // Attach the click event listener
+        this.window_event_listeners.push({ eventType: event_type,  element,  listener: bound_listener, }); // Store the listener for cleanup
     }
 
     remove_window_event_listeners() {

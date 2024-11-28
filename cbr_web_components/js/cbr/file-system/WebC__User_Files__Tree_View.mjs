@@ -7,51 +7,46 @@ import Div              from '../../core/Div.mjs'
 
 export default class WebC__User_Files__Tree_View extends Web_Component {
 
-    load_attributes() {
-        new CSS__Icons    (this).apply_framework()
-        new CSS__Forms    (this).apply_framework()
+    constructor() {
+        super()
         this.api_invoke = new API__Invoke()
         this.data      = null
     }
-
-    async connectedCallback() {
-        this.load_attributes()
-        await this.load_data()
-        this.render()
+    async apply_css() {
+        new CSS__Icons    (this).apply_framework()
+        new CSS__Forms    (this).apply_framework()
+        this.add_css_rules (this.css_rules()                )
     }
-
 
     add_event_listeners() {
-        window.shadow__root = this.shadowRoot
-        this.shadowRoot.querySelectorAll('.tree-item').forEach(item => {
-            const chevron = item.querySelector('.tree-item-icon');
+        this.add_window_event_listener('file-selected'  , this.handle__event__on_selection)                                  // Selection events from document
+        this.add_window_event_listener('folder-selected', this.handle__event__on_selection)
+    }
+
+    add_event_handlers() {
+        // Chevron clicks
+        this.query_selector_all('.tree-item').forEach(item => {
+            const chevron = item.querySelector('.tree-item-icon')
             if (chevron && !chevron.classList.contains('hidden')) {
-                chevron.addEventListener('click', this.handle__on_click__chevron.bind(this, item, chevron));
-            }
-        });
-
-        this.shadowRoot.querySelectorAll('.tree-item[data-type="folder"]').forEach(item => {
-            item.addEventListener('click', this.handle__on_click__folder.bind(this, item));
+                this.add_event__to_element__on('click', chevron, this.handle__on_click__chevron, { item, chevron })}
         })
 
-        this.shadowRoot.querySelectorAll('.tree-item[data-type="file"]').forEach(item => {
-            item.addEventListener('click', this.handle__on_click__file.bind(this, item))
-        })
+        // Folder clicks
+        this.query_selector_all('.tree-item[data-type="folder"]').forEach(item => {
+            this.add_event__to_element__on('click', item, this.handle__on_click__folder, { item })})
 
-        document.addEventListener('file-selected', (e) => {
-            this.handle_selection(e.detail.node_id)
-        })
-
-        document.addEventListener('folder-selected', (e) => {
-            this.handle_selection(e.detail.node_id)
+        // File clicks
+        this.query_selector_all('.tree-item[data-type="file"]').forEach(item => {
+            this.add_event__to_element__on('click', item,this.handle__on_click__file, { item })
         })
 
     }
+
     async load_data() {
         try {
             this.data = await this.api_invoke.invoke_api('/api/user-data/files/json-view')
         } catch (error) {
-            console.error('Error loading file structure:', error)
+            //console.error('Error loading file structure:', error)
             this.data = { node_type: 'folder', children: [], files: [] }
         }
     }
@@ -64,7 +59,7 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
             })
             await this.refresh()
         } catch (error) {
-            console.error('Error adding folder:', error)
+            //console.error('Error adding folder:', error)
         }
     }
 
@@ -93,7 +88,8 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
             const folder   = new Icon({ icon: 'folder'       , class: 'tree-item-icon folder-icon'})
             content.add_elements(chevron, folder)
 
-            const children = new Div({class: `tree-children ${expand ? '' : 'tree-folder-closed'}`, id: `folder-${node.node_id}`})
+            //const children = new Div({class: `tree-children ${expand ? '' : 'tree-folder-closed'}`, id: `folder-${node.node_id}`})
+            const children = new Div({class: `tree-children`, id: `folder-${node.node_id}`})
 
             node.children?.forEach(child => children.add_element(this.create_tree_item(child, level + 1)))
             node.files   ?.forEach(file  => children.add_element(this.create_tree_item(file, level + 1)))
@@ -112,14 +108,18 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         return item_div
     }
 
-    handle__on_click__chevron(item, chevron, event) {
+    handle__event__on_selection = (event) => {
+        this.handle_selection(event.detail.node_id)
+    }
+
+    handle__on_click__chevron({item, chevron, event}) {
         event.stopPropagation();
         const children = item.querySelector('.tree-children');
         children.classList.toggle('tree-folder-closed');
         chevron.classList.toggle('tree-item-expanded');
     }
 
-    handle__on_click__file(item, event) {
+    handle__on_click__file({item, event}) {
         event.stopPropagation();
         const custom_event = new CustomEvent('file-selected', { detail: { node_id: item.dataset.id,
                                                                           name: item.querySelector('.tree-item-text').textContent },
@@ -128,7 +128,7 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
         this.dispatchEvent(custom_event)
     }
 
-    handle__on_click__folder = (item, event) =>{
+    handle__on_click__folder = ({item, event}) =>{
         event.stopPropagation()
 
         this.shadowRoot.querySelectorAll('.tree-item-content.selected').forEach(i => {          // Remove previous selections
@@ -160,12 +160,10 @@ export default class WebC__User_Files__Tree_View extends Web_Component {
 
 
 
-    render() {
+    html() {
         const tree = new Div({ class: 'tree-view' })
         tree.add_element   (this.create_tree_item(this.data))
-        this.set_inner_html(tree.html()                     )
-        this.add_css_rules (this.css_rules()                )
-        this.add_event_listeners()
+        return tree
     }
 
     css_rules() {
