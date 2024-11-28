@@ -139,36 +139,31 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
     }
 
     add_text_viewer(container, decoded_content) {
-        try {
-            const text = new TextDecoder().decode(
-                new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
-            )
+        const text = new TextDecoder().decode(
+            new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
+        )
 
-            if (this.file_data.file_type === '.json') {
-                try {
-                    const formatted = JSON.stringify(JSON.parse(text), null, 2)
-                    const code = new Raw_Html({
-                        class: 'content-code',
-                        value: `<pre>${formatted}</pre>`
-                    })
-                    container.appendChild(code.dom_create())
-                } catch {
-                    const text_div = new Raw_Html({
-                        class: 'content-text',
-                        value: text
-                    })
-                    container.appendChild(text_div.dom_create())
-                }
-            } else {
+        if (this.file_data.file_type === '.json') {
+            try {
+                const formatted = JSON.stringify(JSON.parse(text), null, 2)
+                const code = new Raw_Html({
+                    class: 'content-code',
+                    value: `<pre>${formatted}</pre>`
+                })
+                container.appendChild(code.dom_create())
+            } catch {
                 const text_div = new Raw_Html({
                     class: 'content-text',
                     value: text
                 })
                 container.appendChild(text_div.dom_create())
             }
-        } catch (error) {
-            console.error('Error converting text:', error)
-            this.show_error_viewer()
+        } else {
+            const text_div = new Raw_Html({
+                class: 'content-text',
+                value: text
+            })
+            container.appendChild(text_div.dom_create())
         }
     }
 
@@ -198,31 +193,15 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
     }
 
     add_default_viewer(container, decoded_content) {
-        try {
-            const text = new TextDecoder().decode(
-                new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
-            )
-            const text_div = new Raw_Html({
-                class: 'content-text',
-                value: text
-            })
-            container.appendChild(text_div.dom_create())
-        } catch {
-            const binary_div = new Div({
-                class: 'content-binary',
-                value: 'Binary file contents cannot be displayed'
-            })
-            container.appendChild(binary_div.dom_create())
-        }
-    }
 
-    show_error_viewer() {
-        const error_div = new Div({
-            class: 'content-error',
-            value: 'Error displaying file contents'
+        const text = new TextDecoder().decode(
+            new Uint8Array([...decoded_content].map(c => c.charCodeAt(0)))
+        )
+        const text_div = new Raw_Html({
+            class: 'content-text',
+            value: text
         })
-        this.query_selector('.content-container')
-            .appendChild(error_div.dom_create())
+        container.appendChild(text_div.dom_create())
     }
 
     async load_file_data() {
@@ -290,6 +269,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         await this.render_file_viewer()
     }
 
+    /* istanbul ignore next */
     reload_window_location(path) {
         window.location.href = path;
     }
@@ -450,25 +430,18 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
     // }
 
     async render__using_google_viewer() {                           // todo: a) see if this is the best way to handle these docs, and b) debug the multiple file formats supported
-        try {
-            const response      = await this.api_invoke.invoke_api(`/api/user-data/files/file-temp-signed-url?file_id=${this.current_file.node_id}`, 'GET')
-            const presigned_url = response.data
-            return new Raw_Html({
-                class: 'content-document-viewer',
-                value: `<iframe
-                            src="https://docs.google.com/viewer?embedded=true&url=${encodeURIComponent(presigned_url)}"
-                            width="100%"
-                            height="600px"
-                            frameborder="0">
-                        </iframe>`
-            })
-        } catch (error) {
-            console.error('Error getting presigned URL:', error)
-            return new Raw_Html({
-                class: 'content-error',
-                value: 'Error loading document preview'
-            })
-        }
+
+        const response      = await this.api_invoke.invoke_api(`/api/user-data/files/file-temp-signed-url?file_id=${this.current_file.node_id}`, 'GET')
+        const presigned_url = response.data
+        return new Raw_Html({
+            class: 'content-document-viewer',
+            value: `<iframe
+                        src="https://docs.google.com/viewer?embedded=true&url=${encodeURIComponent(presigned_url)}"
+                        width="100%"
+                        height="600px"
+                        frameborder="0">
+                    </iframe>`
+        })
     }
 
     render_summary_section() {
@@ -478,13 +451,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
 
         let processed_summary
-        try {
-            processed_summary = JSON.parse(this.file_summary)
-        } catch (error) {
-            console.error('Error processing summary:', error)
-            processed_summary = this.file_summary                        // Fallback to original if parsing fails
-        }
-
+        processed_summary = JSON.parse(this.file_summary)
 
         const summary_container = new Div({ class: 'summary-container'                                })
         const summary_header    = new Div({ class: 'summary-header'                                   })
