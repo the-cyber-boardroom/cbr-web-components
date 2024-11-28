@@ -10,6 +10,7 @@ import Button                     from '../../core/Button.mjs'
 import Raw_Html                   from "../../core/Raw_Html.mjs";
 import CSS__Buttons               from "../../css/CSS__Buttons.mjs";
 import WebC__User_Files__Markdown from "../markdown-editor/WebC__User_Files__Markdown.mjs";
+import WebC__User_Files__Content__Chat from "./WebC__User_Files__Content__Chat.mjs";
 
 export default class WebC__User_Files__File_Viewer extends Web_Component {
 
@@ -38,79 +39,82 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
     }
 
     add_event_handlers() {
-        if (this.current_file) {
-            // File action buttons
-            const btn__delete         = this.query_selector('.delete-file')
-            const btn__create_summary = this.query_selector('.create-summary')
-            const btn__download       = this.query_selector('.download-file')
-            const btn__rename         = this.query_selector('.rename-file')
 
-            if (btn__create_summary) { btn__create_summary.addEventListener('click', () => this.on_current_file__create_summary(btn__create_summary)) }
-            if (btn__delete)         { btn__delete.addEventListener('click', () => this.on_current_file__delete()) }
-            if (btn__download)       { btn__download.addEventListener('click', () => this.on_current_file__create_download()) }
-            if (btn__rename)         { btn__rename.addEventListener('click', () => this.on_current_file__rename()) }
+        // File action buttons
+        const btn__delete         = this.query_selector('.delete-file'   )
+        const btn__create_summary = this.query_selector('.create-summary')
+        const btn__download       = this.query_selector('.download-file' )
+        const btn__rename         = this.query_selector('.rename-file'   )
 
-            // View tabs
-            const content_tab = this.query_selector('#content-tab')
-            const chat_tab = this.query_selector('#chat-tab')
+        if (btn__create_summary) { btn__create_summary.addEventListener('click', this.on_current_file__create_summary ) }
+        if (btn__delete)         { btn__delete        .addEventListener('click', this.on_current_file__delete         ) }
+        if (btn__download)       { btn__download      .addEventListener('click', this.on_current_file__create_download) }
+        if (btn__rename)         { btn__rename        .addEventListener('click', this.on_current_file__rename         ) }
 
-            if (content_tab) {
-                content_tab.addEventListener('click', () => {
-                    this.current_view = 'content'
-                    this.render_file_viewer()
-                })
-            }
+        // View tabs
+        const content_tab = this.query_selector('#content-tab')
+        const chat_tab   = this.query_selector ('#chat-tab'  )
 
-            if (chat_tab) {
-                chat_tab.addEventListener('click', () => {
-                    this.current_view = 'chat'
-                    this.render_file_viewer()
-                })
-            }
-        }
+        content_tab.addEventListener('click', this.on_content_tab__click )
+        chat_tab   .addEventListener('click', this.on_chat_tab__click    )
+    }
+
+    remove_event_handlers() {
+        const btn__delete         = this.query_selector('.delete-file'   )
+        const btn__create_summary = this.query_selector('.create-summary')
+        const btn__download       = this.query_selector('.download-file' )
+        const btn__rename         = this.query_selector('.rename-file'   )
+
+        if (btn__create_summary) { btn__create_summary.removeEventListener('click', this.on_current_file__create_summary ) }
+        if (btn__delete)         { btn__delete        .removeEventListener('click', this.on_current_file__delete         ) }
+        if (btn__download)       { btn__download      .removeEventListener('click', this.on_current_file__create_download) }
+        if (btn__rename)         { btn__rename        .removeEventListener('click', this.on_current_file__rename         ) }
+
+        const content_tab = this.query_selector('#content-tab')
+        const chat_tab    = this.query_selector ('#chat-tab'  )
+
+        content_tab.removeEventListener('click', this.on_content_tab__click )
+        chat_tab   .removeEventListener('click', this.on_chat_tab__click    )
     }
 
     async add_web_components() {
         if (!this.file_bytes__base64) return
 
-        try {
-            const decoded_content = atob(this.file_bytes__base64)
-            const file_type = this.file_data.file_type.toLowerCase()
-            const host_element = '.content-container'
-            const content_container = this.query_selector(host_element)
+        this.add_web_component_to('.chat-view', WebC__User_Files__Content__Chat, { 'file_id': this.current_file.node_id })
+
+        const decoded_content = atob(this.file_bytes__base64)
+        const file_type = this.file_data.file_type.toLowerCase()
+        const host_element = '.content-container'
+        const content_container = this.query_selector(host_element)
 
 
-            switch(file_type) {
-                case '.md':
-                    this.add_markdown_editor(host_element)
-                    break
-                case '.txt':
-                case '.json':
-                    this.add_text_viewer(content_container, decoded_content)
-                    break
-                case '.doc':
-                case '.docx':
-                case '.xls':
-                case '.xlsx':
-                case '.ppt':
-                case '.pptx':
-                    await this.add_document_viewer(content_container)
-                    break
-                case '.jpg':
-                case '.jpeg':
-                case '.png':
-                case '.gif':
-                    this.add_image_viewer(content_container)
-                    break
-                case '.pdf':
-                    this.add_pdf_viewer(content_container)
-                    break
-                default:
-                    this.add_default_viewer(content_container, decoded_content)
-            }
-        } catch (error) {
-            console.error('Error processing file:', error)
-            this.show_error_viewer()
+        switch(file_type) {
+            case '.md':
+                this.add_markdown_editor(host_element)
+                break
+            case '.txt':
+            case '.json':
+                this.add_text_viewer(content_container, decoded_content)
+                break
+            case '.doc':
+            case '.docx':
+            case '.xls':
+            case '.xlsx':
+            case '.ppt':
+            case '.pptx':
+                await this.add_document_viewer(content_container)
+                break
+            case '.jpg':
+            case '.jpeg':
+            case '.png':
+            case '.gif':
+                this.add_image_viewer(content_container)
+                break
+            case '.pdf':
+                this.add_pdf_viewer(content_container)
+                break
+            default:
+                this.add_default_viewer(content_container, decoded_content)
         }
     }
     // event handling
@@ -122,11 +126,11 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
 
     // main methods
     async render_file_viewer() {
-        this.render()
-        await this.add_web_components()
-        await this.add_event_listeners()
         await this.load_file_data()
-        this.raise_file_load_event()
+        await this.refresh_ui()
+        // this.render()
+        // await this.add_web_components()
+        // await this.add_event_listeners()
     }
 
     add_markdown_editor(host_element) {
@@ -227,33 +231,33 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             this.file_data          = response.data.file_data
             this.file_bytes__base64 = response.data.file_bytes__base64
             this.file_summary       = response.data.file_summary          // Store summary
+            this.raise_file_load_event()
         } catch (error) {
-            console.error('Error loading file:', error)
-            this.show_error_message('Failed to load file data')
+            //console.error('Error loading file:', error)
+            //this.show_error_message('Failed to load file data')       // todo: implement better solution to handle errore
         }
     }
 
-    async on_current_file__create_summary(button) {
+    on_current_file__create_summary = async () => {
         if (!this.current_file?.node_id) {
             return
         }
-        button.innerHTML = '...creating'                                // todo: find a better way to show progress
+        //button.innerHTML = '...creating'                                // todo: find a better way to show progress
         const file_id      = this.current_file.node_id
         const path         = `/api/user-data/file-to-llms/file-summary?re_create=true&file_id=${file_id}`
 
         await this.api_invoke.invoke_api(path, 'POST')
 
-        button.innerHTML = '...reloading data'
+        //button.innerHTML = '...reloading data'
         //await this.load_file_data()
         await this.render_file_viewer()
-        button.innerHTML = '...all done'
+        //button.innerHTML = '...all done'
 
     }
-    async on_current_file__delete() {
-        if (!this.current_file?.node_id) {
-            return
-        }
 
+    on_current_file__delete = async () => {
+        if (!this.current_file?.node_id) { return }
+        if (!this.file_data            ) { return }
         if (confirm(`Are you sure you want to delete file "${this.file_data.file_name}"?`)) {
             try {
                 const path = `/api/user-data/files/delete-file?file_id=${this.current_file.node_id}`
@@ -261,13 +265,13 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
                 this.raise_refresh_event()
                 this.clear_viewer()
             } catch (error) {
-                console.error('Error deleting file:', error)
-                this.show_error_message('Failed to delete file')
+                //console.error('Error deleting file:', error)
+                //this.show_error_message('Failed to delete file')      // todo: implement better solution to handle errore
             }
         }
     }
 
-    async on_current_file__create_download() {
+    on_current_file__create_download  = async () => {
         if (!this.current_file?.node_id) {
             return
         }
@@ -276,11 +280,21 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         this.reload_window_location(path)
     }
 
+    on_content_tab__click = async () => {
+        this.current_view = 'content';
+        await this.render_file_viewer()
+    }
+
+    on_chat_tab__click = async () => {
+        this.current_view = 'chat';
+        await this.render_file_viewer()
+    }
+
     reload_window_location(path) {
         window.location.href = path;
     }
 
-    async on_current_file__rename() {
+    on_current_file__rename = async () => {
         const new_file_name = prompt('Enter new name:', this.file_data.file_name)
         if (new_file_name && new_file_name !== this.file_data.file_name) {
             try {
@@ -293,8 +307,8 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
                 //await this.load_file_data    ()
                 await this.render_file_viewer()
             } catch (error) {
-                console.error('Error renaming file:', error)
-                this.show_error_message('Failed to rename file')
+                //console.error('Error renaming file:', error)
+                //this.show_error_message('Failed to rename file')      // todo: implement better solution to handle errore
             }
         }
     }
@@ -318,6 +332,7 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
     }
 
     format_size(size) {
+        if (!size) return ''
         const units = ['B', 'KB', 'MB', 'GB']
         let size_num = size
         let unit_index = 0
@@ -330,14 +345,14 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
         return `${size_num.toFixed(1)} ${units[unit_index]}`
     }
 
-    show_error_message(message) {
-        const status = this.shadowRoot.querySelector('.viewer-status')
-        if (status) {
-            status.textContent = message
-            status.className = 'viewer-status error'
-            setTimeout(() => { status.textContent = '' }, 3000)
-        }
-    }
+    // show_error_message(message) {
+    //     const status = this.shadowRoot.querySelector('.viewer-status')
+    //     if (status) {
+    //         status.textContent = message
+    //         status.className = 'viewer-status error'
+    //         setTimeout(() => { status.textContent = '' }, 3000)
+    //     }
+    // }
 
     async clear_viewer() {
         this.current_file       = null
@@ -504,56 +519,43 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
     html() {
         const container = new Div({ class: 'viewer-container' })
 
-        if (!this.current_file || !this.file_data) {
-            container.add_element(
-                new Div({
-                    class: 'viewer-empty',
-                    value: 'Select a file to view its contents'
-                })
-            )
-        } else {
+        // if (!this.current_file || !this.file_data) {
+        //     container.add_element(new Div({class: 'viewer-empty',  value: 'Select a file to view its contents'}))
+        // } else {
             // Header section with file info and actions
-            const header = new Div({ class: 'file-header' })
-            const info = new Div({ class: 'file-info' })
+        const header = new Div({ class: 'file-header' })
+        const info = new Div({ class: 'file-info' })
 
-            info.add_elements(
-                new Div({ class: 'file-name', value: this.file_data.file_name }),
-                new Div({ class: 'file-meta', value: `Last updated: ${this.format_date(this.file_data.updated__date, this.file_data.updated__time)}` }),
-                new Div({ class: 'file-meta', value: `Size: ${this.format_size(this.file_data.file_size)}` }),
-                new Div({ class: 'file-meta', value: `File id: ${this.current_file.node_id}` })
-            )
+        info.add_elements(
+            new Div({ class: 'file-name', value: this.file_data?.file_name                                                                         }),
+            new Div({ class: 'file-meta', value: `Last updated: ${this.format_date(this.file_data?.updated__date, this.file_data?.updated__time)}` }),
+            new Div({ class: 'file-meta', value: `Size: ${this.format_size(this.file_data?.file_size)}`                                            }),
+            new Div({ class: 'file-meta', value: `File id: ${this.current_file?.node_id}`                                                          })
+        )
 
-            const actions = this.render_file_actions()
-            header.add_elements(info, actions)
+        const actions = this.render_file_actions()
+        header.add_elements(info, actions)
 
-            // Add view tabs
-            const tabs = this.render_view_tabs()
+        // Add view tabs
+        const tabs = this.render_view_tabs()
 
-            // Content View
-            const content_view = new Div({
-                class : 'content-view',
-                style : this.current_view === 'content' ? '' : 'display: none;'
-            })
+        // Content View
+        const content_view = new Div({
+            class : 'content-view',
+            style : this.current_view === 'content' ? '' : 'display: none;'
+        })
 
-            const summary_section = this.render_summary_section()
-            const content = new Div({ class: 'content-container' })
-            //content.add_element(await this.render_content_by_type())
-            content_view.add_elements(summary_section, content)
+        const summary_section = this.render_summary_section()
+        const content = new Div({ class: 'content-container' })
+        content_view.add_elements(summary_section, content)
 
-            // Chat View
-            const chat_view = new Div({
-                class : 'chat-view',
-                style : this.current_view === 'chat' ? '' : 'display: none;'
-            })
-            chat_view.add_tag({
-                tag: 'webc-user-files-content-chat',
-                attributes: { 'file_id': this.current_file.node_id }
-            })
+        // Chat View
+        const chat_view = new Div({ class : 'chat-view',  style : this.current_view === 'chat' ? '' : 'display: none;'})
 
-            const status = new Div({ class: 'viewer-status' })
 
-            container.add_elements(header, tabs, content_view, chat_view, status)
-        }
+        //const status = new Div({ class: 'viewer-status' })            // todo : add better solution for status messages
+
+        container.add_elements(header, tabs, content_view, chat_view)
 
         return container
     }
@@ -623,10 +625,10 @@ export default class WebC__User_Files__File_Viewer extends Web_Component {
             ".content-image img"   : { maxWidth         : "100%"                      ,
                                        height            : "auto"                      },
 
-            ".viewer-status"       : { marginTop        : "1rem"                      ,
-                                     padding          : "0.5rem"                     ,
-                                     borderRadius     : "0.25rem"                    ,
-                                     textAlign        : "center"                     },
+            // ".viewer-status"       : { marginTop        : "1rem"                      ,
+            //                          padding          : "0.5rem"                     ,
+            //                          borderRadius     : "0.25rem"                    ,
+            //                          textAlign        : "center"                     },
 
             ".error"              : { backgroundColor   : "#f8d7da"                    ,
                                       color             : "#842029"                    },

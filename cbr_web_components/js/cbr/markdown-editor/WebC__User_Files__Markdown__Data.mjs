@@ -25,8 +25,6 @@ export default class WebC__User_Files__Markdown__Data extends Web_Component {
         this.add_window_event_listener(CBR_Events.CBR__FILE__EDIT_MODE , this.on_edit_mode   )
         this.add_window_event_listener(CBR_Events.CBR__FILE__LOAD      , this.on_file_load   )
         this.add_window_event_listener(CBR_Events.CBR__FILE__SAVE      , this.on_file_save   )
-
-
     }
 
     component_ready() {
@@ -40,7 +38,7 @@ export default class WebC__User_Files__Markdown__Data extends Web_Component {
         return div_data_panel
     }
 
-    show_message(message, alert_class='primary') {
+    show_message(message='', alert_class='primary') {
         if (message) {
             this.text_data_message.show()
             this.text_data_message.innerText = message
@@ -70,6 +68,7 @@ export default class WebC__User_Files__Markdown__Data extends Web_Component {
     on_file_changed() {
         this.show_message__warning('... unsaved changes... ')
     }
+
     async on_file_load(event) {
         this.file_id = event.detail?.file_id
         try {
@@ -84,14 +83,13 @@ export default class WebC__User_Files__Markdown__Data extends Web_Component {
             this.show_message('file data loaded ok')
 
         } catch (error) {
-            //console.error('Error loading file:', error)
+            this.raise_event_global(CBR_Events.CBR__FILE__LOAD_ERROR , {file_id: this.file_id, error:error})
             this.show_message__error(error.message)
         }
     }
 
 
     async on_file_save() {
-
         try {
             const event_response = this.raise_event_global(CBR_Events.CBR__FILE__GET_CONTENT, {file_id: this.file_id})
             const content        = event_response.detail.content
@@ -102,6 +100,7 @@ export default class WebC__User_Files__Markdown__Data extends Web_Component {
             this.raise_event_global(CBR_Events.CBR__FILE__VIEW_MODE, {file_id: this.file_id})
         } catch (error) {
             this.show_message__error(error.message)
+            this.raise_event_global(CBR_Events.CBR__FILE__SAVE_ERROR , {file_id: this.file_id, error:error})
         }
 
     }

@@ -125,4 +125,4 @@ module('WebC__User_Files__Markdown__Toolbar', hooks => {
         toolbar.file_id = null
 
     })
-}); 
+});
