@@ -60,7 +60,7 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
             const response = await this.api_invoke.invoke_api('/api/user-data/ui/left-menu', 'GET')
             this.menu_data = response.menu_items
         } catch (error) {
-            console.error('Error fetching menu items:', error)
+            //console.error('Error fetching menu items:', error)
             this.menu_data = {}  // Set empty object on error
         }
     }

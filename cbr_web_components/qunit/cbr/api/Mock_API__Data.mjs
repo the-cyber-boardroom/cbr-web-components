@@ -66,6 +66,26 @@ export const MOCK_API_CHANNEL   = 'api_invoke__qunit'
 export const MOCK_CONFIG_PATH   = '/config/version'
 export const MOCK_CONFIG_DATA   = { version: 'v0.6.8' }
 
+export const MOCK_SESSION_ID = 'test-session-123'
+export const MOCK_PERSONA_ID = 'test-persona-456'
+
+export const MOCK_SESSION_DATA = {
+    session_id: MOCK_SESSION_ID,
+    user_data : {
+        name    : 'Test User',
+        role    : 'Test Role'
+    }
+}
+
+export const MOCK_SESSION_DETAILS = {
+    session_id : MOCK_SESSION_ID,
+    details    : {
+        timestamp : '2024-01-01T10:00:00',
+        status    : 'active'
+    }
+}
+
+
 export function setup_mock_responses() {
     Mock_API__Invoke.apply_mock()                                                           // we need to keep doing this due to some internal ways of wallaby and KarmaJS (which would lost the mock)
 
@@ -80,11 +100,14 @@ export function setup_mock_responses() {
     set_mock_response(`/api/user-data/files/file-bytes?file_id=${MOCK_FILE_ID}&version_id=${MOCK_VERSION_ID}`, 'GET', { data: { file_bytes__base64: btoa(MOCK_CONTENT) }})
     set_mock_response(`/api/user-data/files/file-bytes?file_id=${MOCK_FILE_ID}&version_id=invalid-version`   , 'GET', { data: {}   })                                      // Missing file_bytes__base64
 
+    set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_SESSION_ID}`              , 'GET' , MOCK_SESSION_DETAILS)
+
     set_mock_response(`/markdown/static_content/data-file?path=${MOCK_MENU_DATA_FILE}`                       , 'GET', MOCK_MENU_DATA            )
     set_mock_response(`/markdown/render/markdown-file-to-html-and-metadata?path=${MOCK_CONTENT_PATH}`        , 'GET', MOCK_MARKDOWN_RESPONSE    )
 
     set_mock_response(MOCK_SERVER_REQUESTS_API_PATH, 'GET', MOCK_SERVER_REQUESTS_DATA )
     set_mock_response(MOCK_CONFIG_PATH             , 'GET', MOCK_CONFIG_DATA          )
+
 
 }
 

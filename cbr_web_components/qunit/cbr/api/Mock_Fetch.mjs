@@ -22,6 +22,9 @@ export class Mock_Fetch {
         }
 
         const response = this.responses.get(url)
+        if (typeof response === 'function') {
+            return response({ url, response });
+        }
         return {
             ok     : response.status === 200   ,
             status : response.status || 200    ,
@@ -50,12 +53,26 @@ export function set_mock_response(url, data, status = 200) {           // Helper
 
 class StreamResponse {
     constructor(chunks) {
-        this.chunks = Array.isArray(chunks) ? chunks : [chunks];
+        if (typeof chunks === 'function') {
+            this.callback = chunks
+            this.chunks   = []
+        }
+        else {
+            this.callback = null
+            if (Array.isArray(chunks)) {
+                this.chunks = chunks
+            } else {
+                chunks = [chunks]
+            }
+        }
         this.encoder = new TextEncoder();
     }
 
     getReader() {
         let index = 0;
+        if (this.callback) {
+            this.callback();
+        }
         return {
             read: async () => {
                 if (index >= this.chunks.length) {

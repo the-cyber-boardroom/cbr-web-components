@@ -2,11 +2,10 @@ import LLM__Handler                                 from '../../../js/cbr/llms/L
 import { Mock_Fetch }                               from '../api/Mock_Fetch.mjs'
 import { setup_mock_responses, set_mock_response }  from '../api/Mock_API__Data.mjs'
 
-const { module, test , only} = QUnit
+const { module, test , only, skip} = QUnit
 
 const MOCK_USER_PROMPT     = 'test prompt'
 const MOCK_SYSTEM_PROMPTS  = ['system prompt 1', 'system prompt 2']
-const MOCK_STREAM_RESPONSE = 'Hello World!'
 
 module('LLM__Handler', hooks => {
     let handler
@@ -67,7 +66,10 @@ module('LLM__Handler', hooks => {
     });
 
     test('stream_response handles errors', async assert => {
-        handler.fetch_url = async () => { throw new Error('Network error') }
+        const fetch_callback = () => {
+            throw new Error('Network error')
+        }
+        mock_fetch.set_stream_response(handler.api_path, fetch_callback);
 
         const error_callback = (error) => {
             assert.equal(error.message, 'Network error'              , 'Error callback received')
@@ -80,4 +82,41 @@ module('LLM__Handler', hooks => {
             assert.equal(error.message, 'Network error'              , 'Throws network error')
         }
     })
+
+    test('create_payload with default system_prompts and config', assert => {
+        const payload              = handler.create_payload(MOCK_USER_PROMPT)
+        const chat_thread_id       = payload.chat_thread_id
+        const user_data_session_id = payload.user_data.session_id
+        const expected_payload = { chat_thread_id: chat_thread_id   ,
+                                   temperature   : 0                ,
+                                   user_prompt   : 'test prompt'    ,
+                                   images        : []               ,
+                                   system_prompts: []               ,
+                                   histories     : []               ,
+                                   user_data     : { session_id       : user_data_session_id     ,
+                                                     selected_platform: 'Groq (Free)'            ,
+                                                     selected_provider: '1. Meta'                ,
+                                                     selected_model   : 'llama-3.1-70b-versatile'},
+                                   stream         : true                                          }
+        assert.deepEqual(payload, expected_payload)
+    })
+
+    test('stream_response with default system_prompts and config', async (assert) => {
+        assert.expect(6)
+        const chunks                = ['Hello', ' World', '!'];
+        const messages_on_chunk     = []
+        const messages_on_complete  = []
+        mock_fetch.set_stream_response(handler.api_path, chunks);
+        await handler.stream_response(MOCK_USER_PROMPT)
+
+        const callbacks      = { onChunk    : (message) => { assert.ok(true); messages_on_chunk   .push(message) },
+                                 onComplete : (message) => { assert.ok(true); messages_on_complete.push(message) }}
+        const system_prompts = null
+        mock_fetch.set_stream_response(handler.api_path, chunks);
+        await handler.stream_response(MOCK_USER_PROMPT, system_prompts, callbacks)
+        assert.deepEqual(messages_on_chunk   , ['Hello', 'Hello World', 'Hello World!'])
+        assert.deepEqual(messages_on_complete, [                        'Hello World!'])
+        
+    })
+
 })

@@ -35,6 +35,7 @@ export default class WebC__CBR__Main_Page extends Web_Component {
 
         setTimeout(() => { window.dispatchEvent(new Event('resize')) }, 1)
     }
+
     add_event_listeners() {
        this.add_window_event_listener(CBR_Events.CBR__UI__LEFT_MENU_TOGGLE , this.on_left_menu_toggle   )
     }
