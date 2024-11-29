@@ -66,7 +66,6 @@ module('WebC__Athena__Welcome', hooks => {
         assert.ok(card.classList.contains('h-100')                                   , 'Has full height class')
         assert.ok(card_body                                                          , 'Card body exists')
         assert.ok(content                                                            , 'Content exists')
-        console.log(content.innerHTML)
         assert.ok(content.innerHTML.includes(MOCK_WELCOME_MESSAGE)                   , 'Shows welcome message')
     })
 

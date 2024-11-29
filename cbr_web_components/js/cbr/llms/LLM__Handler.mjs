@@ -1,4 +1,6 @@
 // LLM__Handler.mjs
+import CBR_Events from "../CBR_Events.mjs";
+
 export default class LLM__Handler {
     constructor(config = {}) {
         this.default_platform = config.platform || 'Groq (Free)'
@@ -36,6 +38,7 @@ export default class LLM__Handler {
         const payload = this.create_payload(user_prompt, system_prompts, config)
 
         try {
+            this.raise_event__llm_request_started()
             const response = await this.fetch_url(this.api_path, payload)
 
             const reader  = response.body.getReader()
@@ -58,13 +61,13 @@ export default class LLM__Handler {
             if (callbacks.onComplete) {
                 callbacks.onComplete(message)
             }
-
+            this.raise_event__llm_request_finished()
             return message
         } catch (error) {
-            //console.error('Error in LLM stream:', error)
             if (callbacks.onError) {
                 callbacks.onError(error)
             }
+            this.raise_event__llm_request_error({error})
             throw error
         }
     }
@@ -73,5 +76,24 @@ export default class LLM__Handler {
         return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
         )
+    }
+
+    raise_event__on_window(event_name, event_detail={}) {
+        const options      =  { bubbles: true, composed: true, detail: event_detail}
+        const custom_event = new CustomEvent(event_name, options)
+        window.dispatchEvent(custom_event);
+        return custom_event
+    }
+
+    raise_event__llm_request_error({error}) {
+        this.raise_event__on_window(CBR_Events.CBR__LLM__REQUEST__ERROR, {error})
+    }
+
+    raise_event__llm_request_finished() {
+        this.raise_event__on_window(CBR_Events.CBR__LLM__REQUEST__FINISHED)
+    }
+
+    raise_event__llm_request_started() {
+        this.raise_event__on_window(CBR_Events.CBR__LLM__REQUEST__STARTED)
     }
 }

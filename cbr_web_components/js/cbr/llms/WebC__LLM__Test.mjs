@@ -1,4 +1,4 @@
-// WebC__LLM__Test.mjs
+import CBR_Events                 from "../CBR_Events.mjs";
 import Web_Component              from '../../core/Web_Component.mjs'
 import CSS__Cards                 from '../../css/CSS__Cards.mjs'
 import CSS__Forms                 from '../../css/CSS__Forms.mjs'
@@ -9,45 +9,35 @@ import LLM__Response__Handler     from './LLM__Response__Handler.mjs'
 import Div                        from '../../core/Div.mjs'
 import Button                     from '../../core/Button.mjs'
 import Textarea                   from '../../core/Textarea.mjs'
-import Raw_Html                   from '../../core/Raw_Html.mjs'
 
 export default class WebC__LLM__Test extends Web_Component {
-    load_attributes() {
-        new CSS__Grid      (this).apply_framework()
-        new CSS__Cards     (this).apply_framework()
-        new CSS__Forms     (this).apply_framework()
-        new CSS__Typography(this).apply_framework()
 
+    constructor() {
+        super()
         this.llm_handler         = new LLM__Handler()
         this.response_handler    = new LLM__Response__Handler()
         this.current_response    = ''
     }
-
-    connectedCallback() {
-        super.connectedCallback()
-        this.build()
-        this.add_event_listeners()
+    async apply_css() {
+        new CSS__Grid      (this).apply_framework()
+        new CSS__Cards     (this).apply_framework()
+        new CSS__Forms     (this).apply_framework()
+        new CSS__Typography(this).apply_framework()
+        this.add_css_rules(this.css_rules())
     }
 
-    add_event_listeners() {
-        const submit_btn = this.shadowRoot.querySelector('#submit-prompt')
-        const clear_btn  = this.shadowRoot.querySelector('#clear-form')
-
-        if (submit_btn) {
-            submit_btn.addEventListener('click', () => this.handle_submit())
-        }
-        if (clear_btn) {
-            clear_btn.addEventListener('click', () => this.handle_clear())
-        }
+    add_event_handlers() {
+        this.add_event__on( 'click', '#submit-prompt', this.handle_submit)
+        this.add_event__on( 'click', '#clear-form'   , this.handle_clear)
     }
 
     async handle_submit() {
-        const system_prompt = this.shadowRoot.querySelector('#system-prompt').value
-        const user_prompt   = this.shadowRoot.querySelector('#user-prompt').value
 
+        const system_prompt = this.query_selector('#system-prompt').value.trim()
+        const user_prompt   = this.query_selector('#user-prompt'  ).value.trim()
         if (!user_prompt) return
 
-        const response_div = this.shadowRoot.querySelector('#response-container')
+        const response_div = this.query_selector('#response-container')
         response_div.innerHTML = '<div class="loading">Processing...</div>'
 
         try {
@@ -65,7 +55,7 @@ export default class WebC__LLM__Test extends Web_Component {
                 }
             )
         } catch (error) {
-            console.error('Error processing LLM request:', error)
+            //console.error('Error processing LLM request:', error)                         // todo: add to refactored error handler
         }
     }
 
@@ -123,7 +113,7 @@ export default class WebC__LLM__Test extends Web_Component {
         }
     }
 
-    build() {
+    html() {
         const container = new Div({ class: 'test-container' })
 
         // System Prompt Section
@@ -176,8 +166,7 @@ export default class WebC__LLM__Test extends Web_Component {
             response_section
         )
 
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
+        return container
     }
 }
 

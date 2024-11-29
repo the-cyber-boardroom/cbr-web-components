@@ -17,12 +17,13 @@ export default class WebC__CBR__Top_Banner extends Web_Component {
         super.add_web_component_to('.user-session', WebC__CBR__User_Session)
     }
 
-    add_event_listeners() {
-        this.query_selector('.menu-icon').addEventListener('click', () => {
-            this.raise_event_global('toggle-menu', { opened: true })
-        })
+    add_event_handlers() {
+        this.add_event_listener('.menu-icon', 'click', this.handle__on__toggle_menu)
     }
 
+    handle__on__toggle_menu() {
+        this.raise_event_global('toggle-menu', { opened: true })
+    }
     html() {
         const container    = new Div ({ class: 'top-banner'                       })    // parent div
         const menu_icon    = new Icon({ class: 'menu-icon icon-lg', icon : 'menu' })    // hamburger menu
