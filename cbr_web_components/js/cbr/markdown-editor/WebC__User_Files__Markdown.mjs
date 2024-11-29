@@ -13,11 +13,11 @@ export default class WebC__User_Files__Markdown extends Web_Component {
     }
 
     load_attributes() {
-        this.file_id     = this.getAttribute('file_id') || '8e2cc157-31f6-4b66-9dfa-f49f9c4b7b6d'
+        this.file_id     = this.getAttribute('file_id')
     }
 
     component_ready() {
-        this.raise_event_global(CBR_Events.CBR__FILE__SHOW_HISTORY)                         // todo: see if this is the best place to raise this event
+        //this.raise_event_global(CBR_Events.CBR__FILE__SHOW_HISTORY)                         // todo: see if this is the best place to raise this event
     }
 
     add_event_listeners() {
@@ -30,15 +30,16 @@ export default class WebC__User_Files__Markdown extends Web_Component {
     add_web_components() {
         const params_versions = { file_id: this.file_id }
         const params_editor   = { file_id: this.file_id }
-        this.add_web_component_to('.versions-container', WebC__User_Files__Markdown__Versions_Panel      , params_versions)
-        this.add_web_component_to('.editor-toolbar'    , WebC__User_Files__Markdown__Toolbar    , {}             )
-        this.add_web_component_to('.viewer-and-editor' , WebC__User_Files__Markdown__Editor_View, params_editor  )
+        this.add_web_component_to('.versions-container', WebC__User_Files__Markdown__Versions_Panel , params_versions)
+        this.add_web_component_to('.editor-toolbar'    , WebC__User_Files__Markdown__Toolbar        , {}             )
+        this.add_web_component_to('.viewer-and-editor' , WebC__User_Files__Markdown__Editor_View    , params_editor  )
     }
     // event handlers
 
     on_file_cancel() {
         this.raise_event_global(CBR_Events.CBR__FILE__VIEW_MODE)
     }
+
     on_show_history() {
         this.query_selector('.versions-container').show()
     }
@@ -49,33 +50,33 @@ export default class WebC__User_Files__Markdown extends Web_Component {
 
     // API Calls
 
-    // todo: refactor to data file
-    async view_version(version_id) {
-        try {
-            const version_content = await this.api.get_version_content(this.file_id, version_id)
-            this.temp_content = this.markdown_content  // Store current content
-            this.markdown_content = version_content
-            this.viewing_version = version_id
-            this.render()
-        } catch (error) {
-            console.error('Error viewing version:', error)
-            //this.show_error('Failed to load version')
-        }
-    }
-
-    async restore_version(version_id) {
-        try {
-            const version_content = await this.api.get_version_content(this.file_id, version_id)
-            this.markdown_content = version_content
-            await this.save_content()
-            this.viewing_version = null
-            this.render()
-            //this.show_success('Version restored successfully')
-        } catch (error) {
-            console.error('Error restoring version:', error)
-            //this.show_error('Failed to restore version')
-        }
-    }
+    // todo: implement and refactor to data file
+    // async view_version(version_id) {
+    //     try {
+    //         const version_content = await this.api.get_version_content(this.file_id, version_id)
+    //         this.temp_content = this.markdown_content  // Store current content
+    //         this.markdown_content = version_content
+    //         this.viewing_version = version_id
+    //         this.render()
+    //     } catch (error) {
+    //         console.error('Error viewing version:', error)
+    //         //this.show_error('Failed to load version')
+    //     }
+    // }
+    //
+    // async restore_version(version_id) {
+    //     try {
+    //         const version_content = await this.api.get_version_content(this.file_id, version_id)
+    //         this.markdown_content = version_content
+    //         await this.save_content()
+    //         this.viewing_version = null
+    //         this.render()
+    //         //this.show_success('Version restored successfully')
+    //     } catch (error) {
+    //         console.error('Error restoring version:', error)
+    //         //this.show_error('Failed to restore version')
+    //     }
+    // }
 
     // UI Methods
 

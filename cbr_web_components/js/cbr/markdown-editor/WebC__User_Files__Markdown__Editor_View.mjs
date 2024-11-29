@@ -80,7 +80,7 @@ export default class WebC__User_Files__Markdown__Editor_View extends Web_Compone
     }
     refresh_content() {
         this.query_selector('.markdown-editor').value      = this.content
-        this.query_selector('.markdown-preview').innerHTML = marked.marked(this.content || '')
+        this.query_selector('.markdown-preview').innerHTML = marked.marked(this.content)
     }
 
     render_version_bar() {

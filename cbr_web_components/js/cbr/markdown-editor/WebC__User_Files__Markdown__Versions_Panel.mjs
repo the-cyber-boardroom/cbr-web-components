@@ -30,29 +30,54 @@ export default class WebC__User_Files__Markdown__Versions_Panel extends Web_Comp
     }
 
     add_event_listeners() {
-        this.add_window_event_listener(CBR_Events.CBR__FILE__LOADED, this.on_file_loaded)
-        this.add_window_event_listener(CBR_Events.CBR__FILE__SAVED , this.on_file_loaded)
-
-        window.addEventListener('versions-update', (event) => {
-            if (event.detail.file_id === this.file_id) {
-                this.versions = event.detail.versions
-                this.render()
-            }
-        })
-
-        window.addEventListener('version-selected', (event) => {
-            if (event.detail.file_id === this.file_id) {
-                this.current_version = event.detail.version_id
-                this.render()
-            }
-        })
+        this.add_window_event_listener(CBR_Events.CBR__FILE__LOADED, this.on_file_loaded           )
+        this.add_window_event_listener(CBR_Events.CBR__FILE__SAVED , this.on_file_loaded           )
+        this.add_window_event_listener('versions-update'           , this.handle__versions_update  )
+        this.add_window_event_listener('version-selected'          , this.handle__version_selected )
     }
+
+
+    add_event_handlers() {
+    this.query_selector_all('.view-btn').forEach(btn => {
+        this.add_event__to_element__on('click', btn, this.handle__view_click, { version: btn.dataset.version })
+    })
+
+    this.query_selector_all('.restore-btn').forEach(btn => {
+        this.add_event__to_element__on('click', btn, this.handle__restore_click, { version: btn.dataset.version })
+    })
+}
+
+    // Event handlers
+
+    handle__versions_update(event) {
+        if (event.detail.file_id === this.file_id) {
+            this.versions = event.detail.versions
+            this.render()
+        }
+    }
+
+    handle__version_selected(event) {
+        if (event.detail.file_id === this.file_id) {
+            this.current_version = event.detail.version_id
+            this.render()
+        }
+    }
+
+    handle__view_click({event, version}) {
+        this.raise_version_event('version-view', version)
+    }
+
+    handle__restore_click({event, version}) {
+        this.raise_version_event('version-restore', version)
+    }
+
+    // other methods
 
     async load_versions() {
         try {
             this.versions = await this.api.get_file_versions(this.file_id)
         } catch (error) {
-            console.error('Error loading versions:', error)
+            //console.error('Error loading versions:', error)
             this.versions = []
         }
     }
@@ -60,9 +85,7 @@ export default class WebC__User_Files__Markdown__Versions_Panel extends Web_Comp
     async on_file_loaded(event) {
         this.file_id  = event.detail?.file_id
         await this.load_versions()
-        const versions_html = this.html_versions().html()
-        this.set_inner_html(versions_html)
-
+        await this.refresh_ui()
     }
 
     raise_version_event(event_name, version_id) {
@@ -72,13 +95,13 @@ export default class WebC__User_Files__Markdown__Versions_Panel extends Web_Comp
     }
 
     html() {
-        const div_versions     = new Div({ class: 'versions-panel h-100pc'      })
-        const primary_message  = new Div({ class: 'alert alert-primary h-100pc',  value:'versions will go here'})
-        div_versions.add_element(primary_message)
-        return div_versions
-    }
-
-    html_versions() {
+    //     const div_versions     = new Div({ class: 'versions-panel h-100pc'      })
+    //     const primary_message  = new Div({ class: 'alert alert-primary h-100pc',  value:'versions will go here'})
+    //     div_versions.add_element(primary_message)
+    //     return div_versions
+    // }
+    //
+    // html_versions() {
         const versions_list     = new Div({ class: 'versions-list'      })
 
         this.versions.forEach(version => {
@@ -122,20 +145,6 @@ export default class WebC__User_Files__Markdown__Versions_Panel extends Web_Comp
         })
 
         return versions_list
-    }
-
-    add_event_handlers() {
-        this.query_selector_all('.view-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.raise_version_event('version-view', btn.dataset.version)
-            })
-        })
-
-        this.query_selector_all('.restore-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.raise_version_event('version-restore', btn.dataset.version)
-            })
-        })
     }
 
     css_rules() {
