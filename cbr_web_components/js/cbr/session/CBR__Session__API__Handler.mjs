@@ -13,7 +13,7 @@ export default class CBR__Session__API__Handler {
                 'GET'
             )
         } catch (error) {
-            console.error('Error fetching current session:', error)
+            //console.error('Error fetching current session:', error)
             throw error
         }
     }
@@ -25,7 +25,7 @@ export default class CBR__Session__API__Handler {
                 'GET'
             )
         } catch (error) {
-            console.error('Error fetching session details:', error)
+            //console.error('Error fetching session details:', error)
             throw error
         }
     }
@@ -37,7 +37,7 @@ export default class CBR__Session__API__Handler {
                 'POST'
             )
         } catch (error) {
-            console.error('Error logging in as persona:', error)
+            //console.error('Error logging in as persona:', error)
             throw error
         }
     }
@@ -49,7 +49,7 @@ export default class CBR__Session__API__Handler {
                 'POST'
             )
         } catch (error) {
-            console.error('Error logging out persona:', error)
+            //console.error('Error logging out persona:', error)
             throw error
         }
     }
@@ -61,7 +61,7 @@ export default class CBR__Session__API__Handler {
                 'POST'
             )
         } catch (error) {
-            console.error('Error logging out all sessions:', error)
+            //console.error('Error logging out all sessions:', error)
             throw error
         }
     }
@@ -72,6 +72,10 @@ export default class CBR__Session__API__Handler {
 
     async set_active_persona(session_id) {
         document.cookie = `CBR__SESSION_ID__PERSONA=${session_id};path=/`
+    }
+
+    delete_cookie(name) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
     }
 
     get_cookie(name) {

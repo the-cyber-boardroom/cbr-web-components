@@ -101,6 +101,11 @@ export function setup_mock_responses() {
     set_mock_response(`/api/user-data/files/file-bytes?file_id=${MOCK_FILE_ID}&version_id=invalid-version`   , 'GET', { data: {}   })                                      // Missing file_bytes__base64
 
     set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_SESSION_ID}`              , 'GET' , MOCK_SESSION_DETAILS)
+    set_mock_response('/api/user-session/session/current-session'                                            , 'GET' , MOCK_SESSION_DATA   )
+    set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_SESSION_ID}`              , 'GET' , MOCK_SESSION_DETAILS)
+    set_mock_response(`/api/user-session/guest/login-as-persona?persona_id=${MOCK_PERSONA_ID}`               , 'POST', { success: true }   )
+    set_mock_response('/api/user-session/guest/logout-persona'                                               , 'POST', { success: true }   )
+    set_mock_response('/api/user-session/guest/logout-all'                                                   , 'POST', { success: true }   )
 
     set_mock_response(`/markdown/static_content/data-file?path=${MOCK_MENU_DATA_FILE}`                       , 'GET', MOCK_MENU_DATA            )
     set_mock_response(`/markdown/render/markdown-file-to-html-and-metadata?path=${MOCK_CONTENT_PATH}`        , 'GET', MOCK_MARKDOWN_RESPONSE    )
