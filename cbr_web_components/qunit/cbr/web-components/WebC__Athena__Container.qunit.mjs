@@ -21,7 +21,7 @@ module('WebC__Athena__Container', hooks => {
     let original_local_storage_setItem
     let storage_mock
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         // Setup API mocks
         setup_mock_responses()
         set_mock_response('/api/user-data/user/user-profile', 'GET', MOCK_USER_DATA)
@@ -50,7 +50,7 @@ module('WebC__Athena__Container', hooks => {
         await container.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         // Restore localStorage
         window.localStorage.getItem = original_local_storage_getItem
         window.localStorage.setItem = original_local_storage_setItem

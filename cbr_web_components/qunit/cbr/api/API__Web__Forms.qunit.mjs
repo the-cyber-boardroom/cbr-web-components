@@ -7,7 +7,7 @@ module('API__Web__Forms', hooks => {
     let api
     let mock_fetch
 
-    hooks.beforeEach(() => {
+    hooks.before(() => {
         api = new API__Web__Forms()
         mock_fetch = Mock_Fetch.apply_mock(API__Web__Forms)
     })

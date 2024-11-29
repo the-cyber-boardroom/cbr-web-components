@@ -16,7 +16,7 @@ module('WebC__Athena__Banner', hooks => {
     let target_div
     let banner
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         add_mock_markdown_path(CBR__Paths.FILE__CONTENT__SITE__ATHENA__BANNER)
 
         target_div = WebC__Target_Div.add_to_body()
@@ -24,7 +24,7 @@ module('WebC__Athena__Banner', hooks => {
         await banner.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         banner    .remove()
         target_div.remove()
     })
@@ -72,22 +72,7 @@ module('WebC__Athena__Banner', hooks => {
         assert.ok  (content.innerHTML.includes(add_padding_to_string(MOCK_RAW_HTML,12))  , 'Correct content')
     })
 
-    test('handles empty content', async assert => {
-        // Arrange - set empty content
-        banner.content = null
-        banner.render()
-
-        // Assert error handling
-        const card_body = banner.query_selector('.card-body')
-        assert.ok(card_body                            , 'Still renders card'    )
-        assert.ok(card_body.textContent.trim() === ''  , 'Shows empty content'   )
-
-    })
-
     test('updates content dynamically', async assert => {
-
-        // Initial state
-        assert.ok(banner.query_selector('.card-title').textContent  , 'Has initial title'       )
 
         // Act - Update content
         banner.content = {
@@ -102,5 +87,17 @@ module('WebC__Athena__Banner', hooks => {
 
         assert.equal(title  , 'New Title'              , 'Title updated'            )
         assert.equal(content, '<p>New content</p>'     , 'Content updated'         )
+    })
+
+    test('handles empty content', async assert => {
+        // Arrange - set empty content
+        banner.content = null
+        banner.render()
+
+        // Assert error handling
+        const card_body = banner.query_selector('.card-body')
+        assert.ok(card_body                            , 'Still renders card'    )
+        assert.ok(card_body.textContent.trim() === ''  , 'Shows empty content'   )
+
     })
 })

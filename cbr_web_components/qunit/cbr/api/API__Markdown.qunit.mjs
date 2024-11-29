@@ -11,7 +11,7 @@ const { module, test , only} = QUnit
 module('API__Markdown', hooks => {
     let api
 
-    hooks.beforeEach(() => {
+    hooks.before(() => {
         setup_mock_responses()
         api = new API__Markdown()
     })

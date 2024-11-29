@@ -14,7 +14,7 @@ setup_mock_responses()
 module('API__User_Data__Files', hooks => {
     let api
 
-    hooks.beforeEach(() => {
+    hooks.before(() => {
         api = new API__User_Data__Files()
     })
 

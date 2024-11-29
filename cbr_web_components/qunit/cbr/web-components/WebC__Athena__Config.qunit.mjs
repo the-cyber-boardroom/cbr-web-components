@@ -11,7 +11,7 @@ module('WebC__Athena__Config', hooks => {
     let original_set_item
     let storage_mock
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         // Save original localStorage methods
         original_get_item = window.localStorage.getItem
         original_set_item = window.localStorage.setItem
@@ -32,7 +32,7 @@ module('WebC__Athena__Config', hooks => {
         await config.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         // Restore original localStorage methods
         window.localStorage.getItem = original_get_item
         window.localStorage.setItem = original_set_item
@@ -138,8 +138,9 @@ module('WebC__Athena__Config', hooks => {
         systemPromptToggle.dispatchEvent(new Event('change'))
     })
 
-    test('handles toggle interactions', async assert => {                               // Test system prompt toggle
-
+    test('handles toggle interactions', async assert => {                                // Test system prompt toggle
+        storage_mock.setItem('athena_show_system_prompt', null)                 // reset values
+        storage_mock.setItem('athena_edit_mode'         , null)
         assert.equal(storage_mock.getItem('athena_show_system_prompt'), null    , 'Before event, athena_show_system_prompt should be null')
 
         const systemPromptToggle = config.query_selector('#system-prompt-toggle')

@@ -21,7 +21,7 @@ module('WebC__Athena__Welcome', hooks => {
     let welcome
     let mock_fetch
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         setup_mock_responses()
         set_mock_response('/api/user-data/user/user-profile', 'GET', MOCK_USER_DATA)
 
@@ -33,7 +33,7 @@ module('WebC__Athena__Welcome', hooks => {
         await welcome.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         welcome.remove()
         target_div.remove()
     })
@@ -66,6 +66,7 @@ module('WebC__Athena__Welcome', hooks => {
         assert.ok(card.classList.contains('h-100')                                   , 'Has full height class')
         assert.ok(card_body                                                          , 'Card body exists')
         assert.ok(content                                                            , 'Content exists')
+        console.log(content.innerHTML)
         assert.ok(content.innerHTML.includes(MOCK_WELCOME_MESSAGE)                   , 'Shows welcome message')
     })
 
@@ -80,6 +81,8 @@ module('WebC__Athena__Welcome', hooks => {
         assert.ok(welcome_2                                                            , 'Renders without user data')
         assert.deepEqual(welcome_2.welcome_message , '')
         assert.deepEqual(content.innerHTML.trim()  , '')
+
+        set_mock_response('/api/user-data/user/user-profile', 'GET', MOCK_USER_DATA)
     })
 
     test('handles stream failure', async assert => {

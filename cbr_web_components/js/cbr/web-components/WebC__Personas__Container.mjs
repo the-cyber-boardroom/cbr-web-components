@@ -29,26 +29,25 @@ export default class WebC__Personas__Container extends Web_Component {
     }
 
     add_event_listeners() {
-        this.shadowRoot.addEventListener('click', async (event) => {                // Handle login button clicks
-            if (event.target.matches('.login-button')) {
-                const persona_id = event.target.dataset.guestId
-                this.event_handler.dispatch(
-                    this.event_handler.events.LOGIN_AS_PERSONA,
-                    { persona_id }
-                )
-            }
-        })
+            this.add_window_event_listener(this.event_handler.events.PERSONA_SESSION_CHANGED, this.handle__persona_session_changed)
+    }
 
-        // Listen for session changes
-        this.event_handler.subscribe(
-            this.event_handler.events.PERSONA_SESSION_CHANGED,
-            (event) => {
-                const state = event.detail.state
-                if (state.persona_session) {
-                    this.update_persona_buttons(state.persona_session.user_name)
-                }
-            }
-        )
+    add_event_handlers() {
+        if (this.query_selector('.login-button')) {
+            this.add_event__on('click', '.login-button', this.handle__login_button_click)
+        }
+    }
+
+    handle__login_button_click = ({event}) => {
+        const persona_id = event.target.dataset.guestId
+        this.event_handler.dispatch( this.event_handler.events.LOGIN_AS_PERSONA,  { persona_id })
+    }
+
+    handle__persona_session_changed = (event) => {
+        const state = event.detail.state
+        if (state.persona_session) {
+            this.update_persona_buttons(state.persona_session.user_name)
+        }
     }
 
     update_persona_buttons(active_persona) {

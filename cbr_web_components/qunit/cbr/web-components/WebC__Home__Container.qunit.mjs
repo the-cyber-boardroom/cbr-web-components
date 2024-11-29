@@ -25,7 +25,7 @@ module('WebC__Home__Container', hooks => {
     let target_div
     let container
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         setup_mock_responses()
 
         // Setup mock responses for markdown content
@@ -38,7 +38,7 @@ module('WebC__Home__Container', hooks => {
         await container.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         container .remove()
         target_div.remove()
     })

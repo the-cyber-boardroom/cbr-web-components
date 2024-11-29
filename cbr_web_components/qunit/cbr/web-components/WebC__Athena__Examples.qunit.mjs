@@ -19,7 +19,7 @@ module('WebC__Athena__Examples', hooks => {
     let examples
     let original_console_error
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         setup_mock_responses()
         set_mock_response('/markdown/static_content/data-file?path=en/site/athena/questions.toml', 'GET', MOCK_EXAMPLES_DATA)
 
@@ -32,7 +32,7 @@ module('WebC__Athena__Examples', hooks => {
         await examples.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         //console.error = original_console_error
         examples.remove()
         target_div.remove()

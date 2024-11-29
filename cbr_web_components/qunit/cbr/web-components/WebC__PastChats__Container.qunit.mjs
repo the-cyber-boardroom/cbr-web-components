@@ -36,7 +36,7 @@ module('WebC__PastChats__Container', hooks => {
     let target_div
     let container
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         setup_mock_responses()
         set_mock_response('/api/user-data/chats/chats', 'GET', MOCK_CHATS_DATA)
 
@@ -45,7 +45,7 @@ module('WebC__PastChats__Container', hooks => {
         await container.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         container.remove()
         target_div.remove()
     })
@@ -66,6 +66,16 @@ module('WebC__PastChats__Container', hooks => {
         assert.ok(css_rules['.container']                                              , 'Has container styles')
         assert.ok(css_rules['.table']                                                  , 'Has table styles')
         assert.ok(css_rules['.card']                                                   , 'Has card styles')
+    })
+
+    test('sorts chats by timestamp', async assert => {
+        const rows = container.query_selector_all('tbody tr')
+        const dates = Array.from(rows).map(row => row.cells[0].textContent)
+
+        assert.deepEqual(dates, [
+            '2024-03-16 15:45',
+            '2024-03-15 14:30'
+        ], 'Sorts in descending order')
     })
 
     test('renders intro card correctly', assert => {
@@ -113,7 +123,7 @@ module('WebC__PastChats__Container', hooks => {
         const rows = container.query_selector_all('tbody tr')
         const cell = container.query_selector('td[colspan="6"]')
 
-        assert.equal(rows.length                  , 1                                  , 'Shows one row')
+        assert.equal(rows.length                  , 1                                 , 'Shows one row')
         assert.equal(cell.textContent            , 'No saved chats found'             , 'Shows empty message')
     })
 
@@ -146,16 +156,6 @@ module('WebC__PastChats__Container', hooks => {
         assert.ok(links[2].href.endsWith('/web/chat/view/chat1-path/image')          , 'Correct image URL')
 
         assert.deepEqual(container.create_action_links({}).html(), "<div>\n</div>\n")
-    })
-
-    test('sorts chats by timestamp', async assert => {
-        const rows = container.query_selector_all('tbody tr')
-        const dates = Array.from(rows).map(row => row.cells[0].textContent)
-
-        assert.deepEqual(dates, [
-            '2024-03-16 15:45',
-            '2024-03-15 14:30'
-        ], 'Sorts in descending order')
     })
 
     test('handles invalid saved_chats data', async assert => {

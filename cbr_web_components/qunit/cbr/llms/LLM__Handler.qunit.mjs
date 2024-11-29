@@ -14,7 +14,7 @@ module('LLM__Handler', hooks => {
     let mock_fetch
     let original_console_error
 
-    hooks.beforeEach(() => {
+    hooks.before(() => {
         setup_mock_responses()
         original_console_error = console.error
         console.error = () => {}
@@ -23,7 +23,7 @@ module('LLM__Handler', hooks => {
         mock_fetch = Mock_Fetch.apply_mock(LLM__Handler)
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         Mock_Fetch.restore_original(LLM__Handler, original_fetch_url)
         console.error = original_console_error
     })

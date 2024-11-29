@@ -21,7 +21,7 @@ const MOCK_PROFILE = {
 module('WebC__Profile__Container', hooks => {
     let target_div
     let container
-
+ 
     hooks.before(async () => {
         setup_mock_responses()
         set_mock_response('/api/user-data/user/user-profile', 'GET', MOCK_PROFILE)

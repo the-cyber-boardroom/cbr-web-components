@@ -132,7 +132,7 @@ export default class Web_Component extends HTMLElement {
         window.addEventListener(eventType, bound_listener);                         // Add the event listener to the window object
         this.window_event_listeners.push({ eventType, listener: bound_listener });  // Store the bound listener for cleanup
     }
-    
+
     add_event__on(event_type, selector, callback, params = {}) {
         const element        = this.query_selector(selector);                                            // Find the element using the selector
         this.add_event__to_element__on(event_type, element, callback, params);                           // Add the event listener to the element

@@ -37,7 +37,7 @@ module('WebC__PastChats__Welcome', hooks => {
     let welcome
     let mock_fetch
 
-    hooks.beforeEach(async () => {
+    hooks.before(async () => {
         setup_mock_responses()
         set_mock_response('/api/user-data/user/user-profile', 'GET', MOCK_USER_PROFILE)
         set_mock_response('/api/user-data/chats/chats'      , 'GET', MOCK_CHAT_DATA)
@@ -50,7 +50,7 @@ module('WebC__PastChats__Welcome', hooks => {
         await welcome.wait_for__component_ready()
     })
 
-    hooks.afterEach(() => {
+    hooks.after(() => {
         welcome.remove()
         target_div.remove()
     })
@@ -130,6 +130,7 @@ module('WebC__PastChats__Welcome', hooks => {
     })
 
     test('handles incremental stream updates', async assert => {
+        set_mock_response('/api/user-data/user/user-profile', 'GET', MOCK_USER_PROFILE)
         const chunks = ['Welcome', ' back', ' Test User!']
         mock_fetch.set_stream_response('/api/llms/chat/completion', chunks)
 
