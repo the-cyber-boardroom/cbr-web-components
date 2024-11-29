@@ -23,12 +23,15 @@ export class Mock_API__Invoke {
         }
     }
 
-    async invoke_api(url, method='GET') {
+    async invoke_api(url, method='GET', data=null) {
         const key = `${method}:${url}`
         if (this.responses.has(key)) {
             const response = this.responses.get(key)
             if (response === null) {
                 throw new Error(`Mock response is null for ${key}`)
+            }
+            if (typeof response === 'function') {
+                return response({ url, method, data });
             }
             return response
         }

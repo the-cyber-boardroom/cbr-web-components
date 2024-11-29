@@ -8,6 +8,7 @@ import Div            from '../../core/Div.mjs'
 import Button         from '../../core/Button.mjs'
 import Input          from '../../core/Input.mjs'
 import CSS__Buttons  from "../../css/CSS__Buttons.mjs";
+import CBR_Events from "../CBR_Events.mjs";
 
 export default class WebC__User_Files__Upload extends Web_Component {
 
@@ -28,66 +29,68 @@ export default class WebC__User_Files__Upload extends Web_Component {
         this.current_folder = { node_id: null,  name: 'root' }
     }
 
-    add_event_handlers() {
 
-        const btn   = this.shadowRoot.querySelector('#select-files-btn')
-        const input = this.shadowRoot.querySelector('#file-input'      )
-        if (btn && input) {
-            btn.addEventListener('click', () => input.click())
-        }
-    }
+
 
     add_event_listeners() {
-        // Listen for folder selection
-        document.addEventListener('folder-selected', (e) => {
-            this.current_folder = e.detail
-            this.update_folder_display()
-        })
-
-        // Set up drag and drop handlers
-        const drop_zone = this.shadowRoot.querySelector('.drop-zone')
-        if (!drop_zone) {
-            console.log("BUG!!! Drop zone not found")
-            return
-        }
-        drop_zone.addEventListener('dragover',  this.handle_dragover)
-        drop_zone.addEventListener('drop',      this.handle_drop)
-        drop_zone.addEventListener('dragenter', () => drop_zone.classList.add('drag-active'))
-        drop_zone.addEventListener('dragover' , () => drop_zone.classList.add('drag-active'))
-        drop_zone.addEventListener('dragleave', () => drop_zone.classList.remove('drag-active'))
-
-        // Set up file input handler
-        const file_input = this.shadowRoot.querySelector('#file-input')
-        file_input.addEventListener('change', this.handle_file_select)
-
-        // Set up paste handler for the whole component
-        this.addEventListener('paste', this.handle_paste)
+        this.add_window_event_listener('folder-selected', this.handle__on__folder_selected)
     }
 
-    handle_dragover = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
+    add_event_handlers() {
+        this.add_event__on('click'    , '#select-files-btn', this.handle__on__select_files_click)
+        this.add_event__on('dragover' , '.drop-zone'       , this.handle__on__drag_over  )              // Drop zone events
+        this.add_event__on('drop'     , '.drop-zone'       , this.handle__on__drop       )
+        this.add_event__on('dragenter', '.drop-zone'       , this.handle__on__drag_enter )
+        this.add_event__on('dragover' , '.drop-zone'       , this.handle__on__drag_over  )
+        this.add_event__on('dragleave', '.drop-zone'       , this.handle__on__drag_leave )
+        this.add_event__on('change'   , '#file-input'      , this.handle__on__file_change)             // File input events
+
+        this.add_event__to_element__on('paste',this, this.handle__on__paste      )             // Component level events
     }
 
-    handle_drop = async (e) => {
-        e.preventDefault()
-        e.stopPropagation()
+    // Event handler methods
+    handle__on__select_files_click() {
+        const input = this.query_selector('#file-input')
+        input.click()
+    }
+    handle__on__folder_selected({detail}) {
+        this.current_folder = detail
+        this.update_folder_display()
+    }
 
-        const files = [...e.dataTransfer.files]
+    handle__on__drag_over({event}) {
+        event.preventDefault()
+        event.stopPropagation()
+        this.query_selector('.drop-zone').classList.add('drag-active')
+    }
+
+    async handle__on__drop({event}) {
+        event.preventDefault()
+        event.stopPropagation()
+
+        const files = [...event.dataTransfer.files]
         for (const file of files) {
             await this.upload_file(file)
         }
     }
 
-    handle_file_select = async (e) => {
-        const files = [...e.target.files]
+    handle__on__drag_enter() {
+        this.query_selector('.drop-zone').classList.add('drag-active')
+    }
+
+    handle__on__drag_leave() {
+        this.query_selector('.drop-zone').classList.remove('drag-active')
+    }
+
+    async handle__on__file_change({event}) {
+        const files = [...event.target.files]
         for (const file of files) {
             await this.upload_file(file)
         }
     }
 
-    handle_paste = async (e) => {
-        const items = [...e.clipboardData.items]
+    async handle__on__paste({event}) {
+        const items = [...event.clipboardData.items]
         for (const item of items) {
             if (item.kind === 'file') {
                 const file = item.getAsFile()
@@ -96,25 +99,41 @@ export default class WebC__User_Files__Upload extends Web_Component {
         }
     }
 
+    // other methods
+
     async upload_file(file) {
         try {
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
+            const base64_content = await this.get_file_as_base64(file)
+            await this.upload_file_data(file.name, base64_content)
 
-            reader.onload = async () => {
-                const base64_content = reader.result.split(',')[1]
-                const post_data = { file_name          : file.name                        ,
-                                    file_bytes__base64 : base64_content                   ,
-                                    folder_id          : this.current_folder.node_id || ''}
-                await this.api_invoke.invoke_api('/api/user-data/files/add-file', 'POST', post_data)
-
-                this.raise_refresh_event()
-                this.show_success_message(`File ${file.name} uploaded successfully`)
-            }
+            this.show_success_message(`File ${file.name} uploaded successfully`)
+            this.raise_refresh_event()
         } catch (error) {
-            console.error('Error uploading file:', error)
+            //console.error('Error uploading file:', error)
             this.show_error_message(`Failed to upload ${file.name}`)
         }
+    }
+
+    async get_file_as_base64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+
+            reader.onload  = () => {
+                const base64_content = reader.result.split(',')[1]
+                resolve(base64_content)
+            }
+            reader.readAsDataURL(file)
+        })
+    }
+
+    async upload_file_data(file_name, base64_content) {
+        const post_data = {
+            file_name         : file_name                      ,
+            file_bytes__base64: base64_content                 ,
+            folder_id         : this.current_folder.node_id || ''
+        }
+
+        await this.api_invoke.invoke_api('/api/user-data/files/add-file', 'POST', post_data)
     }
 
     raise_refresh_event() {
@@ -136,14 +155,15 @@ export default class WebC__User_Files__Upload extends Web_Component {
         const status = this.shadowRoot.querySelector('.upload-status')
         status.textContent = message
         status.className = 'upload-status success'
-        setTimeout(() => { status.textContent = '' }, 3000)
+        //setTimeout(() => { status.textContent = '' }, 3000)                   // find better way to clear message
     }
 
     show_error_message(message) {
         const status = this.shadowRoot.querySelector('.upload-status')
         status.textContent = message
         status.className = 'upload-status error'
-        setTimeout(() => { status.textContent = '' }, 3000)
+        //setTimeout(() => { status.textContent = '' }, 3000)                   // find better way to clear message
+        this.raise_event_global(CBR_Events.CBR__UI__NEW_ERROR_MESSAGE)
     }
 
     css_rules() {

@@ -14,7 +14,8 @@ export const CBR_Events = {
     CBR__FILE__SHOW_HISTORY    : 'cbr::file:show-history'   ,
     CBR__FILE__HIDE_HISTORY    : 'cbr::file:hide-history'   ,
 
-    CBR__UI__LEFT_MENU_TOGGLE  : 'cbr::ui::left-menu:toggle'
+    CBR__UI__LEFT_MENU_TOGGLE  : 'cbr::ui::left-menu:toggle' ,
+    CBR__UI__NEW_ERROR_MESSAGE : 'cbr::ui::new-error-message',
 
 }
 
