@@ -17,9 +17,11 @@ export const CBR_Events = {
     CBR__UI__LEFT_MENU_TOGGLE  : 'cbr::ui::left-menu:toggle' ,
     CBR__UI__NEW_ERROR_MESSAGE : 'cbr::ui::new-error-message',
 
-    CBR__LLM__REQUEST__ERROR   : 'cbr::llm::request::error'   ,
-    CBR__LLM__REQUEST__FINISHED: 'cbr::llm::request::finished',
-    CBR__LLM__REQUEST__STARTED : 'cbr::llm::request::started' ,
+    CBR__LLM__REQUEST__ERROR      : 'cbr::llm::request::error'   ,
+    CBR__LLM__REQUEST__FINISHED   : 'cbr::llm::request::finished',
+    CBR__LLM__REQUEST__STARTED    : 'cbr::llm::request::started' ,
+
+    CBR__SESSION__PERSONA__CHANGED: 'cbr::user::persona::changed',
 
 }
 

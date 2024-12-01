@@ -2,7 +2,7 @@ import WebC__Target_Div          from '../../../js/utils/WebC__Target_Div.mjs'
 import Web_Component             from '../../../js/core/Web_Component.mjs'
 import WebC__Personas__Container from '../../../js/cbr/web-components/WebC__Personas__Container.mjs'
 import { setup_mock_responses,
-         set_mock_response }     from '../api/Mock_API__Data.mjs'
+         set_mock_response }     from '../../../js/testing/Mock_API__Data.mjs'
 
 const { module, test , only} = QUnit
 
@@ -149,7 +149,7 @@ module('WebC__Personas__Container', hooks => {
     //     }
     //     const active_button = container.query_selector('.login-button')
     //
-    //     container.event_handler.dispatch(container.event_handler.events.PERSONA_SESSION_CHANGED, { state })
+    //     container.event_handler.dispatch(CBR_Events.CBR__SESSION__PERSONA__CHANGED, { state })
     //
     //     assert.equal(active_button.textContent       , 'Current Persona'      , 'Updates button on session change')
     // })

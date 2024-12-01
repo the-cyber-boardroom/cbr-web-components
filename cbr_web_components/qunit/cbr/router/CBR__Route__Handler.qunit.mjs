@@ -1,9 +1,8 @@
 import CBR__Content__Loader from '../../../js/cbr/router/CBR__Content__Loader.mjs'
 import CBR__Route__Handler from '../../../js/cbr/router/CBR__Route__Handler.mjs'
 import CBR__Route__Content from '../../../js/cbr/router/CBR__Route__Content.mjs'
-import Raw_Html           from '../../../js/core/Raw_Html.mjs'
 import { Mock_Fetch,
-         set_mock_response } from '../api/Mock_Fetch.mjs'
+         set_mock_response } from '../../../js/testing/Mock_Fetch.mjs'
 
 const { module, test, only } = QUnit
 

@@ -4,7 +4,7 @@ import API__Invoke                  from "../../../js/data/API__Invoke.mjs";
 import WebC__API__Side_Menu         from "../../../js/elements/api/WebC__API__Side_Menu.mjs";
 import WebC__API_Markdown_To_Html   from "../../../js/elements/api/WebC__API_Markdown_To_Html.mjs";
 import {MOCK_MENU_DATA,
-        setup_mock_responses        } from '../../cbr/api/Mock_API__Data.mjs'
+        setup_mock_responses        } from '../../../js/testing/Mock_API__Data.mjs'
 
 if (typeof window.__karma__ !== 'undefined') {
     //console.log('Skipping QUnit module WebC__API__Side_Menu in Karma environment');

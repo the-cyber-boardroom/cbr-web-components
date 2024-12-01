@@ -1,7 +1,7 @@
 import WebC__Target_Div        from '../../../js/utils/WebC__Target_Div.mjs'
 import Web_Component           from '../../../js/core/Web_Component.mjs'
 import WebC__LLM__Test         from '../../../js/cbr/llms/WebC__LLM__Test.mjs'
-import { Mock_Fetch }          from '../api/Mock_Fetch.mjs'
+import { Mock_Fetch }          from '../../../js/testing/Mock_Fetch.mjs'
 import LLM__Handler            from '../../../js/cbr/llms/LLM__Handler.mjs'
 import CBR_Events              from "../../../js/cbr/CBR_Events.mjs";
 

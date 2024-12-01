@@ -1,12 +1,17 @@
 import CBR__Session__API__Handler from '../../../js/cbr/session/CBR__Session__API__Handler.mjs'
-import {set_mock_response, setup_mock_responses,
-    MOCK_PERSONA_ID, MOCK_SESSION_ID, MOCK_SESSION_DATA, MOCK_SESSION_DETAILS} from '../api/Mock_API__Data.mjs'
+import {
+    set_mock_response,
+    setup_mock_responses,
+    MOCK_PERSONA_1_SESSION_ID,
+    MOCK_PERSONA_1_SESSION,
+    MOCK_USER_SESSION_ID,
+    MOCK_USER_SESSION,
+    MOCK__API_RESPONSE__OK__LOGIN_AS_PERSONA, MOCK_PERSONA_2_SESSION_ID, MOCK_PERSONA_1_USER_ID
+} from '../../../js/testing/Mock_API__Data.mjs'
 
 const { module, test , only} = QUnit
 
-
-
-module.only('CBR__Session__API__Handler', hooks => {
+module('CBR__Session__API__Handler', hooks => {
     let api_handler
     let original_cookie
 
@@ -14,7 +19,6 @@ module.only('CBR__Session__API__Handler', hooks => {
         assert.timeout(10)
         setup_mock_responses()
         original_cookie = document.cookie                             // Store original cookie
-        document.cookie = ''                                         // Clear cookies
         api_handler = new CBR__Session__API__Handler()
     })
 
@@ -29,17 +33,17 @@ module.only('CBR__Session__API__Handler', hooks => {
 
     test('get_current_session fetches session data', async assert => {
         const result = await api_handler.get_current_session()
-        assert.deepEqual(result, MOCK_SESSION_DATA                  , 'Returns correct session data')
+        assert.deepEqual(result, MOCK_USER_SESSION                  , 'Returns correct session data')
     })
 
     test('get_session_details fetches details', async assert => {
-        const result = await api_handler.get_session_details(MOCK_SESSION_ID)
-        assert.deepEqual(result, MOCK_SESSION_DETAILS               , 'Returns correct session details')
+        const result = await api_handler.get_session_details(MOCK_USER_SESSION_ID)
+        assert.deepEqual(result, MOCK_USER_SESSION                      , 'Returns correct session details')
     })
 
     test('login_as_persona handles login', async assert => {
-        const result = await api_handler.login_as_persona(MOCK_PERSONA_ID)
-        assert.deepEqual(result, { success: true }                  , 'Returns success response'     )
+        const result = await api_handler.login_as_persona(MOCK_PERSONA_1_SESSION_ID)
+        assert.deepEqual(result, MOCK__API_RESPONSE__OK__LOGIN_AS_PERSONA                  , 'Returns success response'     )
     })
 
     test('logout_persona handles logout', async assert => {
@@ -53,13 +57,13 @@ module.only('CBR__Session__API__Handler', hooks => {
     })
 
     test('set_active_session sets cookie', async assert => {
-        await api_handler.set_active_session(MOCK_SESSION_ID)
-        assert.ok(document.cookie.includes(`CBR__SESSION_ID__ACTIVE=${MOCK_SESSION_ID}`), 'Sets correct cookie')
+        await api_handler.set_active_session(MOCK_USER_SESSION_ID)
+        assert.ok(document.cookie.includes(`CBR__SESSION_ID__ACTIVE=${MOCK_USER_SESSION_ID}`), 'Sets correct cookie')
     })
 
     test('set_active_persona sets cookie', async assert => {
-        await api_handler.set_active_persona(MOCK_SESSION_ID)
-        assert.ok(document.cookie.includes(`CBR__SESSION_ID__PERSONA=${MOCK_SESSION_ID}`), 'Sets correct cookie')
+        await api_handler.set_active_persona(MOCK_PERSONA_2_SESSION_ID)
+        assert.ok(document.cookie.includes(`CBR__SESSION_ID__PERSONA=${MOCK_PERSONA_2_SESSION_ID}`), 'Sets correct cookie')
     })
 
     test('get_cookie retrieves values', assert => {
@@ -69,20 +73,20 @@ module.only('CBR__Session__API__Handler', hooks => {
     })
 
     test('session ID getters return correct values', assert => {
-        document.cookie = `CBR__SESSION_ID__USER=${MOCK_SESSION_ID};path=/`
-        assert.equal(api_handler.get_user_session_id(), MOCK_SESSION_ID, 'Gets user session ID')
+        document.cookie = `CBR__SESSION_ID__USER=${MOCK_USER_SESSION_ID};path=/`
+        assert.equal(api_handler.get_user_session_id(), MOCK_USER_SESSION_ID, 'Gets user session ID')
 
-        document.cookie = `CBR__SESSION_ID__PERSONA=${MOCK_SESSION_ID};path=/`
-        assert.equal(api_handler.get_persona_session_id(), MOCK_SESSION_ID, 'Gets persona session ID')
+        document.cookie = `CBR__SESSION_ID__PERSONA=${MOCK_PERSONA_1_SESSION_ID};path=/`
+        assert.equal(api_handler.get_persona_session_id(), MOCK_PERSONA_1_SESSION_ID, 'Gets persona session ID')
 
-        document.cookie = `CBR__SESSION_ID__ACTIVE=${MOCK_SESSION_ID};path=/`
-        assert.equal(api_handler.get_active_session_id(), MOCK_SESSION_ID, 'Gets active session ID')
+        document.cookie = `CBR__SESSION_ID__ACTIVE=${MOCK_PERSONA_2_SESSION_ID};path=/`
+        assert.equal(api_handler.get_active_session_id(), MOCK_PERSONA_2_SESSION_ID, 'Gets active session ID')
     })
 
     test('switch_to_session changes session', async assert => {
-        const result = await api_handler.switch_to_session(MOCK_SESSION_ID)
-        assert.deepEqual(result, MOCK_SESSION_DETAILS                     , 'Returns session details')
-        assert.ok(document.cookie.includes(`CBR__SESSION_ID__ACTIVE=${MOCK_SESSION_ID}`), 'Updates active session cookie')
+        const result = await api_handler.switch_to_session(MOCK_PERSONA_1_SESSION_ID)
+        assert.deepEqual(result, MOCK_PERSONA_1_SESSION                     , 'Returns session details')
+        assert.ok(document.cookie.includes(`CBR__SESSION_ID__ACTIVE=${MOCK_PERSONA_1_SESSION_ID}`), 'Updates active session cookie')
     })
 
     test('handles API errors gracefully', async assert => {
@@ -99,10 +103,10 @@ module.only('CBR__Session__API__Handler', hooks => {
 
     test('handles get_session_details API error', async assert => {
         // Setup mock to return error
-        set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_SESSION_ID}`, 'GET', null, 500)
+        set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_PERSONA_1_SESSION_ID}`, 'GET', null, 500)
 
         try {
-            await api_handler.get_session_details(MOCK_SESSION_ID)
+            await api_handler.get_session_details(MOCK_PERSONA_1_SESSION_ID)
             assert.notOk(true, 'Should throw error')
         } catch (error) {
             assert.ok(error instanceof Error, 'Throws error on API failure')
@@ -111,12 +115,12 @@ module.only('CBR__Session__API__Handler', hooks => {
         }
     })
 
-    test ('handles login_as_persona API error', async assert => {
+    test('handles login_as_persona API error', async assert => {
         // Setup mock to return error
-        set_mock_response(`/api/user-session/guest/login-as-persona?persona_id=${MOCK_PERSONA_ID}`, 'POST', null, 500)
+        set_mock_response(`/api/user-session/guest/login-as-persona?persona_id=${MOCK_PERSONA_1_SESSION_ID}`, 'POST', null, 500)
 
         try {
-            await api_handler.login_as_persona(MOCK_PERSONA_ID)
+            await api_handler.login_as_persona(MOCK_PERSONA_1_SESSION_ID)
             assert.notOk(true, 'Should throw error')
         } catch (error) {
             assert.ok(error instanceof Error, 'Throws error on API failure')

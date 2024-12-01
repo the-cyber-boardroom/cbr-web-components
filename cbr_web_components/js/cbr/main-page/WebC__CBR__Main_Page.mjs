@@ -29,6 +29,18 @@ export default class WebC__CBR__Main_Page extends Web_Component {
 
     // Web_Component overrides
 
+    apply_css() {
+        new CSS__Alerts              (this).apply_framework()
+        new CSS__Grid                (this).apply_framework()
+        new CSS__Typography          (this).apply_framework()
+        new CSS__Side_Menu           (this).apply_framework()
+        new CSS__CBR__Layout__Default(this).apply_framework()
+
+        this.add_css_rules(CBR__Top_Banner          .css_rules())
+        this.add_css_rules(CBR__Left_Footer         .css_rules())
+        this.add_css_rules(CBR__Content__Placeholder.css_rules())
+    }
+
     add_web_components() {
         this.add_web_component_to('#top-banner', WebC__CBR__Top_Banner, {})
         this.add_web_component_to('#left-menu' , WebC__CBR__Left_Menu , {base_path : this.base_path})
@@ -63,17 +75,7 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         }
    }
 
-    load_attributes() {
-        new CSS__Alerts              (this).apply_framework()
-        new CSS__Grid                (this).apply_framework()
-        new CSS__Typography          (this).apply_framework()
-        new CSS__Side_Menu           (this).apply_framework()
-        new CSS__CBR__Layout__Default(this).apply_framework()
 
-        this.add_css_rules(CBR__Top_Banner          .css_rules())
-        this.add_css_rules(CBR__Left_Footer         .css_rules())
-        this.add_css_rules(CBR__Content__Placeholder.css_rules())
-    }
 
     async render() {
         super.render()

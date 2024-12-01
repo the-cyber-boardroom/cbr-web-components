@@ -86,6 +86,9 @@ export default class CBR__Session__API__Handler {
         }
         return null
     }
+    set_cookie(name, value) {
+        document.cookie = `${name}=${value};path=/`
+    }
 
     get_user_session_id() {
         return this.get_cookie('CBR__SESSION_ID__USER')

@@ -1,4 +1,4 @@
-import API__Invoke from '../../../js/data/API__Invoke.mjs'
+import API__Invoke from '../data/API__Invoke.mjs'
 
 let originalInvokeApi = null                                       // Store the original method
 

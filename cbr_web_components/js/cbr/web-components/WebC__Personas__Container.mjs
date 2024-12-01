@@ -9,6 +9,7 @@ import Div             from '../../core/Div.mjs';
 import H               from '../../core/H.mjs';
 import Button          from '../../core/Button.mjs';
 import CBR__Session__Event__Handler from "../session/CBR__Session__Event__Handler.mjs";
+import CBR_Events from "../CBR_Events.mjs";
 
 export default class WebC__Personas__Container extends Web_Component {
 
@@ -29,7 +30,7 @@ export default class WebC__Personas__Container extends Web_Component {
     }
 
     add_event_listeners() {
-            this.add_window_event_listener(this.event_handler.events.PERSONA_SESSION_CHANGED, this.handle__persona_session_changed)
+            this.add_window_event_listener(CBR_Events.CBR__SESSION__PERSONA__CHANGED, this.handle__persona_session_changed)
     }
 
     add_event_handlers() {

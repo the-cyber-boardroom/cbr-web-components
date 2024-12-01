@@ -4,7 +4,7 @@ import { setup_mock_responses,
          MOCK_VERSION_ID,
          MOCK_CONTENT,
          MOCK_FILE_DATA,
-         MOCK_VERSIONS }         from './Mock_API__Data.mjs'
+         MOCK_VERSIONS }         from '../../../js/testing/Mock_API__Data.mjs'
 
 const { module, test } = QUnit
 

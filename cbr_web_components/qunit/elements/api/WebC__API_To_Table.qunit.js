@@ -4,7 +4,7 @@ import Web_Component        from "../../../js/core/Web_Component.mjs";
 import API__Invoke          from "../../../js/data/API__Invoke.mjs";
 import {MOCK_SERVER_REQUESTS_API_PATH,
         MOCK_SERVER_REQUESTS_DATA    ,
-        setup_mock_responses         } from '../../cbr/api/Mock_API__Data.mjs'
+        setup_mock_responses         } from '../../../js/testing/Mock_API__Data.mjs'
 
 QUnit.module('WebC__API_To_Json', function(hooks) {
     let target_div

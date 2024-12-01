@@ -1,5 +1,5 @@
 import { set_mock_response , Mock_API__Invoke } from './Mock_API__Invoke.mjs'
-import CBR__Paths from "../../../js/cbr/CBR__Paths.mjs";
+import CBR__Paths from "../cbr/CBR__Paths.mjs";
 export { set_mock_response                    }                                 // expose this function for the users of this module
 
 export const MOCK_FILE_ID    = 'test-file-123'
@@ -66,25 +66,61 @@ export const MOCK_API_CHANNEL   = 'api_invoke__qunit'
 export const MOCK_CONFIG_PATH   = '/config/version'
 export const MOCK_CONFIG_DATA   = { version: 'v0.6.8' }
 
-export const MOCK_SESSION_ID = 'test-session-123'
-export const MOCK_PERSONA_ID = 'test-persona-456'
+export const MOCK_USER_ID          = "11111111-aaaa-bbbb-cccc-222222222222"
+export const MOCK_USER_NAME        = 'guest_abc_123'
+export const MOCK_USER_SESSION_ID  = "17b40038-aaaa-bbbb-cccc-a4a19f211833"
 
-export const MOCK_SESSION_DATA = {
-    session_id: MOCK_SESSION_ID,
-    user_data : {
-        name    : 'Test User',
-        role    : 'Test Role'
-    }
-}
+export const MOCK_SESSION_SECURITY =  { "is_admin_global": false ,
+                                        "is_admin_site"  : false ,
+                                        "is_blocked"     : false ,
+                                        "is_customer"    : false ,
+                                        "is_guest"       : false ,
+                                        "is_malicious"   : false ,
+                                        "is_user"        : false ,
+                                        "is_user_qa"     : false ,
+                                        "is_suspended"   : false ,
+                                        "is_suspicious"  : false }
 
-export const MOCK_SESSION_DETAILS = {
-    session_id : MOCK_SESSION_ID,
-    details    : {
-        timestamp : '2024-01-01T10:00:00',
-        status    : 'active'
-    }
-}
+export const MOCK_PERSONA_1_USER_ID    = "33333333-aaaa-bbbb-cccc-444444444444"
+export const MOCK_PERSONA_1_USER_NAME  = 'persona_efg_456'
+export const MOCK_PERSONA_1_SESSION_ID = "17b40038-eeee-ffff-gggg-a4a19f211833"
 
+export const MOCK_PERSONA_2_USER_ID      = "55555555-aaaa-bbbb-cccc-666666666666"
+export const MOCK_PERSONA_2_USER_NAME    = 'persona__hij_789'
+export const MOCK_PERSONA_2_SESSION_ID   = "17b40038-hhhh-iiii-jjjj-a4a19f211833"
+
+export const MOCK_PERSONA_BAD_SESSION_ID = "xxxxxxxx-yyyy-yyyy-yyyy-zzzzzzzzzzzz"
+
+export const MOCK_USER_SESSION       = { "data"              : { "username": MOCK_USER_NAME },
+                                         "security"          : MOCK_SESSION_SECURITY         ,
+                                         "session_id"        : MOCK_USER_SESSION_ID          ,
+                                         "user_name"         : MOCK_USER_NAME                ,
+                                         "user_id"           : MOCK_USER_ID                  ,
+                                         "created__date"     : "2024-11-19"                  ,
+                                         "created__time"     : "11:17:12"                    ,
+                                         "created__timestamp": 1732015032823                 }
+
+export const MOCK_PERSONA_1_SESSION     = { "data"            : { "username": MOCK_PERSONA_1_USER_NAME },
+                                            "security"          : MOCK_SESSION_SECURITY                 ,
+                                            "session_id"        : MOCK_PERSONA_1_SESSION_ID             ,
+                                            "user_name"         : MOCK_PERSONA_1_USER_NAME              ,
+                                            "user_id"           : MOCK_PERSONA_1_USER_ID                ,
+                                            "created__date"     : "2023-11-19"                          ,
+                                            "created__time"     : "01:17:12"                            ,
+                                            "created__timestamp": 1732015111111                         }
+
+export const MOCK_PERSONA_2_SESSION     = { "data"            : { "username": MOCK_PERSONA_2_USER_NAME },
+                                            "security"          : MOCK_SESSION_SECURITY                 ,
+                                            "session_id"        : MOCK_PERSONA_2_SESSION_ID             ,
+                                            "user_name"         : MOCK_PERSONA_2_USER_NAME              ,
+                                            "user_id"           : MOCK_PERSONA_2_USER_ID                ,
+                                            "created__date"     : "2022-11-19"                          ,
+                                            "created__time"     : "06:17:12"                            ,
+                                            "created__timestamp": 1732015222222                         }
+
+export const MOCK__API_RESPONSE__OK__LOGIN_AS_PERSONA   = {"data":null,"error":null,"message":"Found persona, set CBR__SESSION_ID__PERSONA cookie to persona id, so that user is now logged in as the provided persona id","status":"ok"}
+
+export const MOCK__API_RESPONSE__FAIL__LOGIN_AS_PERSONA = {"data":null,"error":null,"message":"Persona not found","status":"error"}
 
 export function setup_mock_responses() {
     Mock_API__Invoke.apply_mock()                                                           // we need to keep doing this due to some internal ways of wallaby and KarmaJS (which would lost the mock)
@@ -100,10 +136,14 @@ export function setup_mock_responses() {
     set_mock_response(`/api/user-data/files/file-bytes?file_id=${MOCK_FILE_ID}&version_id=${MOCK_VERSION_ID}`, 'GET', { data: { file_bytes__base64: btoa(MOCK_CONTENT) }})
     set_mock_response(`/api/user-data/files/file-bytes?file_id=${MOCK_FILE_ID}&version_id=invalid-version`   , 'GET', { data: {}   })                                      // Missing file_bytes__base64
 
-    set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_SESSION_ID}`              , 'GET' , MOCK_SESSION_DETAILS)
-    set_mock_response('/api/user-session/session/current-session'                                            , 'GET' , MOCK_SESSION_DATA   )
-    set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_SESSION_ID}`              , 'GET' , MOCK_SESSION_DETAILS)
-    set_mock_response(`/api/user-session/guest/login-as-persona?persona_id=${MOCK_PERSONA_ID}`               , 'POST', { success: true }   )
+    set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_USER_SESSION_ID}`         , 'GET' , MOCK_USER_SESSION    )
+    set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_PERSONA_1_SESSION_ID}`    , 'GET' , MOCK_PERSONA_1_SESSION)
+    set_mock_response(`/api/user-session/session/session-details?session_id=${MOCK_PERSONA_2_SESSION_ID}`    , 'GET' , MOCK_PERSONA_2_SESSION)
+    set_mock_response('/api/user-session/session/current-session'                                            , 'GET' , MOCK_USER_SESSION   )
+
+    set_mock_response(`/api/user-session/guest/login-as-persona?persona_id=${MOCK_PERSONA_1_SESSION_ID  }`   , 'POST', MOCK__API_RESPONSE__OK__LOGIN_AS_PERSONA   )
+    set_mock_response(`/api/user-session/guest/login-as-persona?persona_id=${MOCK_PERSONA_2_SESSION_ID  }`   , 'POST', MOCK__API_RESPONSE__OK__LOGIN_AS_PERSONA   )
+    set_mock_response(`/api/user-session/guest/login-as-persona?persona_id=${MOCK_PERSONA_BAD_SESSION_ID}`   , 'POST', MOCK__API_RESPONSE__FAIL__LOGIN_AS_PERSONA )
     set_mock_response('/api/user-session/guest/logout-persona'                                               , 'POST', { success: true }   )
     set_mock_response('/api/user-session/guest/logout-all'                                                   , 'POST', { success: true }   )
 
@@ -117,10 +157,10 @@ export function setup_mock_responses() {
 }
 
 // Helper function to create base64 content of any size
-export function create_mock_file_content(size_kb = 1) {
-    const chunk = 'x'.repeat(1024)  // 1KB of data
-    return chunk.repeat(size_kb)
-}
+// export function create_mock_file_content(size_kb = 1) {
+//     const chunk = 'x'.repeat(1024)  // 1KB of data
+//     return chunk.repeat(size_kb)
+// }
 
 export function add_padding_to_string(input, padding = 4) {
     const pad = ' '.repeat(padding); // Generate the padding

@@ -7,7 +7,7 @@ export default class CBR__Session__Event__Handler {
     setup_events() {
         this.events = {
             USER_SESSION_CHANGED     : 'user_session_changed'    ,              // todo: refactor all into CBR__Events class (and use new naming convention, based on cbr::{area}-{action})
-            PERSONA_SESSION_CHANGED  : 'persona_session_changed' ,
+            //PERSONA_SESSION_CHANGED  : 'persona_session_changed' ,
             ACTIVE_SESSION_CHANGED   : 'active_session_changed'  ,
             SESSION_ERROR            : 'session_error'           ,
             LOGIN_AS_PERSONA         : 'login_as_persona'        ,

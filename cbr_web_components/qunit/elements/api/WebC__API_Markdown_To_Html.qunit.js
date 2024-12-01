@@ -6,7 +6,7 @@ import { MOCK_CONTENT_PATH     ,
          MOCK_MARKDOWN_METADATA,
          MOCK_RAW_HTML         ,
          setup_mock_responses  ,
-         add_padding_to_string }    from '../../cbr/api/Mock_API__Data.mjs'
+         add_padding_to_string }    from '../../../js/testing/Mock_API__Data.mjs'
 
 QUnit.module('WebC__API_Markdown_To_Html', function(hooks) {
     let target_div

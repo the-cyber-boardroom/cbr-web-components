@@ -3,7 +3,7 @@ import API_Invoke    from '../../js/data/API__Invoke.mjs';
 import { MOCK_API_CHANNEL,
          MOCK_CONFIG_PATH,
          MOCK_CONFIG_DATA,
-         setup_mock_responses } from '../cbr/api/Mock_API__Data.mjs'
+         setup_mock_responses } from '../../js/testing/Mock_API__Data.mjs'
 
 QUnit.module('API_Invoke', function(hooks) {
 

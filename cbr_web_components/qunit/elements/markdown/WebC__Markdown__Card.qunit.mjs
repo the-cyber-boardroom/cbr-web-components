@@ -5,7 +5,7 @@ import WebC__API_Markdown_To_Html   from "../../../js/elements/api/WebC__API_Mar
 import WebC__Markdown__Card         from "../../../js/elements/markdown/WebC__Markdown__Card.mjs";
 import { MOCK_CONTENT_PATH     ,
          MOCK_MARKDOWN_METADATA,
-         setup_mock_responses  }    from '../../cbr/api/Mock_API__Data.mjs'
+         setup_mock_responses  }    from '../../../js/testing/Mock_API__Data.mjs'
 
 
 

@@ -6,7 +6,7 @@ import WebC__API_To_Table    from "../../../js/elements/api/WebC__API_To_Table.m
 import Table                 from "../../../js/core/Table.mjs";
 import {MOCK_SERVER_REQUESTS_API_PATH,
         MOCK_SERVER_REQUESTS_DATA    ,
-        setup_mock_responses         } from '../../cbr/api/Mock_API__Data.mjs'
+        setup_mock_responses         } from '../../../js/testing/Mock_API__Data.mjs'
 
 QUnit.module('WebC__Server_Requests', function(hooks) {
     let target_div

@@ -1,7 +1,7 @@
-import WebC__Target_Div                            from '../../../js/utils/WebC__Target_Div.mjs'
-import Web_Component                               from '../../../js/core/Web_Component.mjs'
-import WebC__User_Files__Folder_Viewer             from '../../../js/cbr/file-system/WebC__User_Files__Folder_Viewer.mjs'
-import {setup_mock_responses, set_mock_response, add_padding_to_string} from '../api/Mock_API__Data.mjs'
+import WebC__Target_Div                                                 from '../../../js/utils/WebC__Target_Div.mjs'
+import Web_Component                                                    from '../../../js/core/Web_Component.mjs'
+import WebC__User_Files__Folder_Viewer                                  from '../../../js/cbr/file-system/WebC__User_Files__Folder_Viewer.mjs'
+import {setup_mock_responses, set_mock_response, add_padding_to_string} from '../../../js/testing/Mock_API__Data.mjs'
 
 const { module, test, only , skip} = QUnit
 

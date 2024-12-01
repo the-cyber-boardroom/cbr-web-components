@@ -1,8 +1,8 @@
 import WebC__Target_Div                            from '../../../js/utils/WebC__Target_Div.mjs'
 import Web_Component                               from '../../../js/core/Web_Component.mjs'
-import WebC__Athena__Welcome                      from '../../../js/cbr/web-components/WebC__Athena__Welcome.mjs'
-import { Mock_Fetch }                              from '../api/Mock_Fetch.mjs'
-import { setup_mock_responses, set_mock_response } from '../api/Mock_API__Data.mjs'
+import WebC__Athena__Welcome                       from '../../../js/cbr/web-components/WebC__Athena__Welcome.mjs'
+import { Mock_Fetch }                              from '../../../js/testing/Mock_Fetch.mjs'
+import { setup_mock_responses, set_mock_response } from '../../../js/testing/Mock_API__Data.mjs'
 import LLM__Handler                                from "../../../js/cbr/llms/LLM__Handler.mjs"
 
 const { module, test, only } = QUnit

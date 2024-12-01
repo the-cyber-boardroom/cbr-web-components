@@ -1,5 +1,9 @@
 export default class CBR__Session__State__Manager {
     constructor() {
+        this.reset_state()
+    }
+
+    reset_state() {
         this.state = {
             user_session    : null ,
             persona_session : null ,
@@ -8,7 +12,6 @@ export default class CBR__Session__State__Manager {
             error          : null
         }
     }
-
     update_state(new_state) {
         this.state = { ...this.state, ...new_state }
         return this.state
