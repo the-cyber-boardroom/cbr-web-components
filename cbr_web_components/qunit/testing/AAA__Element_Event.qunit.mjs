@@ -1,4 +1,4 @@
-import AAA__Element_Event from './AAA__Element_Event.mjs'
+import AAA__Element_Event from '../../js/testing/AAA__Element_Event.mjs'
 
 const { module, test , only} = QUnit
 

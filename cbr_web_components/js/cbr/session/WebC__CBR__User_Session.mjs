@@ -78,23 +78,19 @@ export default class WebC__CBR__User_Session extends Web_Component {
 
         } catch (error) {
             this.state_manager.set_error(error)
-            this.event_handler.dispatch(
-                this.event_handler.events.SESSION_ERROR,
-                { error }
-            )
+            this.raise_event_global(this.event_handler.events.SESSION_ERROR, { error })
         }
     }
 
     handle_session_click({session_id, event}) {
         if (session_id) {
-            this.event_handler.dispatch(this.event_handler.events.SWITCH_SESSION,
-                                      { session_id: session_id })
+            this.raise_event_global(this.event_handler.events.SWITCH_SESSION,  { session_id: session_id })
         }
     }
 
     handle_revert_click({event}) {
         event.stopPropagation()                                                // Prevent triggering session switch
-        this.event_handler.dispatch(this.event_handler.events.LOGOUT_PERSONA)
+        this.raise_event_global(this.event_handler.events.LOGOUT_PERSONA)
     }
 
     handle__switch_session = async (event) => {
@@ -112,10 +108,7 @@ export default class WebC__CBR__User_Session extends Web_Component {
                                                                                         user_name : session.user_name             })
         } catch (error) {
             this.state_manager.set_error(error)
-            this.event_handler.dispatch(
-                this.event_handler.events.SESSION_ERROR,
-                { error }
-            )
+            this.raise_event_global(this.event_handler.events.SESSION_ERROR, { error })
         }
     }
 
@@ -139,7 +132,7 @@ export default class WebC__CBR__User_Session extends Web_Component {
             await this.login_as_persona__post_login({ persona_id, login_result})
         } catch (error) {
             this.state_manager.set_error(error)
-            this.event_handler.dispatch( this.event_handler.events.SESSION_ERROR, { error })
+            this.raise_event_global(this.event_handler.events.SESSION_ERROR, { error })
         }
     }
 
@@ -156,13 +149,10 @@ export default class WebC__CBR__User_Session extends Web_Component {
 
             // Re-render and notify
             await this.refresh_ui()
-            this.event_handler.dispatch( CBR_Events.CBR__SESSION__PERSONA__CHANGED, { state: this.state_manager.get_state() })
+            this.raise_event_global(CBR_Events.CBR__SESSION__PERSONA__CHANGED, { state: this.state_manager.get_state() })
         } catch (error) {
             this.state_manager.set_error(error)
-            this.event_handler.dispatch(
-                this.event_handler.events.SESSION_ERROR,
-                { error }
-            )
+            this.raise_event_global(this.event_handler.events.SESSION_ERROR, { error })
         }
     }
 
