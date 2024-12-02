@@ -11,37 +11,72 @@ import Textarea       from '../../core/Textarea.mjs'
 import Button         from '../../core/Button.mjs'
 import Icon           from '../../css/icons/Icon.mjs'
 import Raw_Html       from '../../core/Raw_Html.mjs'
+import CBR_Events from "../CBR_Events.mjs";
 
 export default class WebC__Document__Chat extends Web_Component {
-    load_attributes() {
-        new CSS__Forms   (this).apply_framework()
-        new CSS__Buttons (this).apply_framework()
-        new CSS__Cards   (this).apply_framework()
-        new CSS__Icons   (this).apply_framework()
-
+    constructor() {
+        super();
         this.api_invoke  = new API__Invoke()
-        this.file_id     = this.getAttribute('file-id')
-        this.content     = this.getAttribute('content') || ''
         this.messages    = []
         this.chat_id     = this.random_uuid()
         this.streaming   = false
     }
+    apply_css() {
+        new CSS__Forms   (this).apply_framework()
+        new CSS__Buttons (this).apply_framework()
+        new CSS__Cards   (this).apply_framework()
+        new CSS__Icons   (this).apply_framework()
+        this.add_css_rules(this.css_rules())
+    }
 
-    connectedCallback() {
-        super.connectedCallback()
-        this.render()
-        this.add_event_listeners()
+    load_attributes() {
+        this.file_id     = this.getAttribute('file-id')
+        this.content     = this.getAttribute('content') || ''
+    }
+
+    async component_ready() {
         this.add_initial_messages()
     }
 
     add_event_listeners() {
-        // Listen for document content updates
-        window.addEventListener('document-updated', (event) => {
-            if (event.detail.file_id === this.file_id) {
-                this.content = event.detail.content
-                this.add_system_message('Document updated. I have the latest version.')
-            }
-        })
+        this.add_window_event_listener('document-updated', this.handle__on_document_updated)
+    }
+
+    add_event_handlers() {
+        this.add_event__on('keydown', '.chat-input'  , this.handle__on_keydown__chat_input)
+        this.add_event__on('click'  , '.send-button' , this.handle__on_click__send_button )
+    }
+
+    handle__on_keydown__chat_input({event}) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault()
+            this.send_message_if_valid()
+        }
+    }
+
+    async handle__on_click__send_button() {
+        await this.send_message_if_valid()
+    }
+
+    async send_message_if_valid() {
+        const input     = this.query_selector('.chat-input'  )
+        const send_btn  = this.query_selector('.send-button' )
+        const message   = input.value.trim()
+
+        if (message && !this.streaming) {
+            input.value     = ''
+            input.disabled  = true
+            send_btn.disabled = true
+            send_btn.innerHTML = 'Processing...'
+            await this.send_message(message)
+        }
+    }
+
+    handle__on_document_updated(event) {
+        if (event.detail.file_id === this.file_id) {
+            this.content = event.detail.content
+            this.add_system_message('Document updated. I have the latest version.')
+        }
     }
 
     add_initial_messages() {
@@ -101,46 +136,47 @@ export default class WebC__Document__Chat extends Web_Component {
                 })
             } else {
                 this.current_message.update_content('Error: Invalid response format')
+                await this.raise_event_global(CBR_Events.CBR__LLM__REQUEST__ERROR)
             }
         } catch (error) {
-            console.error('Error sending message:', error)
             this.current_message.update_content('Error: Failed to get response')
+            await this.raise_event_global(CBR_Events.CBR__LLM__REQUEST__ERROR)
         } finally {
             this.streaming = false
         }
     }
 
-    add_action_buttons(result) {
-        const actions = new Div({ class: 'message-actions' })
-
-        const preview_btn = new Button({
-            class: 'btn btn-primary btn-sm preview-btn',
-            value: 'Preview Changes'
-        })
-        preview_btn.add_element(new Icon({ icon: 'eye', size: 'sm', spacing: 'right' }))
-
-        const accept_btn = new Button({
-            class: 'btn btn-success btn-sm accept-btn',
-            value: 'Accept All'
-        })
-        accept_btn.add_element(new Icon({ icon: 'check', size: 'sm', spacing: 'right' }))
-
-        const reject_btn = new Button({
-            class: 'btn btn-danger btn-sm reject-btn',
-            value: 'Reject'
-        })
-        reject_btn.add_element(new Icon({ icon: 'cross', size: 'sm', spacing: 'right' }))
-
-        actions.add_elements(preview_btn, accept_btn, reject_btn)
-
-        const msg_element = this.query_selector(`#msg-${this.current_message.id}`)
-        msg_element.appendChild(actions.dom_create())
-
-        // Add event listeners
-        preview_btn.dom_create().addEventListener('click', () => this.raise_event_global('diff:show'))
-        accept_btn.dom_create().addEventListener('click', () => this.raise_event_global('changes:accept', { changes: result.document }))
-        reject_btn.dom_create().addEventListener('click', () => this.raise_event_global('changes:reject'))
-    }
+    // add_action_buttons(result) {
+    //     const actions = new Div({ class: 'message-actions' })
+    //
+    //     const preview_btn = new Button({
+    //         class: 'btn btn-primary btn-sm preview-btn',
+    //         value: 'Preview Changes'
+    //     })
+    //     preview_btn.add_element(new Icon({ icon: 'eye', size: 'sm', spacing: 'right' }))
+    //
+    //     const accept_btn = new Button({
+    //         class: 'btn btn-success btn-sm accept-btn',
+    //         value: 'Accept All'
+    //     })
+    //     accept_btn.add_element(new Icon({ icon: 'check', size: 'sm', spacing: 'right' }))
+    //
+    //     const reject_btn = new Button({
+    //         class: 'btn btn-danger btn-sm reject-btn',
+    //         value: 'Reject'
+    //     })
+    //     reject_btn.add_element(new Icon({ icon: 'cross', size: 'sm', spacing: 'right' }))
+    //
+    //     actions.add_elements(preview_btn, accept_btn, reject_btn)
+    //
+    //     const msg_element = this.query_selector(`#msg-${this.current_message.id}`)
+    //     msg_element.appendChild(actions.dom_create())
+    //
+    //     // Add event listeners
+    //     preview_btn.dom_create().addEventListener('click', () => this.raise_event_global('diff:show'))
+    //     accept_btn.dom_create().addEventListener('click', () => this.raise_event_global('changes:accept', { changes: result.document }))
+    //     reject_btn.dom_create().addEventListener('click', () => this.raise_event_global('changes:reject'))
+    // }
 
     add_message(content, type) {
         const message = { id: this.random_uuid(), type, content, timestamp: new Date() }
@@ -191,7 +227,7 @@ export default class WebC__Document__Chat extends Web_Component {
         messages.scrollTop = messages.scrollHeight
     }
 
-    render() {
+    html() {
         const container = new Div({ class: 'chat-container' })
 
         // Chat header
@@ -225,36 +261,10 @@ export default class WebC__Document__Chat extends Web_Component {
         input_container.add_elements(input, send_btn)
 
         container.add_elements(header, messages, input_container)
+        return container
 
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
-        this.add_event_handlers()
     }
 
-    add_event_handlers() {
-        const input = this.query_selector('.chat-input')
-        const send_btn = this.query_selector('.send-button')
-
-        const send_message = () => {
-            const message = input.value.trim()
-            if (message && !this.streaming) {
-                input.value = ''
-                input.disabled = true
-                send_btn.disabled = true
-                send_btn.innerHTML = 'Processing...'
-                this.send_message(message)
-            }
-        }
-
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                send_message()
-            }
-        })
-
-        send_btn.addEventListener('click', send_message)
-    }
 
     css_rules() {
         return {

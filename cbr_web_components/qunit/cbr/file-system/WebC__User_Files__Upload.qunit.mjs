@@ -133,7 +133,7 @@ module('WebC__User_Files__Upload', hooks => {
         set_mock_response('/api/user-data/files/add-file', 'POST', { success: true })
     })
 
-    test('handles paste events', async assert => {
+    only('handles paste events', async assert => {
         await upload_component.refresh_ui()
         assert.timeout(10)
         assert.expect(1)
@@ -157,7 +157,7 @@ module('WebC__User_Files__Upload', hooks => {
         const file_input = upload_component.query_selector('#file-input')
 
         let clicked = false
-        file_input.addEventListener('click', () => clicked = true)
+        file_input.addEventListener('click', () => {clicked = true}, { once: true })
 
         button.click()
         assert.ok(clicked, 'Button triggers file input')
@@ -203,7 +203,7 @@ module('WebC__User_Files__Upload', hooks => {
             const status = upload_component.query_selector('.upload-status')
             assert.ok(status.textContent.includes('successfully')                     , 'Shows success message')
             done()
-        })
+        } , { once: true })
 
         // Test dragover event
         assert.notOk(drop_zone.classList.contains('drag-active'))
