@@ -26,7 +26,7 @@ export default class LLM__Handler {
             stream: true
         }
     }
-
+    /* istanbul ignore next */
     async fetch_url(path, payload) {
         return await fetch(path, {
             method  : 'POST',

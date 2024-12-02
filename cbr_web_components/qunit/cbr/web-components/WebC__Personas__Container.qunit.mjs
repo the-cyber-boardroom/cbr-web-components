@@ -3,6 +3,7 @@ import Web_Component             from '../../../js/core/Web_Component.mjs'
 import WebC__Personas__Container from '../../../js/cbr/web-components/WebC__Personas__Container.mjs'
 import { setup_mock_responses,
          set_mock_response }     from '../../../js/testing/Mock_API__Data.mjs'
+import CBR_Events from "../../../js/cbr/CBR_Events.mjs";
 
 const { module, test , only} = QUnit
 
@@ -83,87 +84,87 @@ module('WebC__Personas__Container', hooks => {
         assert.equal(cards.length                     , 2                       , 'Renders correct number of cards')
     })
 
-    // test('creates persona card correctly', async assert => {
-    //     const guest_id = 'guest-1'
-    //     const persona  = MOCK_PERSONAS[guest_id]
-    //
-    //     const card = container.create_persona_card(guest_id, persona)
-    //     const dom  = card.dom_create()
-    //
-    //     assert.ok(dom.classList.contains('card')                               , 'Has card class'           )
-    //     assert.ok(dom.classList.contains('bg-white')                          , 'Has background class'     )
-    //
-    //     const name = dom.querySelector('.persona-name')
-    //     assert.equal(name.textContent                 ,
-    //                 `${persona.user_data.first_name} ${persona.user_data.last_name}`,
-    //                 'Shows correct name'              )
-    //
-    //     const role = dom.querySelector('.persona-role')
-    //     assert.equal(role.textContent                , persona.user_data.role  , 'Shows correct role'      )
-    //
-    //     const details = dom.querySelector('.persona-details')
-    //     assert.ok(details.textContent.includes(persona.user_data.organisation), 'Shows organisation'       )
-    //     assert.ok(details.textContent.includes(persona.user_data.sector)      , 'Shows sector'            )
-    //     assert.ok(details.textContent.includes(persona.user_data.country)     , 'Shows country'           )
-    //
-    //     const login_button = dom.querySelector('.login-button')
-    //     assert.ok(login_button                                                 , 'Has login button'        )
-    //     assert.equal(login_button.dataset.guestId    , guest_id               , 'Button has correct ID'   )
-    // })
+    test('creates persona card correctly', async assert => {
+        const guest_id = 'guest-1'
+        const persona  = MOCK_PERSONAS[guest_id]
 
-    // test('handles persona login click', async (assert) => {
-    //     assert.expect(1)
-    //
-    //     const on_login_as_persona = (event) => {
-    //         assert.deepEqual(event.detail, { persona_id: 'guest-1' } )
-    //     }
-    //     window.addEventListener('login_as_persona', on_login_as_persona, {once: true})
-    //     const button = container.query_selector('.login-button')
-    //     button.click()
-    //
-    // })
-    //
-    // test('updates persona buttons correctly', async assert => {
-    //     const active_persona = 'John Doe'
-    //     container.update_persona_buttons(active_persona)
-    //
-    //     const buttons = container.query_selector_all('.login-button')
-    //
-    //     const active_button   = buttons[0]
-    //     const inactive_button = buttons[1]
-    //
-    //     assert.equal(active_button.textContent       , 'Current Persona'      , 'Updates active button text')
-    //     assert.ok(active_button.classList.contains('btn-success')            , 'Adds success class'       )
-    //     assert.ok(active_button.disabled                                     , 'Disables active button'   )
-    //
-    //     assert.equal(inactive_button.textContent     , 'Login as this persona', 'Keeps inactive button text')
-    //     assert.ok(inactive_button.classList.contains('btn-outline-primary')  , 'Keeps outline class'      )
-    //     assert.notOk(inactive_button.disabled                               , 'Keeps inactive button enabled')
-    // })
+        const card = container.create_persona_card(guest_id, persona)
+        const dom  = card.dom_create()
 
-    // test('handles persona session changes', assert => {
-    //     const state = {
-    //         persona_session: {
-    //             user_name: 'John Doe'
-    //         }
-    //     }
-    //     const active_button = container.query_selector('.login-button')
-    //
-    //     container.event_handler.dispatch(CBR_Events.CBR__SESSION__PERSONA__CHANGED, { state })
-    //
-    //     assert.equal(active_button.textContent       , 'Current Persona'      , 'Updates button on session change')
-    // })
+        assert.ok(dom.classList.contains('card')                               , 'Has card class'           )
+        assert.ok(dom.classList.contains('bg-white')                          , 'Has background class'     )
 
-    // test('renders header section correctly', async assert => {
-    //     const header = container.query_selector('.header')
-    //     assert.ok(header                                                      , 'Header section exists'    )
-    //
-    //     const title = header.querySelector('.main-title')
-    //     assert.equal(title.textContent               , 'Personas'             , 'Shows correct title'      )
-    //
-    //     const subtitle = header.querySelector('.subtitle')
-    //     assert.ok(subtitle.textContent.includes('Select a persona')          , 'Shows correct subtitle'   )
-    // })
+        const name = dom.querySelector('.persona-name')
+        assert.equal(name.textContent                 ,
+                    `${persona.user_data.first_name} ${persona.user_data.last_name}`,
+                    'Shows correct name'              )
+
+        const role = dom.querySelector('.persona-role')
+        assert.equal(role.textContent                , persona.user_data.role  , 'Shows correct role'      )
+
+        const details = dom.querySelector('.persona-details')
+        assert.ok(details.textContent.includes(persona.user_data.organisation), 'Shows organisation'       )
+        assert.ok(details.textContent.includes(persona.user_data.sector)      , 'Shows sector'            )
+        assert.ok(details.textContent.includes(persona.user_data.country)     , 'Shows country'           )
+
+        const login_button = dom.querySelector('.login-button')
+        assert.ok(login_button                                                 , 'Has login button'        )
+        assert.equal(login_button.dataset.guestId    , guest_id               , 'Button has correct ID'   )
+    })
+
+    test('handles persona login click', async (assert) => {
+        assert.expect(1)
+
+        const on_login_as_persona = (event) => {
+            assert.deepEqual(event.detail, { persona_id: 'guest-1' } )
+        }
+        window.addEventListener('login_as_persona', on_login_as_persona, {once: true})
+        const button = container.query_selector('.login-button')
+        button.click()
+
+    })
+
+    test('updates persona buttons correctly', async assert => {
+        const active_persona = 'John Doe'
+        container.update_persona_buttons(active_persona)
+
+        const buttons = container.query_selector_all('.login-button')
+
+        const active_button   = buttons[0]
+        const inactive_button = buttons[1]
+
+        assert.equal(active_button.textContent       , 'Current Persona'      , 'Updates active button text')
+        assert.ok(active_button.classList.contains('btn-success')            , 'Adds success class'       )
+        assert.ok(active_button.disabled                                     , 'Disables active button'   )
+
+        assert.equal(inactive_button.textContent     , 'Login as this persona', 'Keeps inactive button text')
+        assert.ok(inactive_button.classList.contains('btn-outline-primary')  , 'Keeps outline class'      )
+        assert.notOk(inactive_button.disabled                               , 'Keeps inactive button enabled')
+    })
+
+    test('handles persona session changes', assert => {
+        const state = {
+            persona_session: {
+                user_name: 'John Doe'
+            }
+        }
+        const active_button = container.query_selector('.login-button')
+
+        container.event_handler.dispatch(CBR_Events.CBR__SESSION__PERSONA__CHANGED, { state })
+
+        assert.equal(active_button.textContent       , 'Current Persona'      , 'Updates button on session change')
+    })
+
+    test('renders header section correctly', async assert => {
+        const header = container.query_selector('.header')
+        assert.ok(header                                                      , 'Header section exists'    )
+
+        const title = header.querySelector('.main-title')
+        assert.equal(title.textContent               , 'Personas'             , 'Shows correct title'      )
+
+        const subtitle = header.querySelector('.subtitle')
+        assert.ok(subtitle.textContent.includes('Select a persona')          , 'Shows correct subtitle'   )
+    })
 
 
     test('handles failed personas loading', async assert => {

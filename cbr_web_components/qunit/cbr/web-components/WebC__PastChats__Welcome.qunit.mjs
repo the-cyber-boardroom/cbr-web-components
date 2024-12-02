@@ -165,4 +165,11 @@ module('WebC__PastChats__Welcome', hooks => {
 
        window.marked = original_marked
     })
+
+    test('generate_welcome - handles failed data fetch', async assert => {
+        assert.notEqual(welcome.welcome_message, '')
+        mock_fetch.set_stream_response('/api/llms/chat/completion', null)
+        await welcome.generate_welcome()
+        assert.equal(welcome.welcome_message, '')
+    })
 })
