@@ -183,10 +183,10 @@ export default class Web_Component extends HTMLElement {
         const current_class = this.constructor.name; // Get the name of the current class
         const timeout_message = `[${current_class}] ${event_name} event did not fire within the expected timeout value: ${timeout_value}ms.`;
 
-        await new Promise((resolve, reject) => {
+        return await new Promise((resolve, reject) => {
             const on_timeout       = () => { reject(new Error(timeout_message)); }
             const timeout_function = setTimeout(on_timeout, timeout_value);
-            const on_event         = () => { clearTimeout(timeout_function); resolve(); }
+            const on_event         = (event) => { clearTimeout(timeout_function); resolve(event.detail); }
             this.addEventListener(event_name, on_event, { once: true });
         });
     }

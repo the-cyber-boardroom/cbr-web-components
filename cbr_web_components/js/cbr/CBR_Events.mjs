@@ -1,4 +1,7 @@
 export const CBR_Events = {
+    CBR__CHAT__SAVED           : 'cbr::chat:saved'          ,
+    CBR__CHAT__SAVE_ERROR      : 'cbr::chat:save-error'     ,
+
     CBR__FILE__CANCEL          : 'cbr::file:cancel'         ,
     CBR__FILE__CHANGED         : 'cbr::file:changed'        ,
     CBR__FILE__EDIT            : 'cbr::file:edit'           ,

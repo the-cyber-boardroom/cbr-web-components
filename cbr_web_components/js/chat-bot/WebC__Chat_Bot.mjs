@@ -9,16 +9,19 @@ import Text                from "../core/Text.mjs"           ;
 import Tag                 from "../core/Tag.mjs"            ;
 import Icon__Mappings      from "../css/icons/Icon__Mappings.mjs";
 import Icon                from "../css/icons/Icon.mjs";
+import API__Chat_Bot       from "../cbr/api/API__Chat_Bot.mjs";
+import CBR_Events from "../cbr/CBR_Events.mjs";
 
 export default class WebC__Chat_Bot extends Web_Component {
 
-    static url_current_user_add_chat_id = '/api/user-data/chats/chat-add?chat_path='
+    //static url_current_user_add_chat_id = '/api/user-data/chats/chat-add?chat_path='
 
     constructor() {
         super();
         this.is_maximized       = false;
         this.target_element     = null
         this.data_chat_bot      = new Data__Chat_Bot()
+        this.api_chat_bot       = new API__Chat_Bot()
         this.bot_name           = 'ChatBot'
         this.channels.push('WebC__Chat_Bot')
 
@@ -74,10 +77,14 @@ export default class WebC__Chat_Bot extends Web_Component {
     }
 
     add_event_listeners() {
-        window.addEventListener('new_input_message', (e)=>{ this.handle_new_input_message(e.detail) });
-        window.addEventListener('clear_messages'   , (e)=>{ this.handle_clear_messages   (e.detail) })
-        window.addEventListener('new_chat_ids'     , (e)=>{ this.handle_new_chat_ids     (e.detail) })
-        this.add_event_listener('.maximize-button', 'click', () => this.toggle_maximize())
+        this.add_window_event_listener('new_input_message', this.handle_new_input_message)
+        this.add_window_event_listener('clear_messages'   , this.handle_clear_messages   )
+        this.add_window_event_listener('new_chat_ids'     , this.handle_new_chat_ids     )
+
+    }
+
+    add_event_handlers() {
+        this.add_event__on('click', '.maximize-button', this.toggle_maximize)
     }
 
     html() {
@@ -86,19 +93,22 @@ export default class WebC__Chat_Bot extends Web_Component {
 
 
     // instance methods
-    handle_new_input_message(event_data) {
+    handle_new_input_message(event) {
+        const event_data = event.detail
         if (event_data?.channel === this.channel) {
             this.messages.add_message_sent(event_data) }
         if (this.channel?.startsWith('shared-llm')) {
             this.messages.add_message_sent(event_data) }
 
     }
-    handle_clear_messages(event_data) {
+    handle_clear_messages(event) {
+        const event_data = event.detail
         if (event_data?.channel === this.channel) {
             this.clear_messages()
         }
     }
-    handle_new_chat_ids(event_data) {
+    handle_new_chat_ids(event) {
+        const event_data = event.detail
         if (event_data?.channel === this.channel) {
             this.html_update_chat_ids_value(event_data)
         }
@@ -201,22 +211,50 @@ export default class WebC__Chat_Bot extends Web_Component {
         return this
     }
 
+    // async on_save_chat_click(event, cbr_chat_id) {
+    //     console.log(cbr_chat_id)
+    //     event.preventDefault()
+    //     const url = WebC__Chat_Bot.url_current_user_add_chat_id + cbr_chat_id
+    //     const response = await fetch(url, { method : 'POST'});
+    //     const saved_chat = await response.json()
+    //     if (saved_chat.chat_path === cbr_chat_id) {
+    //         this.save_chat_link.innerHTML = 'saved'
+    //         this.save_chat_link.style.backgroundColor = 'DarkGreen'
+    //         this.save_chat_link.style.fontWeight      = '100'
+    //     }
+    //     else {
+    //         this.save_chat_link.style.backgroundColor = 'DarkRed'
+    //         this.save_chat_link.style.fontWeight      = '100'
+    //         this.save_chat_link.innerHTML             = 'error'
+    //     }
+    // }
+
+
     async on_save_chat_click(event, cbr_chat_id) {
         event.preventDefault()
-        const url = WebC__Chat_Bot.url_current_user_add_chat_id + cbr_chat_id
-        const response = await fetch(url, { method : 'POST'});
-        const saved_chat = await response.json()
-        if (saved_chat.chat_path === cbr_chat_id) {
-            this.save_chat_link.innerHTML = 'saved'
-            this.save_chat_link.style.backgroundColor = 'DarkGreen'
-            this.save_chat_link.style.fontWeight      = '100'
-        }
-        else {
-            this.save_chat_link.style.backgroundColor = 'DarkRed'
-            this.save_chat_link.style.fontWeight      = '100'
-            this.save_chat_link.innerHTML             = 'error'
-        }
+        const saved_chat = await this.api_chat_bot.add_chat_id(cbr_chat_id)
+        this.update_save_status(saved_chat, cbr_chat_id)
     }
+
+    update_save_status(saved_chat, cbr_chat_id) {
+        if (saved_chat.chat_path === cbr_chat_id) { this.show_success_status(saved_chat) }
+        else                                      { this.show_error_status  (saved_chat)   }
+    }
+
+    show_success_status(saved_chat) {
+        this.save_chat_link.innerHTML             = 'saved'
+        this.save_chat_link.style.backgroundColor = 'DarkGreen'
+        this.save_chat_link.style.fontWeight      = '100'
+        this.raise_event_global(CBR_Events.CBR__CHAT__SAVED, {channel: this.channel, saved_chat:saved_chat})
+    }
+
+    show_error_status(saved_chat) {
+        this.save_chat_link.style.backgroundColor = 'DarkRed'
+        this.save_chat_link.style.fontWeight      = '100'
+        this.save_chat_link.innerHTML             = 'error'
+        this.raise_event_global(CBR_Events.CBR__CHAT__SAVE_ERROR, {channel: this.channel, saved_chat:saved_chat})
+    }
+
 
     // Maximize button section
 
