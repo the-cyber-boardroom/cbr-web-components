@@ -88,7 +88,7 @@ export default class WebC__CBR__Main_Page extends Web_Component {
     extract_base_path_and_version() {
         const path_parts = window.location.pathname.split('/');
 
-        if (path_parts.length >= 2) {
+        if (path_parts.length >= 2 && path_parts[2]) {
             this.version = path_parts[2];             // Version is the second part of the path (e.g., dev, prod, v0.1.100)
         } else {
             this.version = 'latest';                 // Default version

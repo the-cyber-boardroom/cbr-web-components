@@ -18,7 +18,7 @@ export default class WebC__CBR__Top_Banner extends Web_Component {
     }
 
     add_event_handlers() {
-        this.add_event_listener('.menu-icon', 'click', this.handle__on__toggle_menu)
+        this.add_event__on('click', '.menu-icon', this.handle__on__toggle_menu)
     }
 
     handle__on__toggle_menu() {
