@@ -12,38 +12,55 @@ import Button        from '../../core/Button.mjs'
 import Raw_Html      from '../../core/Raw_Html.mjs'
 
 export default class WebC__Document__Diff extends Web_Component {
-    load_attributes() {
+
+    constructor() {
+        super()
+        this.api_invoke = new API__Invoke()
+        this.changes    = null
+        this.view_mode  = 'split'                    // 'split' or 'unified'
+        this.add_css_rules(this.css_rules())
+    }
+
+    apply_css() {
         new CSS__Grid    (this).apply_framework()
         new CSS__Cards   (this).apply_framework()
         new CSS__Buttons (this).apply_framework()
         new CSS__Icons   (this).apply_framework()
+    }
 
-        this.api_invoke = new API__Invoke()
+    load_attributes() {
         this.file_id    = this.getAttribute('file-id')
-        this.changes    = null
-        this.view_mode  = 'split'                    // 'split' or 'unified'
     }
 
-    connectedCallback() {
-        super.connectedCallback()
-        this.render()
-        this.add_event_listeners()
-    }
 
     add_event_listeners() {
-        window.addEventListener('update-diff-view', (event) => {
-            if (event.detail.file_id === this.file_id) {
-                this.update_diff(event.detail.changes)
-            }
-        })
+        this.add_window_event_listener('update-diff-view', this.handle__on_update_diff_view)
     }
 
-    update_diff(result) {
+
+    add_event_handlers() {
+        this.add_event__on_click('.btn-secondary:not(:last-child)', this.toggle_view_mode   )     // View mode toggle
+        this.add_event__on_click('.btn-success'                   , this.accept_changes     )     // Accept all button
+        this.add_event__on_click('.btn-danger'                    , this.reject_changes     )     // Reject all button
+        this.add_event__on_click('.btn-secondary:last-child'      , this.handle_close       )     // Close button
+    }
+
+    handle_close() {                                                                                // New method to handle close event
+        this.raise_event_global('diff:hide')
+    }
+
+    handle__on_update_diff_view(event) {
+        if (event.detail.file_id === this.file_id) {
+            this.update_diff(event.detail.changes)
+        }
+    }
+
+    async update_diff(result) {
         if (!result?.document) return
 
         this.changes     = result.document.changes
         this.new_version = result.document.new_version
-        this.render()
+        await this.refresh_ui()
     }
 
     toggle_view_mode() {
@@ -54,10 +71,7 @@ export default class WebC__Document__Diff extends Web_Component {
     accept_changes() {
         if (!this.changes) return
 
-        this.raise_event_global('changes:accept', {
-            new_version: this.new_version,
-            changes    : this.changes
-        })
+        this.raise_event_global('changes:accept', { new_version: this.new_version,  changes    : this.changes })
         this.raise_event_global('diff:hide')
     }
 
@@ -155,7 +169,7 @@ export default class WebC__Document__Diff extends Web_Component {
         return div.innerHTML
     }
 
-    render() {
+    html() {
         const container = new Div({ class: 'diff-container' })
 
         // Header with controls
@@ -188,23 +202,14 @@ export default class WebC__Document__Diff extends Web_Component {
         view_toggle.add_element(new Icon({ icon: 'eye', size: 'sm', spacing: 'right' }))
 
         // Accept/Reject all
-        const accept_btn = new Button({
-            class: 'btn btn-success btn-sm',
-            value: 'Accept All'
-        })
+        const accept_btn = new Button({ class: 'btn btn-success btn-sm',  value: 'Accept All'})
         accept_btn.add_element(new Icon({ icon: 'check', size: 'sm', spacing: 'right' }))
 
-        const reject_btn = new Button({
-            class: 'btn btn-danger btn-sm',
-            value: 'Reject All'
-        })
+        const reject_btn = new Button({ class: 'btn btn-danger btn-sm',  value: 'Reject All'})
         reject_btn.add_element(new Icon({ icon: 'cross', size: 'sm', spacing: 'right' }))
 
         // Close button
-        const close_btn = new Button({
-            class: 'btn btn-secondary btn-sm',
-            value: 'Close'
-        })
+        const close_btn = new Button({ class: 'btn btn-secondary btn-sm',  value: 'Close'})
         close_btn.add_element(new Icon({ icon: 'close', size: 'sm', spacing: 'right' }))
 
         controls.add_elements(view_toggle, accept_btn, reject_btn, close_btn)
@@ -227,37 +232,12 @@ export default class WebC__Document__Diff extends Web_Component {
         }
 
         container.add_elements(header, content)
+        return container
 
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
-        this.add_event_handlers()
+
+
     }
 
-    add_event_handlers() {
-        // View mode toggle
-        const view_toggle = this.query_selector('.btn-secondary')
-        if (view_toggle) {
-            view_toggle.addEventListener('click', () => this.toggle_view_mode())
-        }
-
-        // Accept all button
-        const accept_btn = this.query_selector('.btn-success')
-        if (accept_btn) {
-            accept_btn.addEventListener('click', () => this.accept_changes())
-        }
-
-        // Reject all button
-        const reject_btn = this.query_selector('.btn-danger')
-        if (reject_btn) {
-            reject_btn.addEventListener('click', () => this.reject_changes())
-        }
-
-        // Close button
-        const close_btn = this.query_selector('.btn-secondary:last-child')
-        if (close_btn) {
-            close_btn.addEventListener('click', () => this.raise_event_global('diff:hide'))
-        }
-    }
 
     css_rules() {
         return {

@@ -11,51 +11,107 @@ import Icon           from '../../css/icons/Icon.mjs'
 import Raw_Html       from '../../core/Raw_Html.mjs'
 
 export default class WebC__Document__Editor extends Web_Component {
-    load_attributes() {
-        new CSS__Forms   (this).apply_framework()
-        new CSS__Buttons (this).apply_framework()
-        new CSS__Icons   (this).apply_framework()
 
+    constructor() {
+        super()
         this.api_invoke  = new API__Invoke()
-        this.file_id     = this.getAttribute('file-id')
-        this.content     = this.getAttribute('content') || ''
         this.version     = 1
         this.unsaved_changes = false
     }
 
-    async connectedCallback() {
-        super.connectedCallback()
-        this.render()
-        this.add_event_listeners()
+    apply_css() {
+        new CSS__Forms   (this).apply_framework()
+        new CSS__Buttons (this).apply_framework()
+        new CSS__Icons   (this).apply_framework()
+        this.add_css_rules(this.css_rules())
+    }
+    load_attributes() {
+        this.file_id     = this.getAttribute('file-id')
+        this.content     = this.getAttribute('content')
     }
 
+
     add_event_listeners() {
-        // Listen for accepted changes
-        window.addEventListener('changes:accept', async (event) => {
-            if (event.detail.changes) {
-                this.content = event.detail.new_version
-                this.unsaved_changes = true
-                await this.update_editor()
-                await this.save_content()
-            }
-        })
+        this.add_window_event_listener('changes:accept' , this.handle__changes_accept  )
+        this.add_window_event_listener('version:reset'  , this.handle__version_reset   )
+        this.add_window_event_listener('content-changed', this.handle__content_changed )
+    }
 
-        // Listen for document reset
-        window.addEventListener('version:reset', async (event) => {
-            if (event.detail.content) {
-                this.content = event.detail.content
-                this.version = event.detail.version
-                await this.update_editor()
-            }
-        })
+    add_event_handlers() {
+        this.add_event__on('input'   , '.markdown-editor', this.handle__editor_input  )
+        this.add_event__on('click'   , '.save-btn'      , this.handle__save_click     )
+        this.add_event__on('click'   , '.preview-btn'   , this.handle__preview_toggle )
+        this.add_event__on('keydown' , '.markdown-editor', this.handle__editor_keydown )
+    }
 
-        // Auto-save timer
-        let save_timer = null
-        this.addEventListener('content-changed', () => {
+    handle__editor_input({event}) {                                                     // Handle editor content changes
+        this.content = event.target.value
+        this.update_status('unsaved')
+        this.update_preview()
+        this.raise_event_global('content-changed', { content: this.content })
+    }
+
+    async handle__save_click() {                                                             // Handle manual save button click
+        await this.save_content()
+    }
+
+    handle__preview_toggle() {                                                         // Handle preview mode toggle
+        const editor_area = this.query_selector('.editor-area')
+        editor_area.classList.toggle('show-preview')
+
+        const preview_btn = this.query_selector('.preview-btn')
+        preview_btn.innerHTML = editor_area.classList.contains('show-preview')
+            ? this.html__edit_button()
+            : this.html__preview_button()
+    }
+
+    handle__editor_keydown({event}) {                                                  // Handle tab key in editor
+        if (event.key === 'Tab') {
+            event.preventDefault()
+            const editor         = event.target
+            const start         = editor.selectionStart
+            const end           = editor.selectionEnd
+            editor.value        = editor.value.substring(0, start) +
+                                 '    ' +
+                                 editor.value.substring(end)
+            editor.selectionStart = editor.selectionEnd = start + 4
+        }
+    }
+
+    html__edit_button() {
+        return '<i class="icon">✎</i> Edit'
+    }
+
+    html__preview_button() {
+        return '<i class="icon">👁</i> Preview'
+    }
+
+    async handle__changes_accept(event) {
+        if (event.detail.changes) {
+            this.content          = event.detail.new_version
             this.unsaved_changes = true
-            if (save_timer) clearTimeout(save_timer)
-            save_timer = setTimeout(() => this.save_content(), 2000)  // Auto-save after 2 seconds
-        })
+            await this.update_editor()
+            await this.save_content()
+        }
+    }
+
+    async handle__version_reset(event) {
+        if (event.detail.content) {
+            this.content         = event.detail.content
+            this.version        = event.detail.version
+            await this.update_editor()
+        }
+    }
+
+    handle__content_changed() {
+        this.unsaved_changes = true
+        //if (this.save_timer) { clearTimeout(this.save_timer) }
+        //this.save_timer = setTimeout(() => this.save_content(), 2000)                 // Auto-save after 2 seconds
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback()
+        //if (this.save_timer) { clearTimeout(this.save_timer) }                        // Clean up timer when component is destroyed
     }
 
     async save_content() {
@@ -82,7 +138,7 @@ export default class WebC__Document__Editor extends Web_Component {
             })
 
         } catch (error) {
-            console.error('Error saving document:', error)
+            //console.error('Error saving document:', error)
             this.update_status('save-error')
         }
     }
@@ -91,7 +147,7 @@ export default class WebC__Document__Editor extends Web_Component {
         const status_el = this.query_selector('.editor-status')
         const toolbar = this.query_selector('.editor-toolbar')
 
-        if (!status_el || !toolbar) return
+        //if (!status_el || !toolbar) return
 
         switch (status) {
             case 'document-saved':
@@ -111,12 +167,12 @@ export default class WebC__Document__Editor extends Web_Component {
         }
 
         // Clear success/error messages after delay
-        if (status !== 'unsaved') {
-            setTimeout(() => {
-                status_el.textContent = this.unsaved_changes ? 'Unsaved changes' : ''
-                status_el.className = this.unsaved_changes ? 'editor-status status-warning' : 'editor-status'
-            }, 3000)
-        }
+        // if (status !== 'unsaved') {
+        //     setTimeout(() => {
+        //         status_el.textContent = this.unsaved_changes ? 'Unsaved changes' : ''
+        //         status_el.className = this.unsaved_changes ? 'editor-status status-warning' : 'editor-status'
+        //     }, 3000)
+        //}
     }
 
     async update_editor() {
@@ -135,7 +191,7 @@ export default class WebC__Document__Editor extends Web_Component {
         }
     }
 
-    render() {
+    html() {
         const container = new Div({ class: 'editor-container' })
 
         // Toolbar
@@ -185,48 +241,10 @@ export default class WebC__Document__Editor extends Web_Component {
         editor_area.add_elements(editor, preview)
         container.add_elements(toolbar, editor_area)
 
-        this.set_inner_html(container.html())
-        this.add_css_rules(this.css_rules())
-        this.add_event_handlers()
+        return container
     }
 
-    add_event_handlers() {
-        const editor = this.query_selector('.markdown-editor')
-        const preview = this.query_selector('.markdown-preview')
-        const save_btn = this.query_selector('.save-btn')
-        const preview_btn = this.query_selector('.preview-btn')
 
-        // Editor changes
-        editor.addEventListener('input', (e) => {
-            this.content = e.target.value
-            this.update_status('unsaved')
-            this.update_preview()
-            this.raise_event('content-changed', { content: this.content })
-        })
-
-        // Manual save
-        save_btn.addEventListener('click', () => this.save_content())
-
-        // Preview toggle
-        preview_btn.addEventListener('click', () => {
-            const editor_area = this.query_selector('.editor-area')
-            editor_area.classList.toggle('show-preview')
-            preview_btn.innerHTML = editor_area.classList.contains('show-preview')
-                ? '<i class="icon">✎</i> Edit'
-                : '<i class="icon">👁</i> Preview'
-        })
-
-        // Tab key handling
-        editor.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                e.preventDefault()
-                const start = editor.selectionStart
-                const end = editor.selectionEnd
-                editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end)
-                editor.selectionStart = editor.selectionEnd = start + 4
-            }
-        })
-    }
 
     css_rules() {
         return {
