@@ -42,6 +42,7 @@ module('WebC__CBR__Main_Page', hooks => {
     test('handles menu toggle events', async assert => {
         const layout_col = main_page.query_selector('#layout-col-left')
         const left_footer = main_page.query_selector('#left-footer')
+        main_page.raise_event_global(CBR_Events.CBR__UI__LEFT_MENU_TOGGLE, { minimized: false })            // make sure we are not minimised
 
         assert.ok(layout_col.classList.contains('w-250px')                            , 'Initially expanded'       )
         assert.notOk(layout_col.classList.contains('w-50px')                          , 'Not minimized'           )
