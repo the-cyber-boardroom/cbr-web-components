@@ -175,5 +175,5 @@ module('WebC__Chat_Messages', hooks => {
         chat_messages.raise_event_global('streamStart', {})
         assert.ok(1)
     })
-    
+
 })
