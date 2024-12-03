@@ -90,9 +90,9 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
     }
 
     async post_openai_prompt_with_stream(user_prompt, images) {
-
-        var storedData = localStorage.getItem('user_data');
-        var user_data = storedData ? JSON.parse(storedData) : {};
+        // var storedData = localStorage.getItem('user_data');
+        // var user_data = storedData ? JSON.parse(storedData) : {};
+        var user_data = {}
         user_data['selected_platform'] = this.platform || $('#platform-select').val();               // todo: refactor the retrieval of this value from outside this js class
         user_data['selected_provider'] = this.provider || $('#provider-select').val();               //       since this highly couples the component to other parts of the page
         user_data['selected_model'   ] = this.model    || $('#model-select'   ).val();
@@ -124,7 +124,8 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         await this.fetch_data_from_server(data)
     }
 
-    async fetch_request_post(url, body) {
+    /* istanbul ignore next */
+    async fetch_url(url, body) {
         return await fetch(url, {
             method : 'POST',
             headers: { 'Accept': 'application/json',
@@ -134,7 +135,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
     }
 
     raise_event_for__chat_ids(headers) {
-        if (!headers) { return }
+        if (!headers || !headers.get) { return }
         const cbr_chat_id        = headers.get('cbr__chat_id')
         const cbr_chat_thread_id = headers.get('cbr__chat_thread_id')
 
@@ -148,7 +149,7 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         let detail__stream_data  = {'channel':this.channel, 'data': null}
         this.stop_fetch = false
         try {
-            const response = await this.fetch_request_post(this.url, data)
+            const response = await this.fetch_url(this.url, data)
 
             this.raise_event_for__chat_ids(response.headers)
 
@@ -172,15 +173,13 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
             const processStream = async ({done, value}) => {
               if (this.stop_fetch) {
                   detail__stream_data.data = '   ...(stopped)...'
-                  this.dispatchEvent(new CustomEvent('streamData', {bubbles : true    , composed: true    ,
-                                                                    detail: detail__stream_data }));
+                  // this.dispatchEvent(new CustomEvent('streamData', {bubbles : true    , composed: true    ,
+                  //                                                   detail: detail__stream_data }));
+                  this.raise_event_global('streamData', detail__stream_data)
                   done = true
               }
             if (done) {
-              this.dispatchEvent(new CustomEvent('streamComplete', {
-                    bubbles : true    ,                         // allows the event to bubble up through the DOM
-                    composed: true    ,                         // allows the event to cross shadow DOM boundaries
-              }));
+              this.raise_event_global('streamComplete', {'channel':this.channel})
               this.messages.messages_div_scroll_to_end()
               return;
             }
@@ -249,10 +248,10 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
 
     async on_message_sent(event) {
         if (this.target && this.target === event.detail.target) {
-            console.log(`[add_event_listeners]--->> NOT Current target ${this.target} != ${event.detail.target}<----`)
+            //console.log(`[add_event_listeners]--->> NOT Current target ${this.target} != ${event.detail.target}<----`)
         }
         if (this.fetch === false) {
-            console.log(`[add_event_listeners]--->> fetch is false ${this.fetch}<----`)
+            //console.log(`[add_event_listeners]--->> fetch is false ${this.fetch}<----`)
             return
         }
         const message     = event.detail.message

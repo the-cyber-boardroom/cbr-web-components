@@ -198,14 +198,11 @@ module('WebC__Chat_Bot', hooks => {
     })
 
     test('handle_clear_messages ignores other channels', assert => {
-        // Setup initial messages
-        const test_message = document.createElement('div')
+        const test_message = document.createElement('div')                      // Setup initial messages
         chat_bot.messages.appendChild(test_message)
         const initial_count = chat_bot.messages.childNodes.length
-        console.log(chat_bot.messages.childNodes.length)
 
-        // Test with different channel
-        const other_channel_event = new CustomEvent('-', {
+        const other_channel_event = new CustomEvent('-', {                      // Test with different channel
             detail: { channel: 'another-different-channel' }
         })
         chat_bot.handle_clear_messages(other_channel_event)

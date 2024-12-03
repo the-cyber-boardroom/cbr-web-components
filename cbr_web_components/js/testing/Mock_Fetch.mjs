@@ -38,10 +38,10 @@ export class Mock_Fetch {
         this.responses.set(url, { data, status })
     }
 
-    set_stream_response(url, chunks, status = 200) {
+    set_stream_response(url, chunks, status = 200, stream=true) {
         this.responses.set(url, { ok: status === 200              ,
                                   status                          ,
-                                  body: new StreamResponse(chunks)});
+                                  body: new StreamResponse({chunks, stream})});
     }
 }
 
@@ -52,7 +52,7 @@ export function set_mock_response(url, data, status = 200) {           // Helper
 }
 
 class StreamResponse {
-    constructor(chunks) {
+    constructor({chunks, stream=true}) {
         if (typeof chunks === 'function') {
             this.callback = chunks
             this.chunks   = []
@@ -66,6 +66,7 @@ class StreamResponse {
             }
         }
         this.encoder = new TextEncoder();
+        this.stream = stream
     }
 
     getReader() {
@@ -75,6 +76,9 @@ class StreamResponse {
         }
         return {
             read: async () => {
+                if (this.stream === false) {
+                    return {done: true, value: this.encoder.encode(this.chunks)}
+                }
                 if (index >= this.chunks.length) {
                     return { done: true };
                 }
