@@ -99,10 +99,18 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         chatbot_openai.messages.messages_clear()
         chatbot_openai.initial_message = null
 
-        // chatbot_openai.system_prompt = 'an system prompt'
-        // chatbot_openai.apply_ui_tweaks()
-        // assert.deepEqual(chatbot_openai.messages.messages_size(),1)
-        // assert.deepEqual(chatbot_openai.messages.messages()[0].outerHTML, '<webc-chat-message type="system" style="display: inherit;">an system prompt</webc-chat-message>')
+        const current_channel = chatbot_openai.channel
+        assert.equal(chatbot_openai.shadowRoot.querySelector('webc-chat-input').style.display,'')
+        chatbot_openai.channel = 'shared-llm--abc'
+        chatbot_openai.apply_ui_tweaks()
+        assert.equal(chatbot_openai.shadowRoot.querySelector('webc-chat-input').style.display,'none')
+        chatbot_openai.channel = current_channel
+
+        assert.deepEqual(chatbot_openai.messages.messages_size(),0)
+        chatbot_openai.system_prompt = 'an system prompt'
+        chatbot_openai.apply_ui_tweaks()
+        assert.deepEqual(chatbot_openai.messages.messages_size(),1)
+        assert.deepEqual(chatbot_openai.messages.messages()[0].outerHTML, '<webc-system-prompt content="an system prompt"></webc-system-prompt>')
 
         chatbot_openai.messages.messages_clear()
     })
@@ -226,6 +234,108 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         })
         assert.ok(true, 'Processes matching target')
     })
+
+    QUnit.test ('raise_event_for__chat_ids handles headers correctly', async assert => {
+        assert.expect(4)                                                                         // We expect 4 assertions
+
+        const mock_headers = new Headers({                                                       // Test with valid headers
+            'cbr__chat_id'       : 'test-chat-id'      ,
+            'cbr__chat_thread_id': 'test-thread-id'
+        })
+
+        chatbot_openai.addEventListener('new_chat_ids', (event) => {
+            assert.deepEqual(event.detail, { channel           : chatbot_openai.channel,
+                                             cbr_chat_id       :'test-chat-id'         ,
+                                             cbr_chat_thread_id: 'test-thread-id'      }, 'Emits correct event data')
+
+            assert.ok(event.bubbles                     , 'Event bubbles'          )
+            assert.ok(event.composed                    , 'Event is composed'      )
+        }, { once: true })
+
+        chatbot_openai.raise_event_for__chat_ids(null)                                              // Test with missing headers
+        assert.ok(true                                  , 'Handles null headers'   )
+
+        chatbot_openai.raise_event_for__chat_ids(mock_headers)                                      // Trigger the event with valid headers
+    })
+
+    QUnit.test('handles HTTP error responses', async assert => {
+        assert.expect(2);
+        const done = assert.async();
+
+        // Mock a 404 response
+        mock_fetch.set_stream_response(handler.api_path, [], 404);
+
+        const on_stream_data = (event) => {
+            assert.equal(event.detail.data, 'HTTP error! Status: 404', 'Receives correct error message');
+            assert.equal(event.detail.channel, chatbot_openai.channel, 'Includes correct channel');
+            chatbot_openai.removeEventListener('streamData', on_stream_data);
+            mock_fetch.set_stream_response(handler.api_path, chunks); // Reset mock
+            done();
+        };
+
+        chatbot_openai.addEventListener('streamData', on_stream_data, {once:true});
+        await chatbot_openai.post_openai_prompt_with_stream('test prompt', []);
+    });
+
+    QUnit.test('handles stream stopping with complete flow', async assert => {
+        assert.timeout(10)
+        assert.expect(4);
+        const done = assert.async();
+        let streamDataReceived = false;
+
+        const on_stream_data = (event) => {
+            if (event.detail.data === '   ...(stopped)...') {
+                assert.ok(true, 'Receives stopped message');
+                streamDataReceived = true;
+            }
+        };
+
+        const on_stream_complete = (event) => {
+            assert.ok(streamDataReceived, 'Stream data event fired first');
+            assert.ok(true, 'Stream complete event fired');
+            assert.deepEqual(event.detail, {channel: chatbot_openai.channel}, 'Completes with correct channel');
+
+            chatbot_openai.removeEventListener('streamData', on_stream_data);
+            chatbot_openai.removeEventListener('streamComplete', on_stream_complete);
+            done();
+        };
+
+        chatbot_openai.addEventListener('streamData', on_stream_data);
+        chatbot_openai.addEventListener('streamComplete', on_stream_complete);
+
+        const prompt = chatbot_openai.post_openai_prompt_with_stream('test prompt', []);
+        chatbot_openai.stop_fetch = true;
+        await prompt;
+    });
+
+    QUnit.test('handles stream errors with complete error flow', async assert => {
+        assert.expect(4);
+        //const done = assert.async();
+        const mock_callback = () => { new Error('Stream error') }
+        const expected_error = "Cannot read properties of undefined (reading 'getReader')"
+        mock_fetch.set_response(handler.api_path, mock_callback);
+
+        const on_stream_data = (event) => {
+            console.log(event.detail.data)
+            assert.equal(event.detail.data, 'streamError: ' + expected_error)
+            assert.equal(event.detail.channel, chatbot_openai.channel, 'Includes correct channel');
+        };
+
+        const on_stream_error = (event) => {
+            console.log(event.detail.message)
+            assert.equal(event.detail.message, expected_error)
+            chatbot_openai.removeEventListener('streamData', on_stream_data);
+            chatbot_openai.removeEventListener('streamError', on_stream_error);
+            mock_fetch.set_stream_response(handler.api_path, chunks); // Reset mock
+            //done();
+        };
+
+        chatbot_openai.addEventListener('streamData', on_stream_data);
+        chatbot_openai.addEventListener('streamError', on_stream_error);
+
+        await chatbot_openai.post_openai_prompt_with_stream('test prompt', []);
+        assert.ok(1)
+    });
 
     QUnit.test('handles non-streamed responses', async assert => {
         assert.expect(2)

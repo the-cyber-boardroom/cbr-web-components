@@ -149,8 +149,8 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
         let detail__stream_data  = {'channel':this.channel, 'data': null}
         this.stop_fetch = false
         try {
-            const response = await this.fetch_url(this.url, data)
 
+            const response = await this.fetch_url(this.url, data)
             this.raise_event_for__chat_ids(response.headers)
 
 
@@ -171,44 +171,45 @@ export default class Chatbot_OpenAI extends WebC_Chat_Bot{
             }
 
             const processStream = async ({done, value}) => {
-              if (this.stop_fetch) {
+                if (this.stop_fetch) {
                   detail__stream_data.data = '   ...(stopped)...'
-                  // this.dispatchEvent(new CustomEvent('streamData', {bubbles : true    , composed: true    ,
-                  //                                                   detail: detail__stream_data }));
                   this.raise_event_global('streamData', detail__stream_data)
                   done = true
-              }
-            if (done) {
-              this.raise_event_global('streamComplete', {'channel':this.channel})
-              this.messages.messages_div_scroll_to_end()
-              return;
-            }
+                }
+                if (done) {
+                  this.raise_event_global('streamComplete', {'channel':this.channel})
+                  this.messages.messages_div_scroll_to_end()
+                  return;
+                }
 
-            const chunk = decoder.decode(value, {stream: true});                            // Decode and process chunk
+                const chunk = decoder.decode(value, {stream: true});                            // Decode and process chunk
 
-            let fixed_chunk = chunk.replace(/\n\n/g, '{{DOUBLE_NEWLINE}}');  // todo: remove the need for this
-            fixed_chunk = fixed_chunk.replace(/\n/g, '');
-            fixed_chunk = fixed_chunk.replace(/{{DOUBLE_NEWLINE}}/g, '\n\n');
+                let fixed_chunk = chunk.replace(/\n\n/g, '{{DOUBLE_NEWLINE}}');  // todo: remove the need for this
+                fixed_chunk = fixed_chunk.replace(/\n/g, '');
+                fixed_chunk = fixed_chunk.replace(/{{DOUBLE_NEWLINE}}/g, '\n\n');
 
-            //const fixed_chunk = chunk.replace(/\n$/, '');
-            detail__stream_data.data = fixed_chunk
-            this.dispatchEvent(new CustomEvent('streamData', {
-                bubbles : true    ,                         // allows the event to bubble up through the DOM
-                composed: true    ,                         // allows the event to cross shadow DOM boundaries
-                detail: detail__stream_data }));                          // Emit an event with the chunk
+                //const fixed_chunk = chunk.replace(/\n$/, '');
+                detail__stream_data.data = fixed_chunk
+                this.dispatchEvent(new CustomEvent('streamData', {
+                    bubbles : true    ,                         // allows the event to bubble up through the DOM
+                    composed: true    ,                         // allows the event to cross shadow DOM boundaries
+                    detail: detail__stream_data }));                          // Emit an event with the chunk
 
-            reader.read().then(processStream);                                              // Read the next chunk
+                reader.read().then(processStream);                                              // Read the next chunk
             };
 
             reader.read().then(processStream);
 
         } catch (error) {                                                   // todo : refactor to raise event method
+
           detail__stream_data.data = `streamError: ${error.message}`
           this.dispatchEvent(new CustomEvent('streamData', {
             bubbles : true    ,                         // allows the event to bubble up through the DOM
             composed: true    ,                         // allows the event to cross shadow DOM boundaries
             detail: detail__stream_data }));                          // Emit an event with the chunk
-          this.events.dispatchEvent(new CustomEvent('streamError', { detail: error.message }));
+          //this.events.dispatchEvent(new CustomEvent('streamError', { detail: error.message }));
+          this.raise_event_global('streamError', { message: error.message })
+
         }
     }
 
