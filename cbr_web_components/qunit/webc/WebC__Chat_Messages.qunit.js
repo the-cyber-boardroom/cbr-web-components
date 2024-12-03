@@ -18,10 +18,10 @@ QUnit.module('WebC__Chat_Messages', function(hooks) {
         assert.ok(true)
 
         const target_div       = WebC__Target_Div.add_to_body().build({width:"10%"})
-        const chat_messages    = WebC__Chat_Messages.create()
-        chat_messages.show_sent_messages = true
+        const chat_messages    = WebC__Chat_Messages.create({show_sent_messages: true})
 
         target_div.appendChild(chat_messages)
+        await chat_messages.wait_for__component_ready()
 
         const sent_message     = 'a new SENT message'
         const received_message = 'message received'

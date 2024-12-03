@@ -1,6 +1,8 @@
 import Chatbot_OpenAI   from '../../js/chat-bot/Chatbot_OpenAI.mjs'
 import Web_Component    from '../../js/core/Web_Component.mjs'
 import WebC__Target_Div from "../../js/utils/WebC__Target_Div.mjs";
+import { Mock_Fetch,
+         set_mock_response } from '../../js/testing/Mock_Fetch.mjs'
 
 QUnit.module('Chatbot_OpenAI', function(hooks) {
 
@@ -9,6 +11,7 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
     let div_system_prompt
 
     hooks.before(async (assert) => {
+        assert.timeout(10)
         target_div                      = WebC__Target_Div.add_to_body().build({width: "50%"})
         chatbot_openai                  = target_div.append_child(Chatbot_OpenAI)
         await chatbot_openai.wait_for__component_ready()                                    // wait for the component to be ready
@@ -129,10 +132,124 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
 
     });
 
-    //     chatbot_openai.addEventListener('streamData', function(event) {
-    //         console.log('in streamData')
-    //         const expected_data = { channel: null, data: 'HTTP error! Status: 404' }
-    //         //assert.deepEqual(event.detail, expected_data)
-    //         end_test();
-    //         }, { once: true });
+
+
+    // QUnit.test('handles stream responses correctly', async assert => {
+    //     //const done = assert.async()
+    //     assert.expect(3)
+    //
+    //     const chunks = ['Hello', ' World', '!']
+    //     const mock_fetch = Mock_Fetch.apply_mock(chatbot_openai)
+    //     mock_fetch.set_stream_response(chatbot_openai.url, chunks)
+    //
+    //     chatbot_openai.addEventListener('streamData', (event) => {
+    //         assert.ok(event.detail.data, 'Receives stream chunk')
+    //     })
+    //
+    //     chatbot_openai.addEventListener('streamComplete', () => {
+    //         assert.ok(true, 'Stream completes successfully')
+    //         done()
+    //     })
+    //
+    //     await chatbot_openai.post_openai_prompt_with_stream('test prompt', [])
+    // })
+    //
+    // QUnit.test('calculates chat histories correctly', async assert => {
+    //     // Add messages in the way the project does it
+    //     chatbot_openai.messages.add_message_sent('Question 1').message('Question 1')
+    //     chatbot_openai.messages.add_message_received('Answer 1').message('Answer 1')
+    //     chatbot_openai.messages.add_message_sent('Question 2').message('Question 2')
+    //
+    //     const histories = chatbot_openai.calculate_histories()
+    //
+    //     assert.equal(histories.length, 1, 'Captures complete Q&A pairs')
+    //     assert.deepEqual(histories[0], {
+    //         question: 'Question 1',
+    //         answer: 'Answer 1'
+    //     }, 'History pair matches expected format')
+    // })
+    //
+    // QUnit.test('handles model selection', async assert => {
+    //     const model_event = new CustomEvent('select_model', {
+    //         detail: {
+    //             platform: 'test_platform',
+    //             provider: 'test_provider',
+    //             model: 'test_model',
+    //             channel: chatbot_openai.channel
+    //         }
+    //     })
+    //
+    //     await chatbot_openai.on_select_model(model_event)
+    //
+    //     assert.equal(chatbot_openai.platform, 'test_platform', 'Updates platform')
+    //     assert.equal(chatbot_openai.provider, 'test_provider', 'Updates provider')
+    //     assert.equal(chatbot_openai.model, 'test_model', 'Updates model')
+    // })
+    //
+    // QUnit.test('handles stream stopping', async assert => {
+    //     assert.expect(2)
+    //     const done = assert.async()
+    //
+    //     chatbot_openai.stop_fetch = false
+    //     assert.notOk(chatbot_openai.stop_fetch, 'Stop flag starts false')
+    //
+    //     const stop_event = new CustomEvent('stop_stream', {
+    //         detail: { channel: chatbot_openai.channel }
+    //     })
+    //
+    //     await chatbot_openai.on_stop_stream(stop_event)
+    //     assert.ok(chatbot_openai.stop_fetch, 'Sets stop flag to true')
+    //     done()
+    // })
+    //
+    // QUnit.test('handles message sending with targets', async assert => {
+    //     assert.expect(2)
+    //     const done = assert.async()
+    //
+    //     chatbot_openai.target = 'specific_target'
+    //     chatbot_openai.fetch = false  // Prevent actual API calls
+    //
+    //     // Different target - should be ignored
+    //     await chatbot_openai.on_message_sent({
+    //         detail: {
+    //             target: 'different_target',
+    //             message: { user_prompt: 'test' }
+    //         }
+    //     })
+    //     assert.ok(true, 'Ignores non-matching target')
+    //
+    //     // Matching target
+    //     chatbot_openai.target = 'matching_target'
+    //     await chatbot_openai.on_message_sent({
+    //         detail: {
+    //             target: 'matching_target',
+    //             message: { user_prompt: 'test' }
+    //         }
+    //     })
+    //     assert.ok(true, 'Processes matching target')
+    //     done()
+    // })
+    //
+    // QUnit.test('handles non-streamed responses', async assert => {
+    //     assert.expect(2)
+    //     const done = assert.async()
+    //
+    //     set_mock_response(chatbot_openai.url, 'POST', {
+    //         success: true,
+    //         data: { message: 'Test response' }
+    //     })
+    //
+    //     chatbot_openai.stream = false
+    //
+    //     chatbot_openai.addEventListener('streamData', (event) => {
+    //         assert.ok(event.detail.data, 'Receives response data')
+    //     })
+    //
+    //     chatbot_openai.addEventListener('streamComplete', () => {
+    //         assert.ok(true, 'Completes non-streamed response')
+    //         done()
+    //     })
+    //
+    //     await chatbot_openai.post_openai_prompt_with_stream('test prompt', [])
+    // })
 })

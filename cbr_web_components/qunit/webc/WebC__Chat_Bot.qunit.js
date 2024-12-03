@@ -25,7 +25,7 @@ QUnit.module('WebC__Chat_Bot', function(hooks) {
         chat_messages.add_message_sent      ('sent'    ).append(' abc.....123').append(' 123\n'.repeat(12))
         chat_messages.add_message_received  ('received').append(' xyz.....123').append(' 123\n'.repeat(12))
         chat_messages.add_message_sent      ('sent'    ).append(' abc.....123').append(' 123\n'.repeat(12))
-        assert.equal(chat_messages.messages().length, 6)
+        assert.equal(chat_messages.messages().length, 5)
         target_div.remove()
 
         // todo add asserts like the one below to make sure the elements are loading ok

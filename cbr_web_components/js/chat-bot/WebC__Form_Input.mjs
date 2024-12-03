@@ -7,10 +7,6 @@ export default class WebC__Form_Input extends Web_Component {
         super();
         this.channels.push('WebC__Form_Input'     )
     }
-    // properties
-    get text_area() {
-        return this.query_selector('#text_area')
-    }
 
     // connection methods
     add_event_listeners() {
@@ -26,16 +22,38 @@ export default class WebC__Form_Input extends Web_Component {
         this.add_css_rules(this.css_rules__chat_input())
     }
 
-    disconnectedCallback() {
-        super.disconnectedCallback()
-        this.remove_event_listeners()
-    }
 
     remove_event_listeners() {
         if (this.text_area) {
             this.text_area.removeEventListener('input', this.on_input)
             this.text_area.removeEventListener('keydown', this.on_keydown)
         }
+    }
+
+    // events
+
+    on_input = () => {
+        this.text_area_resize()
+    }
+
+    on_keydown = (keyboard_event) => {
+        this.events_utils.events_dispatch.send_to_channel('keydown', this.channel, { keyboard_event: keyboard_event})
+    }
+
+    on_paste = (paste_event) => {
+        this.events_utils.events_dispatch.send_to_channel('paste', this.channel, { paste_event: paste_event})
+    }
+
+    on_append_value = (event) => {
+        let value = event.event_data.value
+        this.text_area.value += value
+        this.text_area_trigger_input_event()
+    }
+
+    on_set_value = (event) => {
+        let value = event.event_data.value
+        this.text_area.value = value
+        this.text_area_resize()
     }
 
     // methods
@@ -88,31 +106,11 @@ export default class WebC__Form_Input extends Web_Component {
         this.text_area.style.height = new_height + 'px'; // Set height to scrollHeight
     }
 
-    // events
-
-    on_input = () => {
-        this.text_area_resize()
+    // properties
+    get text_area() {
+        return this.query_selector('#text_area')
     }
 
-    on_keydown = (keyboard_event) => {
-        this.events_utils.events_dispatch.send_to_channel('keydown', this.channel, { keyboard_event: keyboard_event})
-    }
-
-    on_paste = (paste_event) => {
-        this.events_utils.events_dispatch.send_to_channel('paste', this.channel, { paste_event: paste_event})
-    }
-
-    on_append_value = (event) => {
-        let value = event.event_data.value
-        this.text_area.value += value
-        this.text_area_trigger_input_event()
-    }
-
-    on_set_value = (event) => {
-        let value = event.event_data.value
-        this.text_area.value = value
-        this.text_area_resize()
-    }
 
 }
 

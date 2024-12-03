@@ -79,7 +79,8 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
 <div class="chat-input">
     <!--<input id='file-input' type="file" />-->
     <!--<label for="file-input" class="file-input-label">+</label>-->
-    <webc-form-input channel="an_channel" webc_id="webc-form-input"></webc-form-input>
+    <div class="form-input"></div>
+    <!--<webc-form-input channel="an_channel" webc_id="webc-form-input"></webc-form-input>-->
     <!--<input id='user-prompt' type="text" placeholder="Enter a message..." autocomplete=\"off\"/>-->
     <button id=\"action-button\">send</button>
     <button id=\"clear-button\">clear</button>

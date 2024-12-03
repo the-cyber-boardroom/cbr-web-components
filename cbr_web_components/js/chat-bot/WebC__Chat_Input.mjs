@@ -11,35 +11,11 @@ export default class WebC__Chat_Input extends Web_Component {
         this.channels.push('WebC__Chat_Input')
     }
 
-    // properties
-    get input() {                       // todo refactor this into a help method to return the result of a query selector
-        let event_type  = 'invoke'
-        let channel     = this.channel
-        let event_data  = { method: 'query_selector', params: {'selector' : '#text_area'}}
-        let webc_id     = this.query_selector('webc-form-input').webc_id
-        let text_area   = null
-
-        let callback    = function(result) {
-            text_area = result
-        }
-        let events_dispatch = this.events_utils.events_dispatch
-        events_dispatch.send_to_channel(event_type, channel, event_data, webc_id, callback)
-        return text_area
-    }
-
-    get action_button() {
-        return this.query_selector('#action-button')
-    }
-
-    get clear_button() {
-        return this.query_selector('#clear-button')
-    }
-
-    get images() {
-        return this.query_selector('.chat-images')
-    }
-
     // Web_Component overrides
+
+    apply_css() {
+        this.add_css_rules(this.css_rules())
+    }
 
     add_event_listeners() {
         this.events_utils.events_receive.add_event_listener('keydown', this.channel, this.on_input_keydown)
@@ -57,11 +33,6 @@ export default class WebC__Chat_Input extends Web_Component {
         window.addEventListener           ('streamComplete' , this.bound_on_stream_complete)
     }
 
-    disconnectedCallback() {
-        super.disconnectedCallback()
-        this.remove_event_listeners()
-    }
-
     remove_event_listeners() {
         this.events_utils.events_receive.remove_all_event_listeners()
         this.action_button.removeEventListener('click'         , this.bound_on_action_button  )    // Remove using same
@@ -70,42 +41,12 @@ export default class WebC__Chat_Input extends Web_Component {
         window.removeEventListener           ('streamComplete' , this.bound_on_stream_complete)
     }
 
-    async apply_css() {
-        this.add_css_rules(this.css_rules())
+    async add_web_components() {
+        this.add_web_component_to('.form-input', WebC__Form_Input, {channel: this.channel, webc_id:"webc-form-input"})
     }
 
     // other methods
 
-
-
-    html() {
-        //todo add back this HTML mode
-        // const tag = new Tag()
-        // const div_chat_input = tag.clone({tag: 'div', class: 'chat-input'})
-        // const div_images = tag.clone({tag: 'div', class: 'chat-images'})
-        // const input_chat_input = tag.clone({
-        //     tag: 'input',
-        //     attributes: {type: 'text', placeholder: 'Enter a message...'}
-        // })
-        //
-        // div_chat_input.add(div_images)
-        // div_chat_input.add(input_chat_input)
-        // input_chat_input.html_config.include_end_tag = false
-        //return div_chat_input.html()
-        const new_html = `
-<div class="chat-images"></div>
-
-<div class="chat-input">
-    <!--<input id='file-input' type="file" />-->
-    <!--<label for="file-input" class="file-input-label">+</label>-->
-    <webc-form-input channel="${this.channel}" webc_id="webc-form-input"></webc-form-input>
-    <!--<input id='user-prompt' type="text" placeholder="Enter a message..." autocomplete="off"/>-->
-    <button id="action-button">send</button>
-    <button id="clear-button">clear</button>
-</div>
-`
-        return new_html
-    }
 
     setup_upload_button() {
         const element = this.query_selector('#file-input')
@@ -293,6 +234,71 @@ export default class WebC__Chat_Input extends Web_Component {
     //     }
     // }
 
+    html() {
+        //todo add back this HTML mode
+        // const tag = new Tag()
+        // const div_chat_input = tag.clone({tag: 'div', class: 'chat-input'})
+        // const div_images = tag.clone({tag: 'div', class: 'chat-images'})
+        // const input_chat_input = tag.clone({
+        //     tag: 'input',
+        //     attributes: {type: 'text', placeholder: 'Enter a message...'}
+        // })
+        //
+        // div_chat_input.add(div_images)
+        // div_chat_input.add(input_chat_input)
+        // input_chat_input.html_config.include_end_tag = false
+        //return div_chat_input.html()
+        const new_html = `
+<div class="chat-images"></div>
+
+<div class="chat-input">
+    <!--<input id='file-input' type="file" />-->
+    <!--<label for="file-input" class="file-input-label">+</label>-->
+    <div class="form-input"></div>
+    <!--<webc-form-input channel="${this.channel}" webc_id="webc-form-input"></webc-form-input>-->
+    <!--<input id='user-prompt' type="text" placeholder="Enter a message..." autocomplete="off"/>-->
+    <button id="action-button">send</button>
+    <button id="clear-button">clear</button>
+</div>
+`
+        return new_html
+    }
+
+    // properties
+    get input() {                       // todo refactor this into a help method to return the result of a query selector
+
+        let webc_form_input = this.query_selector('webc-form-input')
+        return webc_form_input.text_area
+
+        // let event_type      = 'invoke'
+        // let channel         = this.channel
+        // let event_data      = { method: 'query_selector', params: {'selector' : '#text_area'}}
+        // let webc_form_input = this.query_selector('webc-form-input')
+        // let webc_id         = this.query_selector('webc-form-input').webc_id
+        // console.log(webc_id)
+        // let text_area   = null
+        //
+        // let callback    = function(result) {
+        //     text_area = result
+        // }
+        // let events_dispatch = this.events_utils.events_dispatch
+        // events_dispatch.send_to_channel(event_type, channel, event_data, webc_id, callback)
+        //
+        // return text_area
+    }
+
+    get action_button() {
+        return this.query_selector('#action-button')
+    }
+
+    get clear_button() {
+        return this.query_selector('#clear-button')
+    }
+
+    get images() {
+        return this.query_selector('.chat-images')
+    }
+
     css_rules() {
         return { "*": {"font-family": "Verdana"},
                  ".chat-input"       : { "padding":       "10px"                         ,
@@ -300,10 +306,8 @@ export default class WebC__Chat_Input extends Web_Component {
                                          "box-shadow"    : "0 -2px 10px rgba(0,0,0,0.1)" ,
                                          "display"       : "flex"                        ,
                                          "align-items"   : "center"                      },
-                 "webc-form-input" : { "width"         : "96%"                         },
-                                       //  "padding"       : "10px"                        ,
-                                       //  "border-radius" : "20px"                        ,
-                                       //  "border"        : "1px solid #ccc"              },
+                 //".webc-form-input" : { "width"         : "96%"                         },
+                ".form-input"        : { "width"         : "96%"                         },
                  "#file-input"       : { "opacity"       : "0px"                         ,   /* Hide the file input */
                                          "position"      : "absolute"                    ,
                                          "z-index"       : "-1"                          },  /* Place it behind the scene */

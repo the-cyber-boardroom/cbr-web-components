@@ -8,6 +8,11 @@ export default class WebC__Chat_Messages extends Web_Component {
         super();
         this.auto_scroll        = true                        // Auto-scroll to the bottom of the chat window
         this.dom_spinner        = null
+        this.current_message    = null
+
+    }
+
+    load_attributes() {
         this.channel            = this.getAttribute('channel'           )       || null
         this.edit_mode          = this.getAttribute('edit_mode'         ) === 'true'
         this.show_sent_messages = this.getAttribute('show_sent_messages') === 'true'
@@ -15,8 +20,6 @@ export default class WebC__Chat_Messages extends Web_Component {
 
         if (this.channel) { this.channels.push(this.channel) }
         this.channels.push('WebC__Chat_Messages')
-        this.current_message    = null
-
     }
 
     is_message_to_current_channel(event_data) {

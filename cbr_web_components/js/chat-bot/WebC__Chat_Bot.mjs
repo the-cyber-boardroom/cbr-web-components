@@ -27,6 +27,17 @@ export default class WebC__Chat_Bot extends Web_Component {
 
     }
 
+    async add_web_components() {
+        const params__chat_messages = { channel            : this.channel            ,
+                                        id                 : 'chat_messages'         ,
+                                        show_sent_messages : this.show_sent_messages ,
+                                        edit_mode          : this.edit_mode          }
+        const params__chat_input_ui = { channel            : this.channel            ,
+                                        id                 : 'chat_input'            }
+        this.add_web_component_to('.chat-messages', WebC__Chat_Messages, params__chat_messages )
+        this.add_web_component_to('.chat-input-ui', WebC__Chat_Input   , params__chat_input_ui )
+    }
+
     // properties
 
     get chat_ids() {
@@ -34,11 +45,11 @@ export default class WebC__Chat_Bot extends Web_Component {
     }
 
     get input() {
-        return this.query_selector('#chat_input').input
+        return this.query_selector('webc-chat-input').input
     }
 
     get messages() {
-        return this.query_selector('#chat_messages')        //todo: refactor chat_messages
+        return this.query_selector('webc-chat-messages')        //todo: refactor chat_messages
     }
 
     get save_chat_link() {
@@ -47,10 +58,6 @@ export default class WebC__Chat_Bot extends Web_Component {
 
     get target_element_style() {
         return this.target_element?.style
-    }
-
-    get target_element_style_computed() {
-        return getComputedStyle(this.target_element)
     }
 
     // Web_Component overrider methods
@@ -85,10 +92,6 @@ export default class WebC__Chat_Bot extends Web_Component {
 
     add_event_handlers() {
         this.add_event__on('click', '.maximize-button', this.toggle_maximize)
-    }
-
-    html() {
-        return this.div_chatbot_ui()
     }
 
 
@@ -134,26 +137,25 @@ export default class WebC__Chat_Bot extends Web_Component {
         return div_chat_header
     }
 
-    //todo : refactor this to use use add_web_components (and double check if we still need this class)
-    div_chatbot_ui() {
+    html() {
 
         const tag = new Tag()
-        const tag_chat_messages = WebC__Chat_Messages.element_name
-        const tag_chat_input    = WebC__Chat_Input   .element_name
-        const chat_messages__id = 'chat_messages'
-        const chat_input__id    = 'chat_input'
+
 
         tag.html_config.include_id=false
 
         const div_chatbot_ui     = tag.clone({tag:'div'            , class:'chatbot-ui'                           })
         const div_chat_ids       = new Tag  ({tag:'div'            , class:'chat-ids'     , id: 'chat_ids'        })
-        const webc_chat_messages = new Tag  ({tag:tag_chat_messages, class:'chat-messages', id: chat_messages__id })
-        const webc_chat_input    = new Tag  ({tag:tag_chat_input   , class:'chat-input-ui', id: chat_input__id    })
+        // const webc_chat_messages = new Tag  ({tag:tag_chat_messages, class:'chat-messages', id: chat_messages__id })
+        // const webc_chat_input    = new Tag  ({tag:tag_chat_input   , class:'chat-input-ui', id: chat_input__id    })
+        const webc_chat_messages = new Div  ({ class:'chat-messages' })
+        const webc_chat_input    = new Div  ({ class:'chat-input-ui' })
 
-        webc_chat_input   .attributes.channel            = this.channel
-        webc_chat_messages.attributes.channel            = this.channel
-        webc_chat_messages.attributes.show_sent_messages = this.show_sent_messages
-        webc_chat_messages.attributes.edit_mode          = this.edit_mode
+        //webc_chat_input   .attributes.channel            = this.channel
+
+        // webc_chat_messages.attributes.channel            = this.channel
+        // webc_chat_messages.attributes.show_sent_messages = this.show_sent_messages
+        // webc_chat_messages.attributes.edit_mode          = this.edit_mode
 
         div_chatbot_ui.add(this.create_header())
         div_chatbot_ui.add(div_chat_ids     )
@@ -173,7 +175,7 @@ export default class WebC__Chat_Bot extends Web_Component {
             return
         }
 
-        const cbr_chat_id        = event_data?.cbr_chat_id          || ''
+        const cbr_chat_id        = event_data?.cbr_chat_id
         //const cbr_chat_thread_id = event_data?.cbr_chat_thread_id   || ''
         const link__chat         = `/web/chat/view/${cbr_chat_id}`
         const link__chat_pdf     = `${link__chat}/pdf`
