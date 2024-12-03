@@ -117,33 +117,33 @@ QUnit.module('WebC__Chat_Input', function(hooks) {
         window.removeEventListener('new_input_message', on_new_input_message);
     })
 
-    //todo: this test is correctly triggering the change event, but inside it, the reader.onloadend is not being triggered
-    QUnit.test('setup_upload_button', (assert) => {
-        //var base64Image      = create_test_img_base64(200,500);
-        assert.equal(webc_chat_input.query_selector('#file-input'), null)
-        let div_file_input             = document.createElement('div');                // todo: find a better way to add this temp DIV
-        div_file_input.id              = 'file-input';
-        div_file_input.style.display   = 'none';
-        div_file_input.type            = 'file'
-        webc_chat_input.shadow_root_append(div_file_input);
 
-        webc_chat_input.setup_upload_button()
-
-        assert.equal(webc_chat_input.images.children.length,0)
-
-        const blob          = new Blob(['file content'], { type: 'image/png' });
-        const file          = new File([blob], 'image.png', { type: 'image/png' });      // Create a File from the Blob
-        const dataTransfer  = new DataTransfer();
-        dataTransfer.items.add(file);
-
-        div_file_input.files = dataTransfer.files;
-
-        const event = new Event('change');
-        div_file_input.dispatchEvent(event);
-
-        target_div.remove()
-        div_file_input.remove()
-    })
+    // QUnit.test('setup_upload_button', (assert) => {
+    //     //var base64Image      = create_test_img_base64(200,500);
+    //     assert.equal(webc_chat_input.query_selector('#file-input'), null)
+    //     let div_file_input             = document.createElement('div');                // todo: find a better way to add this temp DIV
+    //     div_file_input.id              = 'file-input';
+    //     div_file_input.style.display   = 'none';
+    //     div_file_input.type            = 'file'
+    //     webc_chat_input.shadow_root_append(div_file_input);
+    //
+    //     webc_chat_input.setup_upload_button()
+    //
+    //     assert.equal(webc_chat_input.images.children.length,0)
+    //
+    //     const blob          = new Blob(['file content'], { type: 'image/png' });
+    //     const file          = new File([blob], 'image.png', { type: 'image/png' });      // Create a File from the Blob
+    //     const dataTransfer  = new DataTransfer();
+    //     dataTransfer.items.add(file);
+    //
+    //     div_file_input.files = dataTransfer.files;
+    //
+    //     const event = new Event('change');
+    //     div_file_input.dispatchEvent(event);
+    //
+    //     target_div.remove()
+    //     div_file_input.remove()
+    // })
 
 
 

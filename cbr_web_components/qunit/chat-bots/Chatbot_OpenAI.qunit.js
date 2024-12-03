@@ -79,7 +79,7 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         assert.deepEqual(chatbot_openai.all_system_prompts(), [])
     })
 
-    QUnit.test('apply_ui_tweaks', (assert) => {
+    QUnit.test('apply_ui_tweaks', async (assert) => {
         assert.deepEqual(chatbot_openai.all_system_prompts(), [])
         assert.equal(chatbot_openai.input.value   , '')
         assert.equal(chatbot_openai.initial_prompt, '')
@@ -90,11 +90,12 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         chatbot_openai.apply_ui_tweaks()
         assert.equal(chatbot_openai.input.value, 'an initial prompt')
 
+        chatbot_openai.messages.messages().innerHTML =''
         chatbot_openai.initial_message = 'an initial message'
-        chatbot_openai.apply_ui_tweaks()
+        await chatbot_openai.refresh_ui()
 
         assert.deepEqual(chatbot_openai.messages.messages_size(),1)
-        assert.deepEqual(chatbot_openai.messages.messages()[0].outerHTML, '<webc-chat-message type="initial">an initial message</webc-chat-message>')
+        assert.deepEqual(chatbot_openai.messages.messages()[0].outerHTML, '<webc-chat-message type="initial" platform="." provider="." model="." style="display: inherit;">an initial message</webc-chat-message>')
 
         chatbot_openai.messages.messages_clear()
         chatbot_openai.initial_message = null
@@ -316,13 +317,11 @@ QUnit.module('Chatbot_OpenAI', function(hooks) {
         mock_fetch.set_response(handler.api_path, mock_callback);
 
         const on_stream_data = (event) => {
-            console.log(event.detail.data)
             assert.equal(event.detail.data, 'streamError: ' + expected_error)
             assert.equal(event.detail.channel, chatbot_openai.channel, 'Includes correct channel');
         };
 
         const on_stream_error = (event) => {
-            console.log(event.detail.message)
             assert.equal(event.detail.message, expected_error)
             chatbot_openai.removeEventListener('streamData', on_stream_data);
             chatbot_openai.removeEventListener('streamError', on_stream_error);

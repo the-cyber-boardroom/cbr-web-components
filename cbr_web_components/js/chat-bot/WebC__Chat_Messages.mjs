@@ -49,15 +49,15 @@ export default class WebC__Chat_Messages extends Web_Component {
     add_event_listeners() {
         //console.log("configuring event hooks in WebC__Chat_Messages")
 
-        var current_message = null
+        //var current_message = null
         window.addEventListener('streamStart', (e)=>{
             //current_message = this.add_message_received('')
             this.handle_stream_start(e.detail)
         });
 
-        window.addEventListener('streamComplete', (e)=>{
-            //console.log('>>>>> streamComplete:")', e)
-        });
+        // window.addEventListener('streamComplete', (e)=>{
+        //     //console.log('>>>>> streamComplete:")', e)
+        // });
         window.addEventListener('streamData', (e)=>{
             this.handle_stream_data(e.detail)
         });
@@ -87,19 +87,18 @@ export default class WebC__Chat_Messages extends Web_Component {
     }
 
     add_message(message, type, images, platform, provider, model) {
-        const new_message =  WebC__Chat_Message.create({type:type})
+        const new_message_params = { type     : type    ,
+                                     platform : platform || '.',
+                                     provider : provider || '.',
+                                     model    : model    || '.' }
+        const new_message =  WebC__Chat_Message.create(new_message_params)
 
-        new_message.platform  = platform || '.'
-        new_message.provider  = provider || '.'
-        new_message.model     = model    || '.'
         new_message.edit_mode = this.edit_mode
-
         this.appendChild(new_message)
         new_message.message(message)
         new_message.images(images)
 
         this.messages_div_scroll_to_end()
-
         return new_message
     }
 

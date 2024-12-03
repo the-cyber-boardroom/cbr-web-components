@@ -48,21 +48,21 @@ export default class WebC__Chat_Input extends Web_Component {
     // other methods
 
 
-    setup_upload_button() {
-        const element = this.query_selector('#file-input')
-        //window.element = element
-        element.addEventListener('change', () => {
-              var reader = new FileReader();
-              reader.onloadend = () => {
-                    var base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
-                    //console.log(`got image of size ${base64String.length}`)
-                    const image_prefix = 'data:image/png;base64,'
-                    this.displayImage(image_prefix + base64String);
-              }
-              reader.readAsDataURL(element.files[0]);
-            });
-
-    }
+    // setup_upload_button() {
+    //     const element = this.query_selector('#file-input')
+    //     //window.element = element
+    //     element.addEventListener('change', () => {
+    //           var reader = new FileReader();
+    //           reader.onloadend = () => {
+    //                 var base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
+    //                 //console.log(`got image of size ${base64String.length}`)
+    //                 const image_prefix = 'data:image/png;base64,'
+    //                 this.displayImage(image_prefix + base64String);
+    //           }
+    //           reader.readAsDataURL(element.files[0]);
+    //         });
+    //
+    // }
 
     input_images_urls() {
         const images_urls = []
@@ -194,14 +194,14 @@ export default class WebC__Chat_Input extends Web_Component {
         var dom_img = doc.body.firstChild;
 
 
-        dom_img.onload = () => {
-            const realWidth = dom_img.naturalWidth;
-            const realHeight = dom_img.naturalHeight;
-            const sizeInBytes = this.calculateImageSize(base64Image);  // Calculate the size of the base64 string in bytes
-            //console.log(`Real Width: ${realWidth}px, Real Height: ${realHeight}px, Size: ${sizeInBytes} bytes`);    // Log the statistics or do something with them
-            //this.resizeImage(dom_img,512)
-
-        };
+        // dom_img.onload = () => {
+        //     const realWidth = dom_img.naturalWidth;
+        //     const realHeight = dom_img.naturalHeight;
+        //     const sizeInBytes = this.calculateImageSize(base64Image);  // Calculate the size of the base64 string in bytes
+        //     //console.log(`Real Width: ${realWidth}px, Real Height: ${realHeight}px, Size: ${sizeInBytes} bytes`);    // Log the statistics or do something with them
+        //     //this.resizeImage(dom_img,512)
+        //
+        // };
         this.images.appendChild(dom_img)
     }
 

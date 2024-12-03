@@ -11,12 +11,6 @@ export default class WebC__Chat_Message extends Web_Component {
         this.message_html = ''
         this.type         = ''
         this.duration     = ''
-        this.channel      = this.getAttribute('channel' )       || null
-        this.platform     = this.getAttribute('platform')       || 'platform'
-        this.provider     = this.getAttribute('provider')       || 'provider'
-        this.model        = this.getAttribute('model'   )       || 'model'
-        if (this.channel) { this.channels.push(this.channel) }
-        this.channels.push('WebC__Chat_Message')
         this.edit_message  = this.edit_message.bind(this);
         this.save_message  = this.save_message.bind(this);
         this.clear_message = this.clear_message.bind(this);
@@ -29,14 +23,23 @@ export default class WebC__Chat_Message extends Web_Component {
 
     load_attributes() {
         this.type = this.attributes.type?.value
+        this.channel      = this.getAttribute('channel' )       || null
+        this.platform     = this.getAttribute('platform')       || 'platform'
+        this.provider     = this.getAttribute('provider')       || 'provider'
+        this.model        = this.getAttribute('model'   )       || 'model'
+        if (this.channel) { this.channels.push(this.channel) }
+        this.channels.push('WebC__Chat_Message')
     }
 
-    add_event_listeners() {
+    add_event_handlers() {
         this.style.display = 'inherit'              // need to add this so that align-self works ('contents' seems a better value, but 'inherit'
         if (this.edit_mode && this.type !== 'initial') {
-            this.shadowRoot.querySelector("#edit_button" ).addEventListener('click', this.edit_message )
-            this.shadowRoot.querySelector("#save_button" ).addEventListener('click', this.save_message )
-            this.shadowRoot.querySelector("#clear_button").addEventListener('click', this.clear_message)
+            this.add_event__on('click', "#edit_button"  , this.edit_message )
+            this.add_event__on('click', "#save_button"  , this.save_message )
+            this.add_event__on('click', "#clear_button" , this.clear_message )
+            // this.shadowRoot.querySelector("#edit_button" ).addEventListener('click', this.edit_message )
+            // this.shadowRoot.querySelector("#save_button" ).addEventListener('click', this.save_message )
+            // this.shadowRoot.querySelector("#clear_button").addEventListener('click', this.clear_message)
         }
     }
 
