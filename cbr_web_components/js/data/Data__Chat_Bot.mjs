@@ -10,13 +10,13 @@ export default class Data__Chat_Bot {
         return this
     }
 
-    add_user_message_sent(message) {
-        return this.add_user_message(message, 'sent')
-    }
-
-    add_user_message_received(message) {
-        return this.add_user_message(message, 'received')
-    }
+    // add_user_message_sent(message) {
+    //     return this.add_user_message(message, 'sent')
+    // }
+    //
+    // add_user_message_received(message) {
+    //     return this.add_user_message(message, 'received')
+    // }
 
     add_system_prompt(system_prompt) {
         this.system_prompts.push(system_prompt)

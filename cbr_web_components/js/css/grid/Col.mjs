@@ -23,11 +23,4 @@ export default class Col extends Div {
         this.add_element(row)
         return row
     }
-
-    // Helper for nested content
-    add_content({value, class: class_name}={}) {
-        this.set_value(value)
-        if (class_name) this.add_class(class_name)
-        return this
-    }
 }

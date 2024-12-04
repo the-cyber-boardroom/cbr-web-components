@@ -7,6 +7,9 @@ export default class WebC__API_To_Json extends Web_Component {
 
     constructor() {
         super();
+        this.api_invoke                = new API__Invoke()
+        this.text_highlight            = new Text_Highlight(this)
+        this.use_api_path_as_title     = true
     }
 
     async apply_css() {
@@ -28,15 +31,13 @@ export default class WebC__API_To_Json extends Web_Component {
         this.api_path  = this.getAttribute('api_path')
     }
 
-    disconnectedCallback() {
-        super.disconnectedCallback()
-    }
+    // disconnectedCallback() {
+    //     super.disconnectedCallback()
+    // }
 
     async load_data() {
-        this.api_invoke                = new API__Invoke()
-        this.text_highlight            = new Text_Highlight(this)
-        this.api_invoke.mock_responses = JSON.parse(this.getAttribute('mock_responses'))
-        this.use_api_path_as_title     = true
+
+        //this.api_invoke.mock_responses = JSON.parse(this.getAttribute('mock_responses'))
         this.api_data                  = await this.invoke_api_path()
     }
 

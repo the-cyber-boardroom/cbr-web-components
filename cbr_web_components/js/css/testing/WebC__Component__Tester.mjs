@@ -59,7 +59,8 @@ export default class WebC__Component__Tester extends Web_Component {
     }
 
     async component_ready() {
-        await this.refresh_component()
+        //todo add check so that we don't load this when running tests
+        // await this.refresh_component()
     }
 
     add_event_handlers() {

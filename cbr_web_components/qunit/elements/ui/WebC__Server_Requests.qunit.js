@@ -6,14 +6,16 @@ import WebC__API_To_Table    from "../../../js/elements/api/WebC__API_To_Table.m
 import Table                 from "../../../js/core/Table.mjs";
 import {MOCK_SERVER_REQUESTS_API_PATH,
         MOCK_SERVER_REQUESTS_DATA    ,
-        setup_mock_responses         } from '../../../js/testing/Mock_API__Data.mjs'
+        setup_mock_responses, set_mock_response  } from '../../../js/testing/Mock_API__Data.mjs'
 
-QUnit.module('WebC__Server_Requests', function(hooks) {
+const { module, test } = QUnit
+
+module('WebC__Server_Requests', function(hooks) {
     let target_div
     let webc_server_requests
-    let mock_responses
-    let api_path
-    let api_data
+    // let mock_responses
+    // let api_path
+    // let api_data
 
     hooks.beforeEach(async (assert) => {
         setup_mock_responses()
@@ -55,5 +57,33 @@ ${table.html(1)}\
         //                     "</div>\n"
         assert.deepEqual(webc_server_requests.inner_html(), expected_html)
 
+    })
+
+    test('processes API response correctly', async assert => {
+        const response = await webc_server_requests.invoke_api_path()
+
+        assert.ok(response                                                              , 'Returns response'         )
+        assert.ok(response.rows                                                         , 'Has rows data'            )
+
+        if (response.rows.length > 3) {
+            const first_cell = response.rows[0][0]
+            assert.ok(first_cell.includes('<a href="docs/dev/web-components/server-request?request_id='),
+                                                                                         'Formats request ID link'   )
+        }
+    })
+
+    test('handles empty response data', async assert => {
+        setup_mock_responses()
+        set_mock_response(MOCK_SERVER_REQUESTS_API_PATH, 'GET', { rows: [] })
+
+        const response = await webc_server_requests.invoke_api_path()
+        assert.deepEqual(response.rows             , []                                 , 'Handles empty rows'       )
+    })
+
+    test('preserves other response data', async assert => {
+        const response = await webc_server_requests.invoke_api_path()
+
+        assert.ok(response.headers                                                      , 'Preserves headers'        )
+        assert.ok(response.title                                                        , 'Preserves title'          )
     })
 })
