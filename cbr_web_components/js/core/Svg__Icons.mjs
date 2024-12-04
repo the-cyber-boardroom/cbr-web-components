@@ -26,11 +26,12 @@ export default class Svg__Icons{
     }
 
     icon(icon_name, ...attributes) {
+
         const svg_code_raw = Svg__Icons[icon_name]
         if (svg_code_raw) {
             const icon_class_name = icon_name.replace(/_/g, '-').toLowerCase()
             const classes = `icon-svg ${icon_class_name}`
-            const svg_code = this.apply_attributes_to_svg_code(svg_code_raw, attributes)
+            const svg_code = this.apply_attributes_to_svg_code(svg_code_raw, ...attributes)
             return new Raw_Html({class:classes, value:svg_code})
         }
 

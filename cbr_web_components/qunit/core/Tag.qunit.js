@@ -1,6 +1,6 @@
 import Tag  from '../../js/core/Tag.mjs' ;
 
-const { module, test } = QUnit
+const { module, test, only } = QUnit
 
 QUnit.module('Html_Tag', function(hooks) {
 
@@ -207,10 +207,12 @@ const expected_html_3 =
         assert.equal(tag_child_4.parent(), tag_child_3 )
         assert.equal(tag.inner_html(), expected_inner_html_4)
         assert.equal(tag.html(),expected_html_4)
-        
+
+
+
     })
-    
-    
+
+
 
     QUnit.test('.add_to', function (assert) {
         const tag_id = 'an_id'
@@ -474,6 +476,10 @@ const expected_html_3 =
         assert.equal   (parent.elements.length , 3                , 'Adds multiple elements')
         assert.equal   (child2.element_parent  , parent           , 'Sets parent for child2')
         assert.equal   (child3.element_parent  , parent           , 'Sets parent for child3')
+
+        parent.clear_elements()
+        assert.equal   (parent.elements.length , 0                , 'confirms no elements')
+
     })
 
     test('clone method', assert => {

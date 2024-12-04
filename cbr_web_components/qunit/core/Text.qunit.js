@@ -1,7 +1,9 @@
 import Text  from '../../js/core/Text.mjs' ;
 import Tag  from '../../js/core/Tag.mjs' ;
 
-QUnit.module('Text', function(hooks) {
+const { module, test , only} = QUnit
+
+module('Text', function(hooks) {
 
     QUnit.test('.config',  function (assert) {
         const text = new Text();
@@ -57,54 +59,52 @@ QUnit.module('Text', function(hooks) {
         const text = new Text({value:payload});
         assert.equal(text.inner_html(), expected_html)
     })
-})
 
-// module('Text', hooks => {
-//     test('constructor creates text element', assert => {
-//         const text = new Text({})
-//         assert.equal(text.tag                    , 'text'          , 'Sets correct tag name')
-//         assert.equal(text.value                  , ''              , 'Empty default value'  )
-//         assert.ok   (text instanceof Tag                           , 'Inherits from Tag'    )
-//
-//         const complex = new Text({
-//             id        : 'test-id'                ,
-//             class     : 'test-class'             ,
-//             value     : 'Test Content'
-//         })
-//         assert.equal(complex.id                   , 'test-id'      , 'Sets ID'             )
-//         assert.equal(complex.class                , 'test-class'   , 'Sets class'          )
-//         assert.equal(complex.value                , 'Test Content' , 'Sets content'        )
-//     })
-//
-//     test('configures HTML options correctly', assert => {
-//         const text = new Text()
-//         assert.notOk(text.html_config.indent_before_last_tag      , 'No indent before last tag' )
-//         assert.notOk(text.html_config.new_line_before_elements    , 'No newline before elements')
-//         assert.notOk(text.html_config.new_line_after_final_tag    , 'No newline after final tag')
-//     })
-//
-//     test('prevents adding child elements', assert => {
-//         const text  = new Text({ value: 'Parent' })
-//         const child = new Text({ value: 'Child'  })
-//
-//         assert.notOk(text.add_element(child)                      , 'Returns false on add attempt')
-//         assert.equal(text.elements.length        , 0              , 'No elements added'          )
-//     })
-//
-//     test('escapes HTML content', assert => {
-//         const text = new Text({
-//             value: '<script>alert("test")</script>'
-//         })
-//         const html = text.html()
-//         assert.ok   (html.includes('&lt;script&gt;')             , 'Escapes < and >'           )
-//         assert.ok   (html.includes('&quot;')                     , 'Escapes quotes'            )
-//         assert.notOk(html.includes('<script>')                   , 'No raw script tags'        )
-//     })
-//
-//     test('just_text mode', assert => {
-//         const text = new Text({ value: 'Test Content' })
-//         text.just_text()
-//         assert.notOk(text.html_config.include_tag                , 'Excludes tags'             )
-//         assert.equal(text.html()                , 'Test Content' , 'Returns only content'      )
-//     })
-// })
+    test('constructor creates text element', assert => {
+        const text = new Text({})
+        assert.equal(text.tag                    , 'text'          , 'Sets correct tag name')
+        assert.equal(text.value                  , ''              , 'Empty default value'  )
+        assert.ok   (text instanceof Tag                           , 'Inherits from Tag'    )
+
+        const complex = new Text({
+            id        : 'test-id'                ,
+            class     : 'test-class'             ,
+            value     : 'Test Content'
+        })
+        assert.equal(complex.id                   , 'test-id'      , 'Sets ID'             )
+        assert.equal(complex.class                , 'test-class'   , 'Sets class'          )
+        assert.equal(complex.value                , 'Test Content' , 'Sets content'        )
+    })
+
+    test('configures HTML options correctly', assert => {
+        const text = new Text()
+        assert.notOk(text.html_config.indent_before_last_tag      , 'No indent before last tag' )
+        assert.notOk(text.html_config.new_line_before_elements    , 'No newline before elements')
+        assert.notOk(text.html_config.new_line_after_final_tag    , 'No newline after final tag')
+    })
+
+    test('prevents adding child elements', assert => {
+        const text  = new Text({ value: 'Parent' })
+        const child = new Text({ value: 'Child'  })
+
+        assert.notOk(text.add_element(child)                      , 'Returns false on add attempt')
+        assert.equal(text.elements.length        , 0              , 'No elements added'          )
+    })
+
+    test ('escapes HTML content', assert => {
+        const text = new Text({
+            value: '<script>alert("test")</script>'
+        })
+        const html = text.html()
+        assert.ok   (html.includes('&lt;script&gt;')             , 'Escapes < and >'           )
+        assert.notOk(html.includes('&quot;')                     , 'Not escapes quotes'        )
+        assert.notOk(html.includes('<script>')                   , 'No raw script tags'        )
+    })
+
+    test('just_text mode', assert => {
+        const text = new Text({ value: 'Test Content' })
+        text.just_text()
+        assert.notOk(text.html_config.include_tag                , 'Excludes tags'             )
+        assert.equal(text.html()                , 'Test Content' , 'Returns only content'      )
+    })
+})

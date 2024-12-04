@@ -39,9 +39,6 @@ export default class Table extends Tag {
         this.add_element(tbody)
 
     }
-    connectedCallback() {
-        this.build()        
-    }
 
     html(depth) {
         this.build()        

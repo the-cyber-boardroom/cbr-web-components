@@ -4,6 +4,8 @@ module.exports = function (wallaby) {
       { pattern: 'node_modules/jquery/dist/jquery.js', instrument: false },
       { pattern: 'node_modules/datatables.net/js/dataTables.js', instrument: false },
       'cbr_web_components/js/**/*.*',
+      '!cbr_web_components/js/css/demos/**/*.*',  // Exclude files in /js/css/demos
+
     ],
     tests: [
       'cbr_web_components/qunit/**/*.*',
