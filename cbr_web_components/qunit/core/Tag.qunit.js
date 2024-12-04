@@ -1,5 +1,7 @@
 import Tag  from '../../js/core/Tag.mjs' ;
 
+const { module, test } = QUnit
+
 QUnit.module('Html_Tag', function(hooks) {
 
 
@@ -415,4 +417,164 @@ const expected_html_3 =
         assert.strictEqual(Tag.prototype.constructor, Tag, 'Html_Tag.prototype.constructor is Html_Tag');
         assert.equal(html_tag.tag, 'tag')
   });
+
+       test('constructor sets default values', assert => {
+        const tag = new Tag()
+
+        assert.equal   (tag.tag            , 'tag'             , 'Sets default tag name'  )
+        assert.deepEqual(tag.attributes    , {}                , 'Sets empty attributes'  )
+        assert.equal   (tag.class          , null              , 'No default class'       )
+        assert.equal   (tag.element_dom    , null              , 'No DOM element'         )
+        assert.equal   (tag.element_parent , null              , 'No parent element'      )
+        assert.deepEqual(tag.elements      , []                , 'Empty elements array'   )
+        assert.ok     (tag.html_config                         , 'Has HTML config'        )
+        assert.equal   (tag.id             , null              , 'No default ID'          )
+        assert.equal   (tag.parent_dom     , null              , 'No parent DOM'          )
+        assert.ok     (tag.styles                              , 'Has styles object'      )
+        assert.equal   (tag.value          , null              , 'No default value'       )
+    })
+
+    test('constructor accepts custom values', assert => {
+        const tag = new Tag({
+            tag        : 'div'                 ,
+            id         : 'test-id'             ,
+            class      : 'test-class'          ,
+            attributes : { 'data-test': 'test' },
+            value      : 'test-value'
+        })
+
+        assert.equal   (tag.tag                    , 'div'            , 'Sets custom tag'        )
+        assert.equal   (tag.id                     , 'test-id'        , 'Sets custom ID'         )
+        assert.equal   (tag.class                  , 'test-class'     , 'Sets custom class'      )
+        assert.equal   (tag.attributes['data-test'], 'test'           , 'Sets custom attributes' )
+        assert.equal   (tag.value                  , 'test-value'     , 'Sets custom value'      )
+    })
+
+    test('add_class method', assert => {
+        const tag = new Tag()
+
+        tag.add_class('class1')
+        assert.equal(tag.class           , 'class1'          , 'Adds first class'       )
+
+        tag.add_class('class2')
+        assert.equal(tag.class           , 'class1 class2'   , 'Appends second class'   )
+    })
+
+    test('add_element and add_elements methods', assert => {
+        const parent = new Tag()
+        const child1 = new Tag({ tag: 'child1' })
+        const child2 = new Tag({ tag: 'child2' })
+        const child3 = new Tag({ tag: 'child3' })
+
+        parent.add_element(child1)
+        assert.equal   (parent.elements.length , 1                , 'Adds single element'  )
+        assert.equal   (child1.element_parent  , parent           , 'Sets parent reference')
+
+        parent.add_elements(child2, child3)
+        assert.equal   (parent.elements.length , 3                , 'Adds multiple elements')
+        assert.equal   (child2.element_parent  , parent           , 'Sets parent for child2')
+        assert.equal   (child3.element_parent  , parent           , 'Sets parent for child3')
+    })
+
+    test('clone method', assert => {
+        const original = new Tag({
+            tag        : 'div'                 ,
+            id         : 'original-id'         ,
+            class      : 'test-class'          ,
+            value      : 'test-value'          ,
+            attributes : { 'data-test': 'test' }
+        })
+
+        const cloned = original.clone({ id: 'cloned-id' })
+
+        assert.equal   (cloned.tag                     , original.tag              , 'Copies tag'            )
+        assert.equal   (cloned.class                   , original.class           , 'Copies class'          )
+        assert.equal   (cloned.value                   , original.value           , 'Copies value'          )
+        assert.deepEqual(cloned.attributes             , original.attributes      , 'Copies attributes'     )
+        assert.equal   (cloned.id                      , 'cloned-id'             , 'Sets new ID'           )
+        assert.deepEqual(cloned.elements               , []                       , 'Empty elements array'   )
+        assert.notEqual(cloned.html_config             , original.html_config    , 'New html_config object')
+        assert.notEqual(cloned.styles                  , original.styles         , 'New styles object'     )
+    })
+
+    test('html generation', assert => {
+        // Simple tag
+        const simple = new Tag({ tag: 'div' })
+        assert.equal(simple.html()          , '<div>\n</div>\n'   , 'Generates basic tag'   )
+
+        // Tag with attributes
+        const with_attrs = new Tag({
+            tag        : 'div'                 ,
+            id         : 'test-id'             ,
+            class      : 'test-class'          ,
+            attributes : { 'data-test': 'test' }
+        })
+        assert.equal(with_attrs.html()      , '<div id="test-id" class="test-class" data-test="test">\n</div>\n',
+                                                                    'Includes attributes'    )
+
+        // Tag with value
+        const with_value = new Tag({
+            tag   : 'span'                     ,
+            value : 'test content'
+        })
+        assert.equal(with_value.html()      , '<span>test content</span>\n',
+                                                                    'Includes value'         )
+
+        // Nested tags
+        const parent = new Tag({ tag: 'div' })
+        const child = new Tag({ tag: 'span', value: 'child' })
+        parent.add_element(child)
+        assert.equal(parent.html()          , '<div>\n    <span>child</span>\n</div>\n',
+                                                                    'Handles nesting'        )
+    })
+
+    test('html_config options', assert => {
+        const tag = new Tag({ tag: 'div', value: 'test' })
+
+        // Test include_tag
+        tag.html_config.include_tag = false
+        assert.equal(tag.html()             , 'test\n'           , 'Can omit tags'          )
+
+        // Test include_end_tag
+        tag.html_config.include_tag = true
+        tag.html_config.include_end_tag = false
+        assert.equal(tag.html()             , '<div/>\n'         , 'Can use self-closing'   )
+
+        // Test new_line settings
+        tag.html_config.include_end_tag = true
+        tag.html_config.new_line_after_final_tag = false
+        assert.equal(tag.html()             , '<div>test</div>'  , 'Can control newlines'   )
+    })
+
+    test('html escaping', assert => {
+        const tag = new Tag({
+            tag   : 'div'                     ,
+            value : '<script>alert("xss")</script>'
+        })
+
+        const escaped_html = tag.html()
+        assert.ok    (escaped_html.includes('&lt;script&gt;')    , 'Escapes < and >'       )
+        assert.notOk (escaped_html.includes('&quot;')            , 'Does NOT Escape quotes'         )
+        assert.ok    (escaped_html.includes('"')            , 'Does NOT Escape quotes'         )
+        assert.notOk (escaped_html.includes('<script>')          , 'No raw script tags'     )
+    })
+
+    test('style handling', assert => {
+        const tag = new Tag({ tag: 'div' })
+
+        tag.set_style('backgroundColor', 'red')
+        assert.equal(tag.styles.backgroundColor , 'red'           , 'Sets single style'     )
+
+        tag.set_styles({
+            border : '1px solid black'         ,
+            margin : '10px'
+        })
+        assert.equal(tag.styles.border         , '1px solid black', 'Sets multiple styles'  )
+        assert.equal(tag.styles.margin         , '10px'           , 'Preserves all styles'  )
+
+        const html = tag.html()
+        assert.ok(html.includes('style="'                      )  , 'Includes style attribute')
+        assert.ok(html.includes('background-color: red'        )  , 'Converts camelCase to kebab-case')
+        assert.ok(html.includes('border: 1px solid black'      )  , 'Includes multiple styles')
+    })
 })

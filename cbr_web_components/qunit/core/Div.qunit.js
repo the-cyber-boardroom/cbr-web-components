@@ -32,6 +32,13 @@ QUnit.module('Div', function(hooks) {
         assert.equal(tag_child .html(), '<title id="child">\n</title>\n')
     })
 
+    QUnit.test('add_tag - no params', (assert) =>{
+        let div_parent = new Div({id:'parent'})
+        let tag_child  = div_parent.add_tag()
+        assert.equal(div_parent.html(), '<div id="parent">\n    <tag>\n    </tag>\n</div>\n')
+        assert.equal(tag_child .html(), '<tag>\n</tag>\n')
+    })
+
     QUnit.test('add_text', (assert) =>{
         let text       = 'this is some text'
         let div_parent = new Div({id:'parent'})
@@ -72,4 +79,93 @@ QUnit.module('Div', function(hooks) {
         assert.equal(document.querySelectorAll('#'+div.id).length, 0, "after remove the div.id is not on the page")
     })
 
+    QUnit.test('handles empty constructor parameters', (assert) => {
+        const div = new Div()
+        assert.equal(div.tag              , 'div'            , 'Sets correct tag name')
+        assert.deepEqual(div.attributes   , {}               , 'Has empty attributes')
+        assert.ok(div instanceof Tag                         , 'Inherits from Tag')
+    })
+
+    QUnit.test('nested divs maintain proper indentation', (assert) => {
+        const parent = new Div()
+        const child1 = parent.add_div()
+        const child2 = child1.add_div()
+
+        const expected = '<div>\n' +
+                        '    <div>\n' +
+                        '        <div>\n' +
+                        '        </div>\n' +
+                        '    </div>\n' +
+                        '</div>\n'
+
+        assert.equal(parent.html(), expected, 'Maintains proper nesting indentation')
+    })
+
+    QUnit.test('multiple child elements maintain order', (assert) => {
+        const parent = new Div({ id: 'parent' })
+        const div1   = parent.add_div ({ id: 'div1'   })
+        const text1  = parent.add_text('text1')
+        const div2   = parent.add_div ({ id: 'div2'   })
+
+        const expected = '<div id="parent">\n' +
+                        '    <div id="div1">\n' +
+                        '    </div>\n' +
+                        '    <text>text1</text>' +
+                        '    <div id="div2">\n' +
+                        '    </div>\n' +
+                        '</div>\n'
+
+        assert.equal(parent.html(), expected, 'Maintains child element order')
+    })
+
+    QUnit.test('add_div returns the created div instance', (assert) => {
+        const parent = new Div()
+        const child  = parent.add_div({ class: 'child' })
+
+        assert.ok   (child instanceof Div            , 'Returns Div instance'     )
+        assert.equal(child.class      , 'child'      , 'Sets provided attributes' )
+    })
+
+    QUnit.test('handles complex nested structures', (assert) => {
+        const root = new Div({ id: 'root' })
+        const div1 = root.add_div({ class: 'level-1' })
+        div1.add_text('Text in level 1')
+        const div2 = div1.add_div({ class: 'level-2' })
+        div2.add_text('Text in level 2')
+
+        const expected = '<div id="root">\n' +
+                        '    <div class="level-1">\n' +
+                        '        <text>Text in level 1</text>' +
+                        '        <div class="level-2">\n' +
+                        '            <text>Text in level 2</text>' +
+                        '        </div>\n' +
+                        '    </div>\n' +
+                        '</div>\n'
+
+        assert.equal(root.html(), expected, 'Correctly renders complex nested structure')
+    })
+
+    QUnit.test('add_tag with various HTML elements', (assert) => {
+        const div = new Div()
+        const span = div.add_tag({ tag: 'span', value: 'Span text' })
+        const p    = div.add_tag({ tag: 'p'   , value: 'Paragraph' })
+
+        const expected = '<div>\n' +
+                        '    <span>Span text</span>\n' +
+                        '    <p>Paragraph</p>\n' +
+                        '</div>\n'
+
+        assert.equal(div.html() , expected     , 'Renders mixed HTML elements')
+        assert.equal(span.tag   , 'span'       , 'Sets correct tag for span' )
+        assert.equal(p.tag      , 'p'          , 'Sets correct tag for p'    )
+    })
+
+    QUnit.test('add_text maintains text content integrity', (assert) => {
+        const div = new Div()
+        const text1 = div.add_text('Line 1\nLine 2')
+        const text2 = div.add_text('Special chars: <>&"\'')
+
+        assert.equal(text1.value, 'Line 1\nLine 2'          , 'Preserves line breaks'     )
+        assert.equal(text2.value, 'Special chars: <>&"\''   , 'Preserves special chars'   )
+    })
 })
