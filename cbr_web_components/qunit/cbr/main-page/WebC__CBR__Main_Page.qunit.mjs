@@ -106,4 +106,14 @@ module('WebC__CBR__Main_Page', hooks => {
         assert.ok(content_row.classList.contains('flex-fill')                        , 'Flexible content row'     )
         assert.ok(content_row.classList.contains('flex-nowrap')                      , 'No wrapping'             )
     })
+
+    test('handle_first_route', async (assert) => {
+        assert.expect(2)                                // confirm both asserts where called
+        const on_navigate_to_link = (event) =>{
+            assert.ok(event.detail.path)                // confirm is set
+            assert.ok(1)                                // confirm we got here
+        }
+        main_page.addEventListener(CBR_Events.CBR__UI__NAVIGATE_TO_PATH, on_navigate_to_link, {once: true})
+        await main_page.handle_first_route()
+    })
 })

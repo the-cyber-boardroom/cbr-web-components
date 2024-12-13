@@ -3,6 +3,7 @@ import CBR__Route__Handler from '../../../js/cbr/router/CBR__Route__Handler.mjs'
 import CBR__Route__Content from '../../../js/cbr/router/CBR__Route__Content.mjs'
 import { Mock_Fetch,
          set_mock_response } from '../../../js/testing/Mock_Fetch.mjs'
+import CBR_Events from "../../../js/cbr/CBR_Events.mjs";
 
 const { module, test, only } = QUnit
 
@@ -20,7 +21,9 @@ module('CBR__Route__Handler', hooks => {
     let content_div
     let route_content
 
-    hooks.beforeEach(() => {
+    // todo: refactor this so that we don't use beforeEach on every test
+    hooks.beforeEach((assert) => {
+        assert.timeout(10)
         //Mock_Fetch.apply_mock(CBR__Route__Content)                                // Apply mock to Route Content
         Mock_Fetch.apply_mock(CBR__Content__Loader)
 
@@ -437,5 +440,22 @@ module('CBR__Route__Handler', hooks => {
 
         // Assert
         assert.equal(content_div.innerHTML, expected_error, 'Shows error message when component loading fails')
+    })
+
+    test('handle_navigate_to_link', (assert) => {
+        //const done = assert.async()
+        const link = document.createElement('a')
+        const path = 'an-path'
+        link.href                  = handler.base_path + path
+        link.dataset.targetType    = 'web_component'
+        link.dataset.componentPath = ''
+        link.dataset.component     = 'WebC__An_UI_Feature'
+        const custom_event = new CustomEvent(CBR_Events.CBR__UI__NAVIGATE_TO_LINK, { detail: { link } })
+        handler.import_module = async (path) => {
+            assert.equal(path, '/web_components/js/cbr/web-components/WebC__An_UI_Feature.mjs')
+            assert.ok(1)
+        }
+
+        window.dispatchEvent(custom_event)
     })
 })

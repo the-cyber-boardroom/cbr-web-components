@@ -44,7 +44,8 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
     }
 
     add_event_listeners() {
-        this.add_window_event_listener(CBR_Events.CBR__UI__LEFT_MENU_TOGGLE, this.on_left_menu_toggle)
+        this.add_window_event_listener(CBR_Events.CBR__UI__LEFT_MENU_TOGGLE, this.on__left_menu_toggle       )
+        this.add_window_event_listener(CBR_Events.CBR__UI__NAVIGATE_TO_PATH, this.on__handle_navigate_to_path)          // Listen to CBR__UI__NAVIGATE_TO_LINK
     }
 
     add_web_components() {
@@ -53,6 +54,9 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         this.add_web_component(WebC__Resize_Button, params )
     }
 
+    component_ready(){
+        this.raise_event_global(CBR_Events.CBR__UI__LEFT_MENU_LOADED)
+    }
     // API methods
 
     async fetch_menu_items() {
@@ -65,11 +69,33 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         }
     }
 
-    // component methods
+    // event handlers
 
+    on__handle_navigate_to_path = async (event) => {
+        const path     = event.detail?.path
+        const menu_key = this.remove_base_path(path)
+        if (menu_key) {
+            let link, target_type, component_path, component
+            const href          = window.location.origin + path
+            if (menu_key in this.menu_data) {
+                const path_data = this.menu_data[menu_key]
+                target_type     = 'web_component'
+                component_path  = path_data.web_component_path || ''
+                component       = path_data.web_component
 
+            }
+            else {
+                component_path = ''
+                component      = ''
+                target_type    = 'link'
+            }
+            link = this.create_navigation_link({href, target_type, component_path, component})
+            const detail = { link: link }
+            this.raise_event_global(CBR_Events.CBR__UI__NAVIGATE_TO_LINK, detail)
+        }
+    }
 
-    on_left_menu_toggle (event) {
+    on__left_menu_toggle (event) {
         const minimized = event.detail.minimized
         if (minimized) {
             this.div__left_menu_main.add_class   ('left-menu-minimized')
@@ -78,6 +104,7 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         }
     }
 
+    // component methods
     html() {
         const div_left_menu       = new Div       ({ class: 'left-menu-main'       })
         const cbr_left_menu       = new Left_Menu ({ menu_items: this.menu_items() })
@@ -92,12 +119,10 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         if (!this.menu_data) return []
 
         return Object.entries(this.menu_data).map(([key, item]) => {
-            const link_attributes = {
-                'data-target-type'   : item.web_component ? 'web_component' : 'link' , // Add target type attribute
-                'data-component-path': item.web_component_path || ''                 ,
-                icon                 : item.icon                                     ,
-                label                : item.label                                    ,
-            }
+            const link_attributes = { 'data-target-type'   : item.web_component       ? 'web_component' : 'link' ,   // Add target type attribute
+                                      'data-component-path': item.web_component_path || ''                       ,
+                                      icon                 : item.icon                                           ,
+                                      label                : item.label                                          }
 
             if (item.web_component) {
                 link_attributes['data-component'] = item.web_component             // Add data-component attribute for web components
@@ -109,6 +134,21 @@ export default class WebC__CBR__Left_Menu extends Web_Component {
         })
     }
 
+    remove_base_path(path) {
+        if (path && path.includes(this.base_path)) {
+            return path.replace(this.base_path, '').replace(/^\/+/, '')
+        }
+        return null
+    }
+
+    create_navigation_link({href, target_type, component_path, component}){
+        const link = document.createElement('a')
+        link.href                  = href
+        link.dataset.targetType    = target_type
+        link.dataset.componentPath = component_path
+        link.dataset.component     = component
+        return link
+    }
     // GETTERS
     get div__left_menu_main() { return this.query_selector('.left-menu-main')  }
 

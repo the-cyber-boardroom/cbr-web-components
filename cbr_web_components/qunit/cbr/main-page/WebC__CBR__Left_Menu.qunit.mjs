@@ -136,4 +136,44 @@ module('WebC__CBR__Left_Menu', hooks => {
             overflow  : "hidden"
         }, 'Minimized styles are correct')
     })
+
+    test('on__handle_navigate_to_path - web-component', async(assert) => {
+        assert.expect(4)
+        const base_path = '/some/base-path'
+        const path      = `${base_path}/dashboard`
+        const detail = { path: path }
+        const event  = new CustomEvent('_', {'detail': detail})
+        const on_navigate_to_link = (event) => {
+            const link = event.detail.link
+            const href = window.location.origin + path
+            assert.equal(link.dataset.targetType   , 'web_component'  )
+            assert.equal(link.dataset.componentPath, ''               )
+            assert.equal(link.dataset.component    , 'WebC__Dashboard')
+            assert.equal(link.href                 , href             )
+        }
+        left_menu.base_path = base_path
+        left_menu.addEventListener(CBR_Events.CBR__UI__NAVIGATE_TO_LINK, on_navigate_to_link, {once: true})
+        await left_menu.on__handle_navigate_to_path(event)
+
+    })
+
+    test('on__handle_navigate_to_path - link', async(assert) => {
+        assert.expect(4)
+        const base_path = '/some/base-path'
+        const path      = `${base_path}/another-page`
+        const detail = { path: path }
+        const event  = new CustomEvent('_', {'detail': detail})
+        const on_navigate_to_link = (event) => {
+            const link = event.detail.link
+            const href = window.location.origin + path
+            assert.equal(link.dataset.targetType   , 'link')
+            assert.equal(link.dataset.componentPath, ''    )
+            assert.equal(link.dataset.component    , ''    )
+            assert.equal(link.href                 , href  )
+        }
+        left_menu.base_path = base_path
+        left_menu.addEventListener(CBR_Events.CBR__UI__NAVIGATE_TO_LINK, on_navigate_to_link, {once: true})
+        await left_menu.on__handle_navigate_to_path(event)
+
+    })
 })

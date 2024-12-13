@@ -2,7 +2,7 @@ import WebC__Target_Div from '../../js/utils/WebC__Target_Div.mjs'
 import Web_Component    from '../../js/core/Web_Component.mjs'
 import WebC__Chat_Message from '../../js/chat-bot/WebC__Chat_Message.mjs'
 
-const { module, test, only } = QUnit
+const { module, test, only} = QUnit
 
 module('WebC__Chat_Message', hooks => {
     let target_div
@@ -128,13 +128,16 @@ module('WebC__Chat_Message', hooks => {
     })
 
     test('handles image display', assert => {
-        const images = ['test1.jpg', 'test2.jpg']
+        const images = [
+        'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',  // 1x1 transparent GIF
+        'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+    ]
         chat_message.images(images)
 
         const img_elements = chat_message.querySelectorAll('img')
-        assert.equal(img_elements.length              , 2                               , 'Displays all images'      )
-        assert.equal(img_elements[0].src.split('/').pop(), 'test1.jpg'                 , 'Sets correct image source')
-        assert.ok(chat_message.querySelector('hr')                                      , 'Adds separator'           )
+        assert.equal(img_elements.length              , 2                    , 'Displays all images'      )
+        assert.ok   (img_elements[0].src.startsWith('data:image/gif;base64,' ,'Sets correct image source'))
+        assert.ok   (chat_message.querySelector('hr')                        , 'Adds separator'           )
     })
 
     test('handles source display for received messages', async assert => {

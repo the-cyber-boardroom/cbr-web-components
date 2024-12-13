@@ -17,8 +17,11 @@ export const CBR_Events = {
     CBR__FILE__SHOW_HISTORY    : 'cbr::file:show-history'   ,
     CBR__FILE__HIDE_HISTORY    : 'cbr::file:hide-history'   ,
 
-    CBR__UI__LEFT_MENU_TOGGLE  : 'cbr::ui::left-menu:toggle' ,
-    CBR__UI__NEW_ERROR_MESSAGE : 'cbr::ui::new-error-message',
+    CBR__UI__LEFT_MENU_TOGGLE     : 'cbr::ui::left-menu:toggle'  ,
+    CBR__UI__LEFT_MENU_LOADED     : 'cbr::ui::left-menu:loaded'  ,
+    CBR__UI__NEW_ERROR_MESSAGE    : 'cbr::ui::new-error-message' ,
+    CBR__UI__NAVIGATE_TO_PATH     : 'cbr::ui::navigate-to-path'  ,
+    CBR__UI__NAVIGATE_TO_LINK     : 'cbr::ui::navigate-to-link'  ,
 
     CBR__LLM__REQUEST__ERROR      : 'cbr::llm::request::error'   ,
     CBR__LLM__REQUEST__FINISHED   : 'cbr::llm::request::finished',

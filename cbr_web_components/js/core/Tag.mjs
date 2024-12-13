@@ -297,12 +297,12 @@ export default class Tag {
     with_id(id) {
         if (this.id === id) return this
 
-        // Search through child elements
-        for (const child of this.elements || []) {
-            const found = child.with_id(id)
-            if (found) return found
+        if (this.elements) {                            // Search through child elements
+            for (const child of this.elements) {
+                const found = child.with_id(id)
+                if (found) return found
+            }
         }
-
         return null
     }
 }

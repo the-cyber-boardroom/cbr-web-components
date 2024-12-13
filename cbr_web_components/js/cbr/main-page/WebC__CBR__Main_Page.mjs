@@ -19,6 +19,9 @@ import CBR_Events                from "../CBR_Events.mjs";
 import WebC__CBR__Top_Banner     from "./WebC__CBR__Top_Banner.mjs";
 
 export default class WebC__CBR__Main_Page extends Web_Component {
+
+    DEFAULT_PATH = '/home'
+
     constructor() {
         super()
         this.routeContent   = new CBR__Route__Content()
@@ -41,15 +44,16 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         this.add_css_rules(CBR__Content__Placeholder.css_rules())
     }
 
-    add_web_components() {
+    async add_web_components() {
         this.add_web_component_to('#top-banner', WebC__CBR__Top_Banner, {})
         this.add_web_component_to('#left-menu' , WebC__CBR__Left_Menu , {base_path : this.base_path})
 
-        setTimeout(() => { window.dispatchEvent(new Event('resize')) }, 1)
+        setTimeout(() => {window.dispatchEvent(new Event('resize'))}, 1)
     }
 
     add_event_listeners() {
-       this.add_window_event_listener(CBR_Events.CBR__UI__LEFT_MENU_TOGGLE , this.on_left_menu_toggle   )
+        this.add_window_event_listener(CBR_Events.CBR__UI__LEFT_MENU_TOGGLE , this.on_left_menu_toggle   )
+        this.add_window_event_listener(CBR_Events.CBR__UI__LEFT_MENU_LOADED , this.on_left_menu_loaded   )
     }
 
     load_data() {
@@ -58,10 +62,12 @@ export default class WebC__CBR__Main_Page extends Web_Component {
 
     async component_ready() {
         this.routeHandler.set_base_path(this.base_path)
-        await this.handle_first_route()
     }
     // EVENT HANDLERS
 
+    on_left_menu_loaded() {
+        this.handle_first_route()
+    }
     on_left_menu_toggle(event) {
         const minimized   = event.detail.minimized
         const layout_col  = this.query_selector('#layout-col-left' )
@@ -81,8 +87,12 @@ export default class WebC__CBR__Main_Page extends Web_Component {
         super.render()
     }
 
-    async handle_first_route() {
-        //await this.routeHandler.handle_route(window.location.pathname)          // todo refactor to new menu structure (where the menu data is dynamically fetched )
+    handle_first_route() {
+        let path = window.location.pathname
+        if (path == this.base_path) {
+            path += this.DEFAULT_PATH
+        }
+        this.raise_event_global(CBR_Events.CBR__UI__NAVIGATE_TO_PATH, { path: path })
     }
 
     extract_base_path_and_version() {

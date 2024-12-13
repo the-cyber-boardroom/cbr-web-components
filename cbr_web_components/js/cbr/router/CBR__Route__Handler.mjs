@@ -1,4 +1,5 @@
 import Raw_Html from "../../core/Raw_Html.mjs";
+import CBR_Events from "../CBR_Events.mjs";
 
 export default class CBR__Route__Handler {
 
@@ -11,10 +12,17 @@ export default class CBR__Route__Handler {
     }
 
     add_event_listeners() {
-        window.addEventListener  ('popstate', this.handle_pop_state       .bind(this))        // Listen for popstate events (browser back/forward)
-        document.addEventListener('click'   , this.handle_navigation_click.bind(this))        // Intercept navigation clicks
+        window.addEventListener  (CBR_Events.CBR__UI__NAVIGATE_TO_LINK, this.handle_navigate_to_link          )
+        window.addEventListener  ('popstate'                          , this.handle_pop_state       .bind(this))          // Listen for popstate events (browser back/forward)
+        document.addEventListener('click'                             , this.handle_navigation_click.bind(this))          // Intercept navigation clicks
     }
 
+    handle_navigate_to_link = async (event) => {
+        const link = event.detail?.link
+        if (link) {
+            await this.process_link(link)
+        }
+    }
     async handle_pop_state(event) {
         await this.handle_route(window.location.pathname)
     }
@@ -140,6 +148,7 @@ export default class CBR__Route__Handler {
     update_browser_path(path) {
         window.history.pushState({}, '', `${this.base_path}${path}`)
     }
+
     set_base_path(base_path) {
         this.base_path = base_path
     }

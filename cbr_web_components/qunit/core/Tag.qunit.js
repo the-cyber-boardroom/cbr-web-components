@@ -2,7 +2,7 @@ import Tag  from '../../js/core/Tag.mjs' ;
 
 const { module, test, only } = QUnit
 
-QUnit.module('Html_Tag', function(hooks) {
+module('Html_Tag', function(hooks) {
 
 
     QUnit.test('. parent', function (assert) {
