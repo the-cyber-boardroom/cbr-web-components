@@ -1,5 +1,6 @@
 import Web_Component from "../core/Web_Component.mjs";
 import Tag           from "../core/Tag.mjs";
+import CBR_Events    from "../cbr/CBR_Events.mjs";
 
 export default class WebC__Form_Input extends Web_Component {
 
@@ -10,6 +11,7 @@ export default class WebC__Form_Input extends Web_Component {
 
     // connection methods
     add_event_listeners() {
+        this.add_window_event_listener                     (CBR_Events.CBR__NEW_INPUT_MESSAGE, this.on__new_input_message)
         this.text_area.addEventListener                    ('input'       , this.on_input  );
         this.text_area.addEventListener                    ('keydown'     , this.on_keydown);
         this.text_area.addEventListener                    ('paste'       , this.on_paste  );
@@ -32,6 +34,10 @@ export default class WebC__Form_Input extends Web_Component {
 
     // events
 
+    on__new_input_message = () =>{
+        this.text_area.value = ''                   // clear the text area
+        this.text_area_resize()                     // resize the text area
+    }
     on_input = () => {
         this.text_area_resize()
     }

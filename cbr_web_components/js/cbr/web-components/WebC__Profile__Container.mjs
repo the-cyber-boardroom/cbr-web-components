@@ -27,6 +27,7 @@ export default class WebC__Profile__Container extends Web_Component {
         new CSS__Typography(this).apply_framework()
         new CSS__Forms     (this).apply_framework()
         new CSS__Cards     (this).apply_framework()
+        this.add_css_rules (this.css_rules       ())
     }
 
     load_attributes() {
@@ -192,7 +193,7 @@ export default class WebC__Profile__Container extends Web_Component {
     html() {
         const layout = new Layout({
             id: 'profile-page',
-            class: 'h-100pc d-flex flex-column'
+            class: 'profile-page d-flex flex-column w-100pc'
         })
 
         // Content row
@@ -230,6 +231,12 @@ ${profile_data}
                 
 Please address the user by name, explain what you know about the user, and how the profile data helps 
 in creating personalized and customised experiences.`
+    }
+
+    css_rules() {
+        return {
+            // "#profile-page" : { width: "100pc",  backgroundColor: 'blue'},
+        }
     }
 }
 

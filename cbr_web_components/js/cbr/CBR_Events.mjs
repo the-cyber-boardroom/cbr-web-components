@@ -29,6 +29,9 @@ export const CBR_Events = {
 
     CBR__SESSION__PERSONA__CHANGED: 'cbr::user::persona::changed',
 
+    // these need refactoring in the code since they are still using the string literals
+    CBR__NEW_INPUT_MESSAGE : 'new_input_message'
+
 }
 
 export default CBR_Events;

@@ -260,6 +260,9 @@ export default class CSS__Grid {
 
             ".layout-fixed": {
                 flexShrink: 0
+            },
+            ".w-100pc": {
+                width: "100pc"
             }
         }
     }

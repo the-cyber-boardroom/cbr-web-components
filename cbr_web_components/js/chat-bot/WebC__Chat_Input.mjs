@@ -1,7 +1,8 @@
 import Events__Utils      from "../events/Events__Utils.mjs";
 import Web_Component      from "../core/Web_Component.mjs";
 import Tag                from "../core/Tag.mjs";
-import WebC__Form_Input   from "./WebC__Form_Input.mjs";       // used in .build()
+import WebC__Form_Input   from "./WebC__Form_Input.mjs";
+import CBR_Events         from "../cbr/CBR_Events.mjs";
 
 export default class WebC__Chat_Input extends Web_Component {
 
@@ -78,7 +79,7 @@ export default class WebC__Chat_Input extends Web_Component {
         const user_prompt = this.input.value + ''
         const images = this.input_images_urls()
         const event_detail = {"user_prompt": user_prompt, 'images': images, 'channel': this.channel}
-        this.event_dispatch('new_input_message', event_detail)
+        this.event_dispatch(CBR_Events.CBR__NEW_INPUT_MESSAGE, event_detail)
         this.input.value = ''
         this.images.innerHTML  =''
     }
